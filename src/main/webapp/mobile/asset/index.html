@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<head>
+<meta charset="utf-8">
+
+<script src="/ycglj/js/jquery.min.js"></script>
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
+
+<script type="text/javascript">
+	var redirectUrl="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APPID+"&redirect_uri="+DOMAIN+"/ycglj/mobile/asset/index.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
+</script>
+
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type='text/javascript' src='js/fastclick.js' charset='utf-8'></script>
+<script type='text/javascript' src='js/swiper.js' charset='utf-8'></script>
+<title>泸州市国有公房经营管理有限公司</title>
+<link rel="icon" href="../../img/yt.ico" type="image/x-icon">
+<!-- Buttons 库的核心文件 -->
+  <link rel="stylesheet" href="css/buttons.css">
+ 
+
+  <link rel="stylesheet" href="css/weui.css"/>
+    <link rel="stylesheet" href="css/jquery-weui.css">
+  <link rel="stylesheet" href="css/buttons.css">
+</head>
+<body>
+
+<!--  
+  <div class="swiper-container swiper-container-horizontal swiper-container-android">
+    <div class="swiper-wrapper" style="transform: translate3d(-1800px, 0px, 0px); transition-duration: 0ms;"><div class="swiper-slide swiper-slide-duplicate swiper-slide-next" data-swiper-slide-index="2" style="width: 450px;"></div>
+      <div class="swiper-slide" ><img src="1.jpg" alt=""></div>
+    </div>
+  <div class="swiper-pagination swiper-pagination-bullets"><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span></div>
+  </div>
+-->
+
+	<div class="container">
+    <div class="row" >
+    <div class="container">
+     <div class="row" >
+     
+
+        
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="notHire" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-home"></i></button>
+          <div><span>预约</span></div>
+        </div>
+        
+    
+     <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="registration" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-home"></i></button>
+          <div><span>网上办理</span></div>
+        </div>
+        
+    
+    <div class="container">
+     <div class="row" >
+     
+       <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="userSetting" class="button button-raised button-primary button-circle button-jumbo"><i class="fa fa-user-o"></i></button>
+          <div><span>用户设置</span></div>
+        </div>
+       
+     </div>
+    </div>
+    
+    <div class="container">
+     <div class="row" >
+        
+        
+        
+        
+     
+     </div>        
+    </div>
+</div>
+ 
+     
+      
+    
+</body>
+</html>
+
+<script>
+  $(function() {
+    FastClick.attach(document.body);
+  });
+</script>
+
+<script type='text/javascript' src='../../js/jquery-weui.js' charset='utf-8'></script>
+
+<script>
+      $(".swiper-container").swiper({
+        loop: true,
+        autoplay: 3000
+      });
+    
+</script>
+
+<style type="text/css"> 
+
+  .weui-btn{
+    margin:0px 10px 50px 10px;
+  }
+  .hd{
+    margin:50px 0px 50px 0px;
+  }
+  .page_title{
+    text-align:center;
+    font-family:"微软雅黑";
+    color:#3eb94e;
+  }
+
+.col-xs-4{
+   padding:15px
+}
+
+</style>

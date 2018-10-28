@@ -1,0 +1,197 @@
+package com.ycglj.manage.daoImpl;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import com.ycglj.manage.daoModel.Order_User;
+import com.ycglj.manage.daoModel.PreMessage;
+import com.ycglj.manage.daoModel.User_Data;
+import com.ycglj.manage.daoSQL.InsertExe;
+import com.ycglj.manage.daoSQL.SelectExe;
+import com.ycglj.manage.daoSQL.UpdateExe;
+import com.ycglj.manage.tools.TransMapToString;
+import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.Users;
+
+
+public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
+
+	@Override
+	public Integer insertPreMessage(PreMessage preMessage) {
+		// TODO Auto-generated method stub
+		return InsertExe.get(this.getJdbcTemplate(), preMessage);
+	}
+
+	@Override
+	public Integer insertUser(Users users) {
+		// TODO Auto-generated method stub
+		return InsertExe.get(this.getJdbcTemplate(), users);
+	}
+
+	@Override
+	public Integer updateUser(Users users) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), users);
+	}
+
+	@Override
+	public Map<String,Object> getAllUser(Integer limit, Integer offset, String sort,String order, Map<String, String> search) {
+		// TODO Auto-generated method stub
+		Map<String,Object> map=new HashMap<>();
+		
+		Users users=new Users();
+		
+		users.setLimit(limit);
+		users.setOffset(offset);
+		users.setNotIn("id");
+		
+		if(sort!=null){
+
+		}else{
+			sort="date";
+		}
+		
+		if(order!=null&&order.equals("asc")){
+			order="asc";
+		}else{
+			order="desc";
+		}
+		
+		if(!search.equals("")&&!search.isEmpty()){
+			String[] where=TransMapToString.get(search);
+			users.setWhere(where);
+		}
+		
+		List<Users> list=SelectExe.get(this.getJdbcTemplate(), users);
+		
+		int total=(int) SelectExe.getCount(this.getJdbcTemplate(), users).get("");
+		
+		map.put("code", "0");
+		
+		map.put("data", list);
+		
+		map.put("count", total);
+		
+		return map;
+	}
+
+	@Override
+	public Integer insertUserData(User_Data user_Data) {
+		// TODO Auto-generated method stub
+		return InsertExe.get(this.getJdbcTemplate(), user_Data);
+	}
+
+	@Override
+	public Integer updateUserData(User_Data user_Data) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), user_Data);
+	}
+
+	@Override
+	public Map<String,Object> getAllUserData(Integer limit, Integer offset, String sort, Map<String, String> search) {
+		// TODO Auto-generated method stub
+		Map<String,Object> map=new HashMap<>();
+		
+		User_Data user_Data=new User_Data();
+		
+		user_Data.setLimit(limit);
+		user_Data.setOffset(offset);
+		user_Data.setNotIn("id");
+		
+		if(search.equals("")||search.isEmpty()){
+			String[] where=TransMapToString.get(search);
+			user_Data.setWhere(where);
+		}
+		
+		List<Order_User> list=SelectExe.get(this.getJdbcTemplate(), user_Data);
+		
+		int total=(int) SelectExe.getCount(this.getJdbcTemplate(), user_Data).get("");
+		
+		map.put("rows", list);
+		
+		map.put("total", total);
+		
+		return map;
+	}
+	
+    @Override
+	public Map<String, Object> findAllPreMessage(Integer limit, Integer offset, String sort, String order, Map search) {
+		// TODO Auto-generated method stub
+		
+		PreMessage preMessage=new PreMessage();
+		
+		preMessage.setLimit(limit);
+		preMessage.setOffset(offset);
+		preMessage.setSort(sort);
+		preMessage.setOrder(order);
+		preMessage.setNotIn("UUID");
+		
+		if(!search.isEmpty()){
+		    String[] where=TransMapToString.get(search);
+		    preMessage.setWhere(where);
+		}
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), preMessage);
+		
+		int total=(int) SelectExe.getCount(this.getJdbcTemplate(), preMessage).get("");
+		
+		Map map=new HashMap<>();
+		
+		map.put("rows", list);
+		
+		map.put("total", total);
+		
+		return map;
+	}
+
+	@Override
+	public Integer updateUserDataAffirm(List list) {
+		// TODO Auto-generated method stub
+		
+		Iterator<String> iterator=list.iterator();
+		
+		int i=0;
+		
+		User_Data user_Data=new User_Data();
+		
+		user_Data.setCurrently(0);
+
+		String[] where0={"affirm >= ","0"};
+
+		user_Data.setWhere(where0);
+		
+		int k=UpdateExe.get(this.getJdbcTemplate(), user_Data);
+		
+		if(k<1){
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return 0;
+		}
+		
+		user_Data.setCurrently(1);
+		
+		user_Data.setAffirm(1);
+		
+		user_Data.setUp_date(new Date());
+		
+		while (iterator.hasNext()) {
+			String[] where={"uuid=",iterator.next()};
+			user_Data.setWhere(where);
+			int j=UpdateExe.get(this.getJdbcTemplate(), user_Data);
+			if(j<1){
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				return 0;
+			}
+			i=i+j;
+		}
+		
+		return i;
+	}
+
+    
+}

@@ -1,0 +1,432 @@
+<!doctype html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<head>
+<meta charset="utf-8">
+
+<script src="/ycglj/js/jquery.min.js"></script>
+
+<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="/ycglj/bootstrap/3.3.7/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="/ycglj/bootstrap/3.3.7/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
+
+<script type="text/javascript">
+	var redirectUrl="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APPID+"&redirect_uri="+DOMAIN+"/ycglj/mobile/1/index.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
+</script>
+
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
+<link rel="stylesheet" href="../../weixinUI/style/weui.css"/>
+
+
+<title>泸州市国有公房经营管理有限公司</title>
+<!--  <link rel="icon" href="../../img/" type="image/x-icon"> -->
+<!-- Buttons 库的核心文件 -->
+  <link rel="stylesheet" href="css/buttons.css">
+ 
+ <!-- 只有使用字体图标时才需要加载 Font-Awesome -->
+ <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+ 
+<body>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse"
+                data-target="#example-navbar-collapse">
+            <span class="sr-only"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><img src="../../img/yt.ico" width="25px" height="25px"></a>
+        <a class="navbar-brand" href="#">资产与安全管理助手</a>
+    </div>
+    <div class="collapse navbar-collapse" id="example-navbar-collapse">
+        <ul class="nav navbar-nav">
+            <li><a href="userSetting.html">用户设置</a></li>
+            <li><a href="#">关于管理助手</a></li>
+        </ul>
+    </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row" >
+    <!--  
+    <div class="container">
+     <div class="row" >
+
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="hiddenNeaten" class="button button-raised  button-circle button-jumbo"><i class="fa fa-file-text-o"></i></button>
+          <div><span>隐患整改</span></div>
+        </div>
+        
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="addhiddenCheck" class="button button-raised button-action button-circle button-jumbo"><i class="fa fa-check-square-o"></i></button>
+          <div><span>安全巡查</span></div>
+        </div>
+        
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="hiddenCheck" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-calendar-check-o"></i></button>
+          <div><span>巡查记录</span></div>
+        </div>
+     
+      </div>
+     </div>
+    
+ 
+     <div class="container">
+     <div class="row" >
+        
+       <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="hiddentrouble" class="button button-raised button-action3 button-circle button-jumbo"><i class="fa fa-search-plus"></i></button>
+          <div><span>隐患检索</span></div>
+        </div>
+               
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="photo" class="button button-raised button-caution button-circle button-jumbo"><i class="fa fa-camera"></i></button>
+          <div><span>隐患上传</span></div>
+        </div>
+        
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="map" class="button button-raised button-primary button-circle button-jumbo"><i class="fa fa-map-marker"></i></button>
+          <div><span>隐患地图</span></div>
+        </div>
+        
+       </div>
+      </div>
+     
+     <div class="container">
+     <div class="row" >
+     
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="allAsset" class="button button-raised button-caution button-circle button-jumbo"><i class="fa fa-institution"></i></button>
+          <div><span>全部资产</span></div>
+        </div>
+        
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="assetMap" class="button button-raised button-primary button-circle button-jumbo"><i class="fa fa-map-marker"></i></button>
+          <div><span>资产地图</span></div>
+        </div>
+        
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="finance" class="button button-raised  button-circle button-jumbo"><i class="fa fa-yen"></i></button>
+          <div><span>财务管理</span></div>
+        </div>
+          
+       </div>
+      </div>
+     
+      <div class="container">
+     <div class="row" >
+    
+
+     <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="hiddenCheckMap" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-map"></i></button>
+          <div><span>巡查路线图</span></div>
+        </div>
+     
+     <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="assetCheck" class="button button-raised button-action button-circle button-jumbo"><i class="fa fa-check-square-o"></i></button>
+          <div><span>资产巡查</span></div>
+        </div>
+     
+     <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="assetCheckList" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-calendar-check-o"></i></button>
+          <div><span>资产巡查记录</span></div>
+        </div>
+     
+     </div>
+    </div>
+     
+     
+      <div class="container">
+     <div class="row" >
+      
+     <div class="container">
+     <div class="row" >
+     
+     <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="hiddenStat" class="button button-raised button-action3 button-circle button-jumbo"><i class="fa fa-area-chart"></i></button>
+          <div><span>隐患统计</span></div>
+        </div>
+     
+       
+        
+        <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="safeLike" class="button button-raised button-royal button-circle button-jumbo"><i class="fa fa-address-book-o"></i></button>
+          <div><span>安全通讯录</span></div>
+        </div>
+        
+   
+       <div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="report" class="button button-raised button-caution button-circle button-jumbo"><i class="fa fa-warning"></i></button>
+          <div><span>紧急报告</span></div>
+        </div>
+       
+       
+     </div>
+    </div>
+    
+    	<div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="asseStat" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-bar-chart"></i></button>
+          <div><span>资产统计</span></div>
+        </div>
+
+     	<div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="userSetting" class="button button-raised button-action button-circle button-jumbo"><i class="fa fa-user-o"></i></button>
+          <div><span>用户设置</span></div>
+        </div>
+     
+     	
+     
+      	<div class="col-xs-4 col-sm-3" 
+        style="text-align:center;">
+          <button id="notPlace" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-map"></i></button>
+          <div><span>无位置资产</span></div>
+        </div>
+    
+     
+     </div>
+     </div>
+     
+     </div>
+    </div>
+    
+    
+    
+     <div class="container">
+     <div class="row" >
+        
+        
+        
+        
+     
+     </div> 
+     -->
+
+			<div id="actionSheet_wrap">
+				<div class="weui_mask_transition" id="mask" style="display: none;"></div>
+				<div class="weui_actionsheet" id="weui_actionsheet">
+					<div class="weui_actionsheet_menu">
+						<div class="weui_actionsheet_cell" id="sendMessage">发送短信</div>
+						<div class="weui_actionsheet_cell" id="preMessage">查看短信记录</div>
+					</div>
+					<div class="weui_actionsheet_action">
+						<div class="weui_actionsheet_cell" id="actionsheet_cancel">取消</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+</div>
+
+<script type="text/javascript">
+
+
+
+	var a1 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddenNeaten\" class=\"button button-raised button-royal button-circle button-jumbo\"><i class=\"fa fa-file-text-o\"></i></button><div><span>隐患整改</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"addhiddenCheck\" class=\"button button-raised button-action button-circle button-jumbo\"><i class=\"fa fa-check-square-o\"></i></button><div><span>安全巡查</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddenCheck\" class=\"button button-raised button-highlight button-circle button-jumbo\"><i class=\"fa fa-calendar-check-o\"></i></button><div><span>安全巡查记录</span></div></div>"
+			+ "";
+	var a2 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddentrouble\" class=\"button button-raised button-action3 button-circle button-jumbo\"><i class=\"fa fa-calendar\"></i></button><div><span>整改记录</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddenAssets\" class=\"button button-raised button-caution button-circle button-jumbo\"><i class=\"fa fa-fire\"></i></button><div><span>隐患资产</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"map\" class=\"button button-raised button-primary button-circle button-jumbo\"><i class=\"fa fa-map-marker\"></i></button><div><span>隐患地图</span></div></div>"
+			+ "";
+
+	var a21=""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddentrouble\" class=\"button button-raised button-action3 button-circle button-jumbo\"><i class=\"fa fa-search-plus\"></i></button><div><span>隐患检索</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddenStat\" class=\"button button-raised button-highlight button-circle button-jumbo\"><i class=\"fa fa-area-chart\"></i></button><div><span>隐患统计</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"map\" class=\"button button-raised button-primary button-circle button-jumbo\"><i class=\"fa fa-map-marker\"></i></button><div><span>隐患地图</span></div></div>"
+			+ "";
+			
+	
+	var a3 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"allAsset\" class=\"button button-raised button-caution button-circle button-jumbo\"><i class=\"fa fa-institution\"></i></button><div><span>全部资产</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"assetMap\" class=\"button button-raised button-primary button-circle button-jumbo\"><i class=\"fa fa-map-marker\"></i></button><div><span>资产地图</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"asseStat\" class=\"button button-raised button-highlight button-circle button-jumbo\"><i class=\"fa fa-bar-chart\"></i></button><div><span>资产统计</span></div></div>"
+			+ "";
+
+	var a4 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"userSetting\" class=\"button button-raised button-action button-circle button-jumbo\"><i class=\"fa fa-user-o\"></i></button><div><span>用户设置</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"safeLike\" class=\"button button-raised button-royal button-circle button-jumbo\"><i class=\"fa fa-address-book-o\"></i></button><div><span>管理通讯录</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"showActionSheet\" class=\"button button-raised button-caution button-circle button-jumbo\"><i class=\"fa fa-envelope-open-o\"></i></button><div><span>发送短信</span></div></div>"			
+			+ "";
+	
+	var a42 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddenStat\" class=\"button button-raised button-highlight button-circle button-jumbo\"><i class=\"fa fa-area-chart\"></i></button><div><span>隐患统计</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-3' style=\"text-align:center;\"><button id=\"repairLog\" class=\"button button-raised button-primary button-circle button-jumbo\"><i class=\"fa fa-wrench\"></i></button><div><span>维修记录</span></div></div>"
+			+ "";
+
+	var a41 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"userSetting\" class=\"button button-raised button-action button-circle button-jumbo\"><i class=\"fa fa-user-o\"></i></button><div><span>用户设置</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"safeLike\" class=\"button button-raised button-royal button-circle button-jumbo\"><i class=\"fa fa-address-book-o\"></i></button><div><span>管理通讯录</span></div></div>"
+			+ "";
+
+	var a5 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddenStat\" class=\"button button-raised button-highlight button-circle button-jumbo\"><i class=\"fa fa-area-chart\"></i></button><div><span>隐患统计</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"assetCheck\" class=\"button button-raised button-action button-circle button-jumbo\"><i class=\"fa fa-check-square-o\"></i></button><div><span>资产巡查</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"assetCheckList\" class=\"button button-raised button-highlight button-circle button-jumbo\"><i class=\"fa fa-calendar-check-o\"></i></button><div><span>资产巡查记录</span></div></div>"
+			+ "";
+
+	var a51 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"assetCheck\" class=\"button button-raised button-action button-circle button-jumbo\"><i class=\"fa fa-check-square-o\"></i></button><div><span>资产巡查</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"assetCheckList\" class=\"button button-raised button-highlight button-circle button-jumbo\"><i class=\"fa fa-calendar-check-o\"></i></button><div><span>资产巡查记录</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"repairLog\" class=\"button button-raised button-primary button-circle button-jumbo\"><i class=\"fa fa-wrench\"></i></button><div><span>维修记录</span></div></div>"
+			+ "";
+
+	var a52 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddenAssets\" class=\"button button-raised button-caution button-circle button-jumbo\"><i class=\"fa fa-fire\"></i></button><div><span>隐患资产</span></div></div>"
+			+ "";
+
+	var a6 = ""
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"hiddenCheckMap\" class=\"button button-raised button-highlight button-circle button-jumbo\"><i class=\"fa fa-map\"></i></button><div><span>巡查路线图</span></div></div>"
+			+ "<div class='col-xs-4 col-sm-4' style=\"text-align:center;\"><button id=\"repairLog\" class=\"button button-raised button-primary button-circle button-jumbo\"><i class=\"fa fa-wrench\"></i></button><div><span>维修记录</span></div></div>"
+			+ "";
+
+	var xhm = new XMLHttpRequest();
+	xhm.open("GET", "/ycglj/mobile/assetCheck/selectPlace.do", false);
+	xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhm.send();
+
+	place = xhm.responseText;
+
+	console.log("place=" + place);
+
+	if (place == 2) {
+		$(".row").append(a1);
+		$(".row").append(a2);
+		$(".row").append(a3);
+		$(".row").append(a4);
+		$(".row").append(a42);
+	} else if (place == 3) {
+		$(".row").append(a21);
+		$(".row").append(a3);
+		$(".row").append(a41);
+		$(".row").append(a51);
+		$(".row").append(a52);
+	} else if (place > 3) {
+		$(".row").append(a1);
+		$(".row").append(a2);
+		$(".row").append(a3);
+		$(".row").append(a4);
+		$(".row").append(a5);
+		$(".row").append(a6);
+	} else {
+		$(".row").append(a21);
+		$(".row").append(a3);
+		$(".row").append(a41);
+	}
+	/*
+	var financeButton = document.getElementById("finance");
+
+	$.get("/ycglj/mobile/finance/findFirstClew.do", {
+		days : 15
+	}, function(text) {
+
+		if (text > 0) {
+
+			financeButton.setAttribute("data-num", text);
+
+			financeButton.setAttribute("class",
+					"button button-raised  button-circle button-jumbo corner");
+		}
+
+		$.get("/ycglj/mobile/asset/upUserAccessTime.do", {
+			parameter : "first"
+		}, function(text) {
+
+		});
+
+	});
+	 */
+	 
+	 $('#showActionSheet').on('click', function () {
+         var mask = $('#mask');
+         var weuiActionsheet = $('#weui_actionsheet');
+         weuiActionsheet.addClass('weui_actionsheet_toggle');
+         mask.show()
+             .focus()//加focus是为了触发一次页面的重排(reflow or layout thrashing),使mask的transition动画得以正常触发
+             .addClass('weui_fade_toggle').one('click', function () {
+             hideActionSheet(weuiActionsheet, mask);
+         });
+         $('#actionsheet_cancel').one('click', function () {
+             hideActionSheet(weuiActionsheet, mask);
+         });
+         mask.unbind('transitionend').unbind('webkitTransitionEnd');
+
+         function hideActionSheet(weuiActionsheet, mask) {
+             weuiActionsheet.removeClass('weui_actionsheet_toggle');
+             mask.removeClass('weui_fade_toggle');
+             mask.on('transitionend', function () {
+                 mask.hide();
+             }).on('webkitTransitionEnd', function () {
+                 mask.hide();
+             })
+         }
+     });
+	 
+	 $("#sendMessage").on("click",function(){
+		 location.href="sendMessage.html";
+	 });
+	 
+	 $("#preMessage").on("click",function(){
+		 location.href="preMessage.html";
+	 });
+	 
+</script>
+
+<script type="text/javascript" src="js/index.js"></script>
+
+</body>
+<style type="text/css">
+ .col-xs-4{
+   padding:15px
+ }
+
+  .corner {
+         color: #fff;
+         position: relative;
+     }
+
+     .corner:after {
+         content: attr(data-num);
+         line-height: 25px;
+         text-align: center;
+         font-size:17px;
+         width: 25px;
+         height: 25px;
+         border-radius: 50%;
+         background-color: red;
+         position: absolute;
+         top: -10px;
+         right: -10px;
+     }
+
+</style>
+</html>

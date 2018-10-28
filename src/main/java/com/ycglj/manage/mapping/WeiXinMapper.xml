@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ycglj.manage.mapper.WeiXinMapper">
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="true" />
+	<resultMap id="BaseResultMap" type="com.ycglj.manage.model.WeiXin">
+	 <id column="campus_id" property="campusId" jdbcType="INTEGER" />
+	 <result column="campus_name" property="campusName" jdbcType="VARCHAR" />
+	 <result column="city_id" property="cityId" jdbcType="INTEGER" />
+	 <result column="custom_service" property="customService" jdbcType="VARCHAR" />
+	 <result column="home_page" property="homePage" jdbcType="VARCHAR" />
+	 <result column="user_name" property="userName" jdbcType="VARCHAR" />
+	 <result column="app_id" property="appId" jdbcType="VARCHAR" />
+	 <result column="app_secret" property="appSecret" jdbcType="VARCHAR" />
+	 <result column="token" property="token" jdbcType="VARCHAR" />
+	 <result column="access_token" property="accessToken" jdbcType="VARCHAR" />
+	 <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+
+    <select id="getAccessToken" resultMap="BaseResultMap">
+      select
+       access_token,create_time
+      from
+      campus
+      where
+      campus_id=#{campusId,jdbcType=INTEGER}      
+    </select>
+
+    <select id="getAllCampus" resultMap="BaseResultMap">
+     select
+        campus_id,campus_name,city_id,
+        custom_service,home_page,
+        user_name,
+        app_id,app_secret,
+        token,
+        access_token,
+        create_time
+      from
+      campus
+      where
+      city_id=#{cityId,jdbcType=INTEGER} 
+    </select>
+
+     <select id="getCampus" resultMap="BaseResultMap">
+     select
+        campus_id,campus_name,city_id,
+        custom_service,home_page,
+        user_name,
+        app_id,app_secret,
+        token,
+        access_token,
+        create_time
+      from
+      campus
+      where
+      campus_id=#{campusId,jdbcType=INTEGER}  
+    </select>
+
+
+   <select id="getByCampusId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+     select campus_id
+     from campus 
+     where
+     campus_id=#{campusId,jdbcType=INTEGER} 
+   </select>
+
+
+    <insert id="insertCampus" parameterType="com.ycglj.manage.model.WeiXin">
+      insert into campus
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+				campus_name,
+                city_id,
+			<if test="customService !=null">
+				custom_service,
+			</if>
+			<if test="userName !=null">
+				user_name,
+			</if>
+			<if test="appId !=null">
+				app_id,
+			</if>
+			<if test="appSecret !=null">
+				app_secret,
+			</if>
+			<if test="token !=null">
+				token,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+				#{campusName,jdbcType=VARCHAR},
+				#{cityId,jdbcType=INTEGER},
+			<if test="customService!=null">
+				#{customService,jdbcType=VARCHAR},
+			</if>
+			<if test="userName!=null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="appId!=null">
+				#{appId,jdbcType=VARCHAR},
+			</if>
+			<if test="appSecret!=null">
+				#{appSecret,jdbcType=VARCHAR},
+			</if>
+			<if test="token!=null">
+				#{token,jdbcType=VARCHAR},
+			</if>
+		</trim>
+    </insert>
+    
+    <update id="updateCampus" parameterType="com.ycglj.manage.model.WeiXin">
+		update campus
+		<set>
+		  <if test="campusName!=null">
+			 campus_name=#{campusName,jdbcType=VARCHAR},
+			</if>		
+		   <if test="customService!=null">
+			 custom_service=#{customService,jdbcType=VARCHAR},
+			</if>
+			<if test="userName!=null">
+			  user_name=#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="appId!=null">
+			 app_id=#{appId,jdbcType=VARCHAR},
+			</if>
+			<if test="appSecret!=null">
+			 app_secret=#{appSecret,jdbcType=VARCHAR},
+			</if>
+			<if test="accessToken!=null">
+			 access_token=#{accessToken,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime!=null">
+			 create_time=#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="token!=null">
+			 token=#{token,jdbcType=VARCHAR},
+			</if>			
+		</set>
+        where 
+        campus_id=#{campusId,jdbcType=INTEGER} 
+     </update>
+    
+    <update id="updateHomePageByCampusId" parameterType="com.ycglj.manage.model.WeiXin">
+    update campus
+     <set>
+      home_page=#{homePage,jdbcType=VARCHAR}
+     </set>
+     where
+      campus_id=#{campusId,jdbcType=INTEGER} 
+    </update>
+    
+    <select id="getCampusIdByUserName" resultType="Integer" useCache="false">
+     select campus_id 
+     from
+      campus
+     where
+      user_name=#{userName,jdbcType=VARCHAR}
+    </select>
+    
+</mapper>
