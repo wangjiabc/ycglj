@@ -175,15 +175,13 @@ public class FileUploadController {
         
         String uuid=(String) map2.get("uuid");
         
-        String imgUrl=(String) map2.get("imgUrl");
-        
         Map<String, Object> result=new HashMap<>();
         
         result.put("state", 1);
         
         result.put("uuid", uuid);
         
-        result.put("url", imgUrl);
+        result.put("url", imageUrl);
         
         return result;  
       }catch (Exception e) {

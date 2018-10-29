@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>日历</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
+    <link rel="stylesheet" type="text/css" href="../layui/css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="../layui/css/calendar.css" />
+    <!--jquery weui-->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+
+</head>
+
+<body>
+    <div class="wrap">
+        <div id="calendar"></div>
+    </div>
+    <!-- 视图层 -->
+    <div id="view"></div>
+
+    <!-- 模板语法 -->
+    <script id="demo" type="text/html">
+    <div style="background-color: #ee0606;height: 10px;width:10px;display:inline-block;"></div>
+    <span>预约人数已满</span>
+    <span>预约人数为:{{ d.title }}</span>
+    {{#  layui.each(d.order, function(index, item){ }}
+    <span>预约日期为:{{item.datetime}}</span>
+    {{#  }); }}
+    <form class="layui-form" action="">
+    <input type="checkbox" name="zzz" lay-skin="switch" lay-text="开启预约|关闭预约">
+    </form>
+    <button id="saveStatus" class="layui-btn">保 存</button>
+    </script>
+    <!-- <script id="demo" type="text/html">
+        <h3>{{ d.title }}</h3>
+        <ul>
+        {{#  layui.each(d.list, function(index, item){ }}
+          <li>
+            <span>{{ item.modname }}</span>
+            <span>{{ item.alias }}：</span>
+            <span>{{ item.site || '' }}</span>
+          </li>
+        {{#  }); }}
+        {{#  if(d.list.length === 0){ }}
+          无数据
+        {{#  } }} 
+        </ul>
+      </script> -->
+
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="../layui/calendar.js"></script>
+    <script src="../layui/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+    <script>
+        //一般直接写在一个js文件中
+        layui.use(['layer', 'form'], function () {
+            var layer = layui.layer
+                , form = layui.form;
+        });
+    </script>
+    <script>
+        var result;
+        var calendarIns = new calendar.calendar({
+            count: 1,
+            selectDate: new Date(),
+            //selectDateName: '30人',
+            // minDate: new Date(),
+            isShowHoliday: true,
+            isShowWeek: true
+        });
+        (function () {
+            $.ajax({
+                type: "POST",
+                //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                url: "/ycglj/mobile/order/getOrderDate.do",
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: { time:"2018-10"},
+                dataType: "json",
+                success: function (data) {
+                	console.log(data);
+                    result = data;
+                    initSelect();
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+            //监听日期改变事件
+            $(calendarIns).bind('changed', function () {
+                initSelect();
+            });
+            // 绑定事件
+            $(calendarIns).bind('afterSelectDate', function (event, dateObject) {
+                var { curItem, date, dateName } = dateObject;
+                var order_number = undefined;
+                setStatus(date);
+
+                for (var i = 0; i < result.order.length; i++) {
+                    // 这个for的问题，也不是这个问题，是setSelectDate的问题
+                    // 如果点击的日期和数组里的相等 有预约人数
+                    if (new Date(date).getTime() == new Date(result.order[i].datetime).getTime()) {
+                        //默认只有一个被选中，当这个日期被传进来，替换掉别的样式
+                        // calendarIns.setSelectDate(date, result.order[i].order_number);
+                        order_number = result.order[i].order_number;
+                        break;
+                    }
+                }
+                calendarIns.setSelectDate(date, order_number);
+            });
+
+            $(document).on('click', '#prevMonth', function () {
+                calendarIns.prevMonth();
+            });
+            $(document).on('click', '#nextMonth', function () {
+                calendarIns.nextMonth();
+            });
+            //保存预约状态 
+            $(document).on('click', '#saveStatus', function () {
+                console.log('保存预约');
+                //提交预约选中状态和预约日期
+                $.ajax({
+                    type: "POST",
+                    //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                    url: "http://doc.88hao.cn/mock/27/calendar",
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        //保存成功，刷新日期界面
+                        initSelect();
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+            });
+        })();
+        //设置预约状态
+        function setStatus(date) {
+            //post日期到服务器 回传状态和预约人数
+            $.ajax({
+                type: "POST",
+                //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                url: "http://doc.88hao.cn/mock/27/calendar",
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: { order_date: date },
+                dataType: "json",
+                success: function (data) {
+                    //渲染模版
+                    var getTpl = demo.innerHTML
+                        , view = document.getElementById('view');
+                    layui.use('laytpl', function () {
+                        var laytpl = layui.laytpl;
+                        laytpl(getTpl).render(data, function (html) {
+                            view.innerHTML = html;
+                        });
+                    })
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+
+            layer.open({
+                title: '设置预约状态',
+                type: 1,
+                // content: '当前选中的日期是' + date + '显示状态和预约人数 设置预约状态',
+                content: $('#view'),
+                area: ['420px', '240px']
+            });
+
+        }
+
+        //初始化日期样式
+        function initSelect() {
+            console.log('exec');
+            //设置人数满的日期样式
+            if (result.full.length > 0) {
+                for (var i = 0; i < result.full.length; i++) {
+                    calendarIns.setFullStatus(result.full[i]);
+                }
+            }
+            //设置已经预约的日期样式
+            // if (result.sub_date.length > 0) {
+            //     calendarIns.setSubDate(result.sub_date[0], 1);
+            // }
+        }
+    </script>
+
+</body>
+
+</html>

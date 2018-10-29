@@ -29,8 +29,8 @@ public class Order_User implements Serializable{
     @SQLInteger(name="overdue_number")
 	private Integer overdue_number;
 
-    @SQLDateTime(name="order_date_uuid")
-	private Date order_date_uuid;
+    @SQLString(name="order_date_uuid")
+	private String order_date_uuid;
 
     @SQLDateTime(name="cancel_date")
 	private Date cancel_date;
@@ -86,11 +86,11 @@ public class Order_User implements Serializable{
 		return overdue_number;
 	}
 
-	public void setOrder_date_uuid(Date order_date_uuid){
+	public void setOrder_date_uuid(String order_date_uuid){
 		this.order_date_uuid = order_date_uuid;
 	}
 
-	public Date getOrder_date_uuid(){
+	public String getOrder_date_uuid(){
 		return order_date_uuid;
 	}
 

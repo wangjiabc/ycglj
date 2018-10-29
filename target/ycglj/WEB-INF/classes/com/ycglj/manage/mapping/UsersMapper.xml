@@ -64,15 +64,11 @@
 		subscribe_time,
 		usersinfo.name,users.place,	
 		usersinfo.headship,usersinfo.email,	
-		address ,phone,
-		user_asset.charter, user_asset.IDNo,user_asset.hire_phone
+		address ,phone
 		from users
 		left join usersinfo
 		on
 		users.open_id = usersinfo.open_id
-		left join user_asset
-		on
-		users.open_id = user_asset.open_id
 		<where>
 			users.open_id=#{openId,jdbcType=VARCHAR}
 	    </where>
@@ -143,19 +139,12 @@
 		left join usersinfo
 		on
 		users.open_id = usersinfo.open_id
-		left join user_asset
-		on
-		users.open_id = user_asset.open_id	
 		<where>
 			users.campus_id=#{campusId,jdbcType=INTEGER}
-			and user_asset.charter !="" 
 		<if test="search != null and search !='' ">
 				and (nickname like #{search,jdbcType=VARCHAR} or
 				usersinfo.phone like
-				#{search,jdbcType=VARCHAR} or
-				user_asset.charter like
-				#{search,jdbcType=VARCHAR} or
-				 usersinfo.address like #{search,jdbcType=VARCHAR})
+				#{search,jdbcType=VARCHAR})
 			</if>
 			<if test="sort != null">
 				order by ${sort}
@@ -177,18 +166,12 @@
 		users left join usersinfo
 		on
 		users.open_id = usersinfo.open_id
-		left join user_asset
-		on
-		users.open_id = user_asset.open_id	
-		and user_asset.charter !="" 
 		<where>
 		   users.campus_id=#{campusId,jdbcType=INTEGER} 
 			<if test="search != null and search !='' ">
 				and (nickname like #{search,jdbcType=VARCHAR} or usersinfo.phone like
 				#{search,jdbcType=VARCHAR} or
-				user_asset.charter like
-				#{search,jdbcType=VARCHAR}
-				 or usersinfo.address like #{search,jdbcType=VARCHAR})
+				usersinfo.address like #{search,jdbcType=VARCHAR})
 			</if>
 		</where>
 	</select>
@@ -515,20 +498,21 @@
 		subscribe_time,
 		usersinfo.name,users.place,	
 		usersinfo.headship,usersinfo.email,	
-		address ,phone,
-		user_asset.charter, user_asset.IDNo,user_asset.hire_phone
+		address ,phone
 		from users
 		left join usersinfo
 		on
 		users.open_id = usersinfo.open_id
-		left join user_asset
-		on
-		users.open_id = user_asset.open_id
+	</select>
+    
+    <select id="getCountUserByOpenId" resultType="Integer" useCache="false">
+		select
+		count("*")
+		from
+		users 
 		<where>
-			user_asset.charter=#{charter,jdbcType=VARCHAR}
-			and
-			user_asset.hire_phone=#{phone,jdbcType=VARCHAR}
-	    </where>
+		   users.open_id = #{openId,jdbcType=VARCHAR}
+		</where>
 	</select>
     
 </mapper>

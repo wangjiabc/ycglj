@@ -52,11 +52,14 @@ http://www.springframework.org/schema/context
    </property>
   </bean>
  
-  <!--  
-   <bean id="dao" class="com.ycglj.manage.daoImpl.UserDAOImpl">
+ 
+   <bean id="userdao" class="com.ycglj.manage.daoImpl.UserDAOImpl">
         <property name="jdbcTemplate" ref="jdbcTemplate"></property>
    </bean>
-  -->
+
+	<bean id="orderdao" class="com.ycglj.manage.daoImpl.OrderDAOImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+   </bean>
    
    <!-- 配置事务管理器 -->
 	<bean id="transactionManager"

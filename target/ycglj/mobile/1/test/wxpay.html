@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<head>
+<meta charset="utf-8">
+
+<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+
+<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script type="text/javascript" src="/voucher/mobile/singleton.js"></script>
+
+<script type="text/javascript">
+	var redirectUrl="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APPID+"&redirect_uri="+DOMAIN+"/voucher/mobile/1/test/wxpay.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
+</script>
+
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
+<link rel="stylesheet" href="../css/weui.css"/>
+    <link rel="stylesheet" href="../css/example.css"/>
+    <link rel="stylesheet" href="../css/jquery-weui.css">
+
+</head>
+<body>
+ <div class="hd">
+    <h2 class="page_title">10.00</h2>
+</div>
+
+    <a href="javascript:;" id="pay" class="weui-btn weui-btn_primary" style="font-size:40px; 100px;">
+    	立即支付
+    </a>
+    <br>
+    <a href="javascript:;" class="weui-btn weui-btn_primary" style="font-size:40px; 100px;">
+    	申请退款
+    </a>
+
+</body>
+</html>
+<style type="text/css"> 
+  .weui-btn{
+    margin:0px 10px 50px 10px;
+  }
+  .hd{
+    margin:50px 0px 50px 0px;
+  }
+  .page_title{
+    text-align:center;
+    font-family:"微软雅黑";
+    color:#3eb94e;
+  }
+</style>
+<script type="text/javascript">
+var campusId=1; //公众号id
+
+function getQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]); return null;
+   }
+
+
+var code=getQueryString("code");
+var state=getQueryString("state");
+
+
+  function onBridgeReady(){
+	   WeixinJSBridge.invoke(
+	       'getBrandWCPayRequest', {
+	           "appId":"wx2421b1c4370ec43b",     //公众号名称，由商户传入     
+	           "timeStamp":"1395712654",         //时间戳，自1970年以来的秒数     
+	           "nonceStr":"e61463f8efa94090b1f366cccfbbb444", //随机串     
+	           "package":"prepay_id=u802345jgfjsdfgsdg888",     
+	           "signType":"MD5",         //微信签名方式：     
+	           "paySign":"70EA570631E4BB79628FBCA90534C63FF7FADD89" //微信签名 
+	       },
+	       function(res){     
+	           if(res.err_msg == "get_brand_wcpay_request:ok" ) {}     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+	       }
+	   ); 
+	}
+	
+	
+
+$.get("/voucher/oauth/test.do", { 
+	 campusId:campusId
+  }, function(data) {
+	//   alert("data="+data);
+
+ if(data=="false"){
+	//   alert("false");
+     if(code!=null){   	  
+          $.get("/voucher/oauth/getUserInfo.do", {
+             code:code,
+             state:state,
+              campusId:campusId
+           }, function(text) {
+
+        	  var obj = $.parseJSON(text);
+           
+        	 $("#brand").html(obj.campusName);
+        	 $(".headimgUrl").attr("src",obj.headimgUrl);
+        	 $(".nickName").html(obj.nickName);
+        	  
+      	    
+        	 
+        	url=document.location.toString();
+        	
+        	$.ajax({
+			     url : "../../../wechat/sign.do",
+			     data : {
+			    	 campusId:campusId,
+			    	 url:url
+			     },
+			     async: false,
+			     type : "GET",
+			     success : function(data) {
+			    	 var ticket=JSON.parse(data);
+
+			    	 /*
+		      	      * 此处需要两次执行相同的函数，否则回调后不能执行以下函数
+		      	      */ 
+			    	 
+			    	 wx.config({
+			    		  debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				      		appId: ticket.appId,
+				      		timestamp: ticket.timestamp,
+				      		nonceStr: ticket.nonceStr,
+				      		signature: ticket.signature,
+				      		jsApiList : [ 'checkJsApi', 'onMenuShareTimeline',
+				                            'onMenuShareAppMessage', 'onMenuShareQQ',
+				                            'onMenuShareWeibo', 'hideMenuItems',
+				                            'showMenuItems', 'hideAllNonBaseMenuItem',
+				                            'showAllNonBaseMenuItem', 'translateVoice',
+				                            'startRecord', 'stopRecord', 'onRecordEnd',
+				                            'playVoice', 'pauseVoice', 'stopVoice',
+				                            'uploadVoice', 'downloadVoice', 'chooseImage',
+				                            'previewImage', 'uploadImage', 'downloadImage',
+				                            'getNetworkType', 'openLocation', 'getLocation',
+				                            'hideOptionMenu', 'showOptionMenu', 'closeWindow',
+				                            'scanQRCode', 'chooseWXPay',
+				                            'openProductSpecificView', 'addCard', 'chooseCard',
+				                            'openCard' ]
+				      	});
+			    	 
+			    	 /*
+		      	      * 此处需要两次执行相同的函数，否则回调后不能执行以下函数
+		      	      */ 
+			    	
+			     }
+        	});
+           
+        });
+     }else{
+  	   location.href=redirectUrl;
+     }
+    }else{
+    	$.get("/voucher/oauth/getUserInfoByOpenId.do",{
+ 		   campusId:campusId
+ 	   },function(text) {
+       	  var obj = $.parseJSON(text);
+
+       	 $("#brand").html(obj.campusName);
+       	 $(".headimgUrl").attr("src",obj.headimgUrl);
+     	 $(".nickName").html(obj.nickName);
+       	  
+
+ 			 url=document.location.toString();
+
+ 			 $.ajax({
+ 			     url : "../../../wechat/sign.do",
+ 			     data : {
+ 			    	 campusId:campusId,
+ 			    	 url:url
+ 			     },
+ 			     async: false,
+ 			     type : "GET",
+ 			     success : function(data) {
+ 			    	 var ticket=JSON.parse(data);
+ 		       	     /*
+ 		     	      * 此处需要两次执行相同的函数，否则返回ture时不能执行以下函数
+ 		     	      */  
+ 		       	          
+ 			    	 
+ 			    	 wx.config({
+ 			    		debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+ 			      		appId: ticket.appId,
+ 			      		timestamp: ticket.timestamp,
+ 			      		nonceStr: ticket.nonceStr,
+ 			      		signature: ticket.signature,
+ 			      		jsApiList : [ 'checkJsApi', 'onMenuShareTimeline',
+ 			                            'onMenuShareAppMessage', 'onMenuShareQQ',
+ 			                            'onMenuShareWeibo', 'hideMenuItems',
+ 			                            'showMenuItems', 'hideAllNonBaseMenuItem',
+ 			                            'showAllNonBaseMenuItem', 'translateVoice',
+ 			                            'startRecord', 'stopRecord', 'onRecordEnd',
+ 			                            'playVoice', 'pauseVoice', 'stopVoice',
+ 			                            'uploadVoice', 'downloadVoice', 'chooseImage',
+ 			                            'previewImage', 'uploadImage', 'downloadImage',
+ 			                            'getNetworkType', 'openLocation', 'getLocation',
+ 			                            'hideOptionMenu', 'showOptionMenu', 'closeWindow',
+ 			                            'scanQRCode', 'chooseWXPay',
+ 			                            'openProductSpecificView', 'addCard', 'chooseCard',
+ 			                            'openCard' ]
+ 			      	});
+ 			    	 
+ 			    	/*
+		      	      * 此处需要两次执行相同的函数，否则回调后不能执行以下函数
+		      	      */ 
+ 			     }
+ 			 });
+       });
+    }
+});
+
+
+wx.ready(function () {
+	
+
+	 document.querySelector('#pay').onclick =function(){
+		 if(typeof WeixinJSBridge == "undefined"){
+			   if( document.addEventListener ){
+			       document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+			   }else if (document.attachEvent){
+			       document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+			       document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+			   }
+			}else{
+			   onBridgeReady();
+			}
+	 }
+	 
+}); //wx.ready
+ 
+
+</script>

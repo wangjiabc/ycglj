@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Order_Date;
+import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.sqlserver.context.Connect;
 
@@ -141,6 +143,69 @@ public class MoblieOrderController {
 						
 		return map2;
 		
+	}
+	
+	
+	@RequestMapping("insertOrder")
+	public @ResponseBody Integer insertOrder(@RequestParam String time,HttpServletRequest request){
+		
+		Date subDate = null;
+		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+		
+		try {
+			subDate = fmt.parse(time);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		Order_User order_User=new Order_User();
+		
+		order_User.setOpen_id(openId);
+		order_User.setSub_date(subDate);
+		order_User.setCancel(0);
+		order_User.setDate(new Date());
+		
+		return orderDao.insertOrderUser(order_User);
+	}
+	
+	
+	@RequestMapping("updateOrder")
+	public @ResponseBody Integer updateOrder(@RequestParam String time,
+			Integer cancel,HttpServletRequest request){
+		
+		Date subDate = null;
+		DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+		
+		try {
+			subDate = fmt.parse(time);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		Order_User order_User=new Order_User();
+		order_User.setOpen_id(openId);
+		order_User.setSub_date(subDate);
+		order_User.setDate(new Date());
+		
+		if(cancel!=null&&cancel==1){
+			order_User.setCancel(cancel);
+		}
+		
+		String[] where={"open_id=","0"};
+		
+		order_User.setWhere(where);
+		
+		return orderDao.updateOrderUser(order_User);
 	}
 	
 }

@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta content="" name="description"/>
+    <meta content="webthemez" name="author"/>
+    <title>房屋出租合同</title>
+    <link rel="stylesheet"
+          href="../../../assets/bootstrap-table/bootstrap-table.css">
+    <link rel="stylesheet"
+          href="../../../assets/bootstrap-table/bootstrap-editable.css">
+    <script src="../../../assets/bootstrap-table/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../../assets/bootstrap-table/bootstrap.min.css">
+    <script src="../../../assets/bootstrap-table/bootstrap-table.js"></script>
+    <script src="../../../assets/bootstrap-table/bootstrap-table-export.js"></script>
+    <script src="../../../assets/bootstrap-table/tableExport.js"></script>
+    <script src="../../../assets/bootstrap-table/bootstrap-table-editable.js"></script>
+
+    <script src="../../../js/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../../bootstrap/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+
+	<script type="text/javascript" src="../js/accessStat.js"></script>
+</head>
+
+<body>
+        <div class="header">
+            <h1 class="page-header">租金详情</h1>
+        </div>
+
+
+        <div id="page-inner">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table id="table" class="table " data-toggle="table" data-toolbar="#toolbar"
+                                       data-url="" data-search="false"
+                                       data-show-refresh="false" data-show-toggle="false"
+                                       data-side-pagination="server" data-pagination="true"
+                                       data-show-columns="false" data-sort-order="desc">
+                                    <thead>
+                                    <tr>
+                                        <th data-align="left" data-field="hire">金额</th>
+                                        <th data-align="left" data-field="state" data-sortable="true" data-formatter="statusFormatter">状态</th>
+                                        <th data-align="left" data-field="hireDate" data-sortable="true">日期</th>                               
+
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+</div>
+<!-- 警告对话框 -->
+<div class="modal fade" id="alertdialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header blue">
+                <div>
+                    <strong id="alertchar" style="font-size:20px"></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                    <button type="button" id="commitFoodDataButton" class="btn btn-primary">添 加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+ 
+	function getQueryString(key) {
+    	var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+    	var result = window.location.search.substr(1).match(reg);
+    	return result ? decodeURIComponent(result[2]) : null;
+	}
+
+    var hireGUID=encodeURI(getQueryString("hireGUID"));
+
+    $("#table").bootstrapTable({
+		url : "/voucher/mobile/asset/getHireListByGUID.do?hireGUID="+hireGUID+"&sort=&order="
+	});
+    
+    function actionReport(value, row, index) {
+    		return [
+                	// '<a  href="javascript:void(0)" onclick="report(this);" title="点击查看征信报告">',
+                	// '&nbsp;<img src="img/detail.jpg" width="25px" height="25px">&nbsp;',
+                	// '</a>&nbsp;',
+                	'<button type="button" title="查看详情" onclick="repayment(this);" class="btn btn-success">查看详情</button>'
+            		].join('');
+    }
+
+    function repayment(temp){
+        var hang = $(temp.parentNode).parent().prevAll().length + 1;
+        var hireGUID =document.getElementById("table").rows[hang].cells[6].innerHTML;
+        
+        window.location.href = "hire.html?hireGUID="+hireGUID;
+        
+    }
+    
+    function statusFormatter(value, row, index) {
+    	
+        var hiredate =row.hireDate;
+        
+        var date=actionDate(new Date());
+        
+        var compare=compareDate(hiredate,date);
+        
+    	if (value == "未交"){
+    		if(compare){
+    			return "<img src='../../../img/wrong.jpg' width='15px' height='15px'></i><font color='#FF0000'>已逾期</font>";
+    		}else{
+    			return "未交";
+    		}
+    	}else if (value == "已交"){
+    		return "<img src='../../../img/right.jpg' width='15px' height='15px'></i><font color='#3eb94e'>已交</font>";
+    	}
+    	
+    }
+    
+    function actionTime(value, row, index){
+        var date = new Date(value);
+        Y = date.getFullYear() + '-';
+        M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+        D = date.getDate() + ' ';
+        h = date.getHours() + ':';
+        m = date.getMinutes() + ':';
+        s = date.getSeconds();
+        return Y+M+D+h+m+s;
+    }
+
+    function actionDate(value, row, index){
+        var date = new Date(value);
+        Y = date.getFullYear() + '-';
+        M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1);
+        D = date.getDate() + ' ';
+        h = date.getHours() + ':';
+        m = date.getMinutes() + ':';
+        s = date.getSeconds();
+        return Y+M;
+    }
+    
+    function compareDate(checkStartDate, checkEndDate) {      
+        var arys1= new Array();      
+        var arys2= new Array();      
+    if(checkStartDate != null && checkEndDate != null) {      
+        arys1=checkStartDate.split('-');   
+       // console.log(arys1[0],parseInt(arys1[1]-1));
+          var sdate=new Date(arys1[0],parseInt(arys1[1]-1));      
+        arys2=checkEndDate.split('-');      
+        var edate=new Date(arys2[0],parseInt(arys2[1]-1));   
+      //  console.log("checkStartDate="+checkStartDate+" checkEndDate ="+checkEndDate);
+      // console.log("sdate="+sdate+"edate="+edate);
+    if(sdate > edate) {      
+      //  console.log("日期开始时间大于结束时间");         
+        return false;         
+    }  else {   
+      //  console.log("通过");   
+        return true;      
+        }   
+        }      
+    }     
+
+    
+</script>
+</body>
+
+</html>

@@ -51,7 +51,7 @@ public class OrderController {
 	
 	@RequestMapping("getAllOrderDate")
 	public @ResponseBody Map<String, Object> getAllOrderDate(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
-			String search,HttpServletRequest request){
+			String search,Integer agree,Integer disagree, String day,HttpServletRequest request){
 			
 			Map searchMap=new HashMap<>();
 			
@@ -59,6 +59,34 @@ public class OrderController {
 				search="%"+search+"%";  
 				searchMap.put("name like ", search);
 			}		
+			
+			if(agree!=null&&agree==1){
+				searchMap.put(" agree = ", "1");
+			}
+			
+			if(disagree!=null&&disagree==1){
+				searchMap.put(" disagree = ", "1");
+			}
+			
+			if(day!=null&&!day.equals("")){
+				Date date = null;
+				
+				DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+				
+				try {
+					date = fmt.parse(day);
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				
+				String d=sdf.format(date);
+		        
+		        searchMap.put("convert(varchar(11),sub_date,120 ) =", d);
+
+			}
 			
 			int offset=(page-1)*limit;
 			
@@ -68,7 +96,7 @@ public class OrderController {
 	
 	@RequestMapping("getAllOrderUser")
 	public @ResponseBody Map<String, Object> getAllOrderUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
-			String search,HttpServletRequest request){
+			String search, String day,String time,HttpServletRequest request){
 			
 			Map searchMap=new HashMap<>();
 			
@@ -76,6 +104,65 @@ public class OrderController {
 				search="%"+search+"%";  
 				searchMap.put("name like ", search);
 			}		
+			
+			if(day!=null&&!day.equals("")){
+				Date date = null;
+				
+				DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+				
+				try {
+					date = fmt.parse(day);
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				
+				String d=sdf.format(date);
+		        
+		        searchMap.put("convert(varchar(11),sub_date,120 ) =", d);
+
+			}
+			
+			if(time!=null&&!time.equals("")){
+				Date date = null;
+				
+				DateFormat fmt =new SimpleDateFormat("yyyy-MM");
+				
+				try {
+					date = fmt.parse(time);
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				
+				SimpleDateFormat sdfyyyy = new SimpleDateFormat("yyyy");
+				
+				SimpleDateFormat sdfmm = new SimpleDateFormat("MM");
+				
+				String year=sdfyyyy.format(date);
+				
+				String month=sdfmm.format(date);
+				
+				Calendar cal = Calendar.getInstance();  
+				cal.set(Integer.parseInt(year), Integer.parseInt(month)-1, 0, 0, 0, 0);  
+
+				String startTime = null;
+				
+				String endTime=null;
+				
+				startTime=sdf.format(cal.getTime());
+				
+				cal.set(Integer.parseInt(year), Integer.parseInt(month), 0, 0, 0, 0);
+		        
+		        endTime=sdf.format(cal.getTime());
+		        
+		        searchMap.put("convert(varchar(11),sub_date,120 ) >", startTime);
+				searchMap.put("convert(varchar(11),sub_date,120 ) <=", endTime);
+			}
 			
 			int offset=(page-1)*limit;
 			
