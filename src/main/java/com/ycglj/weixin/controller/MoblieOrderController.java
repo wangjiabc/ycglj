@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.bouncycastle.jce.provider.asymmetric.ec.Signature.ecCVCDSA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -52,7 +53,9 @@ public class MoblieOrderController {
 	@RequestMapping("getOrderDate")
 	public @ResponseBody Map getOrderDate(@RequestParam String time,HttpServletRequest request){
 		
-		System.out.println("time="+time);
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
 		
 		Date date = null;
 		DateFormat fmt =new SimpleDateFormat("yyyy-MM");
@@ -133,6 +136,25 @@ public class MoblieOrderController {
 			
 		}
 		
+		String[] where={"open_id = ", openId};
+		
+		Order_User order_User=new Order_User();
+		
+		order_User.setWhere(where);
+		
+		Map search=new HashMap<>();
+		
+		searchMap.put("open_id = ", openId);
+		
+		List list=(List) userDao.getAllUserData(request,1, 0, "","", search).get("count");
+		
+		try {
+			order_User=(Order_User) list.get(0);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
 		Map map2=new HashMap<>();
 		
 		map2.put("agree",agree);
@@ -140,11 +162,52 @@ public class MoblieOrderController {
 		map2.put("order",order);
 		map2.put("sub_date",sub_date);
 		map2.put("full",full);
-						
+		
+		if(order_User!=null){
+			if(order_User.getSub_date().getTime()>0){
+				map2.put("current", order_User.getSub_date());
+			}else{
+				map2.put("current", order_User.getSub_date());
+			}
+		}else{
+			map2.put("current", order_User.getSub_date());
+		}
+		
 		return map2;
 		
 	}
 	
+	@RequestMapping("getOrderDay")
+	public @ResponseBody Map getOrderDay(@RequestParam String time,HttpServletRequest request){
+	
+		Map searchMap=new HashMap<>();
+        
+        searchMap.put("convert(varchar(11),sub_date,120 ) = ", time);
+		
+		Map map=orderDao.getAllOrderDate(1, 0, null, null, searchMap);
+		
+		List dataList=(List) map.get("data");
+		
+		Order_Date order_Date=new Order_Date();
+		
+		try{
+			order_Date=(Order_Date) dataList.get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		Map map2=new HashMap<>();
+		
+		map2.put("agree",order_Date.getAgree());
+		map2.put("disagree",order_Date.getDisagree());
+		map2.put("order",order_Date.getOrder());
+		map2.put("sub_date",order_Date.getSub_date());
+		map2.put("order_number",order_Date.getOrder_number());
+		
+		return map2;
+		
+	}	
 	
 	@RequestMapping("insertOrder")
 	public @ResponseBody Integer insertOrder(@RequestParam String time,HttpServletRequest request){
@@ -161,8 +224,8 @@ public class MoblieOrderController {
 		
 		HttpSession session = request.getSession();
 		
-		String openId=session.getAttribute("openId").toString();
-		
+		//String openId=session.getAttribute("openId").toString();
+		String openId="0";
 		Order_User order_User=new Order_User();
 		
 		order_User.setOpen_id(openId);
@@ -201,11 +264,44 @@ public class MoblieOrderController {
 			order_User.setCancel(cancel);
 		}
 		
-		String[] where={"open_id=","0"};
+		String[] where={"open_id=",openId};
 		
 		order_User.setWhere(where);
 		
 		return orderDao.updateOrderUser(order_User);
+	}
+	
+	
+	@RequestMapping("cancelOrder")
+	public @ResponseBody Integer cancelOrder(HttpServletRequest request){
+				
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		String[] where={"open_id = ", openId};
+		
+		Order_User order_User=new Order_User();
+		
+		order_User.setWhere(where);
+		
+		Map searchMap=new HashMap<>();
+		
+		searchMap.put("open_id = ", openId);
+		
+		List list=(List) userDao.getAllUserData(request,1, 0, "","", searchMap).get("data");
+		
+		try {
+			order_User=(Order_User) list.get(0);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return -1;
+		}
+				
+		order_User.setCancel(1);
+		
+		return orderDao.insertOrderUser(order_User);
 	}
 	
 }

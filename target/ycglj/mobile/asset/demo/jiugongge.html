@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>首页九宫格</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
+
+  <!--jquery weui-->
+  <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+
+</head>
+<style>
+  img{
+    width:100%;
+    display: block;
+  }
+</style>
+<body>
+  <img src="images/manage.jpg">
+  <div class="weui-grids">
+    <a href="" id="b1" class="weui-grid js_grid">
+      <div class="weui-grid__icon">
+        <img src="images/img1.png" alt="">
+      </div>
+      <p class="weui-grid__label">
+        预约办理
+      </p>
+    </a>
+    <a href="" id="b2" class="weui-grid js_grid">
+      <div class="weui-grid__icon">
+        <img src="images/img2.png" alt="">
+      </div>
+      <p class="weui-grid__label">
+        网上办证
+      </p>
+    </a>
+    <a href="" id="b3" class="weui-grid js_grid">
+        <div class="weui-grid__icon">
+          <img src="images/img3.png" alt="">
+        </div>
+        <p class="weui-grid__label">
+          办证指南
+        </p>
+      </a>
+      <a href="" id="b4" class="weui-grid js_grid">
+          <div class="weui-grid__icon">
+            <img src="images/img4.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            投诉建议
+          </p>
+        </a>
+  </div>
+  <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+
+  <script>
+    $('.weui-grid').css("width", "50%");
+    $('.weui-grid p').css("color", "white");
+    $('#b1').css("background-color","#6cc1f8");
+    $('#b2').css("background-color","#925f39");
+    $('#b3').css("background-color","#304c68");
+    $('#b4').css("background-color","#77a3ad");
+  </script>
+
+</body>
+
+</html>

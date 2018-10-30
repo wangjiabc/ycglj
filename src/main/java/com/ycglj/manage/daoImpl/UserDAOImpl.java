@@ -1,10 +1,13 @@
 package com.ycglj.manage.daoImpl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -16,6 +19,8 @@ import com.ycglj.manage.daoSQL.InsertExe;
 import com.ycglj.manage.daoSQL.SelectExe;
 import com.ycglj.manage.daoSQL.UpdateExe;
 import com.ycglj.manage.tools.TransMapToString;
+import com.ycglj.manage.singleton.Singleton;
+import com.ycglj.manage.tools.CopyFile;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Users;
 
@@ -94,28 +99,65 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	}
 
 	@Override
-	public Map<String,Object> getAllUserData(Integer limit, Integer offset, String sort, Map<String, String> search) {
+	public Map<String,Object> getAllUserData(HttpServletRequest request,Integer limit, Integer offset, String sort, String order,Map<String, String> search) {
 		// TODO Auto-generated method stub
+		
+		String pathRoot = System.getProperty("user.home");
+		
+		String filePath=pathRoot+Singleton.filePath;
+        
+		String imgPath=request.getSession().getServletContext().getRealPath(Singleton.filePath);
+		
 		Map<String,Object> map=new HashMap<>();
 		
 		User_Data user_Data=new User_Data();
 		
 		user_Data.setLimit(limit);
 		user_Data.setOffset(offset);
-		user_Data.setNotIn("id");
+		user_Data.setNotIn("open_id");
 		
 		if(search.equals("")||search.isEmpty()){
 			String[] where=TransMapToString.get(search);
 			user_Data.setWhere(where);
 		}
 		
-		List<Order_User> list=SelectExe.get(this.getJdbcTemplate(), user_Data);
+		List<User_Data> list=SelectExe.get(this.getJdbcTemplate(), user_Data);
 		
 		int total=(int) SelectExe.getCount(this.getJdbcTemplate(), user_Data).get("");
 		
-		map.put("rows", list);
+		List fileBytes=new ArrayList<>();
 		
-		map.put("total", total);
+		Iterator<User_Data> iterator=list.iterator();
+		
+		while (iterator.hasNext()) {
+			
+			User_Data user_data=iterator.next();
+			
+			try{			
+				String oldFile=filePath+"\\"+user_data.getUri();
+			
+				CopyFile.set(imgPath, oldFile, user_data.getUri());
+			
+				Map<String,String> map2=new HashMap<>();
+				
+				map2.put("dataType", user_data.getData_type());
+				map2.put("uri", Singleton.filePath+"\\"+user_data.getUri());
+				map2.put("compressUri", Singleton.filePath+"\\compressFile\\"+user_data.getUri());
+				map2.put("date", user_data.getDate().toString());
+				
+				fileBytes.add(map2);
+			}catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
+		}
+		
+		map.put("data", list);
+		
+		map.put("count", total);
+		
+		map.put("fileBytes", fileBytes);
 		
 		return map;
 	}
@@ -143,9 +185,9 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		
 		Map map=new HashMap<>();
 		
-		map.put("rows", list);
+		map.put("data", list);
 		
-		map.put("total", total);
+		map.put("count", total);
 		
 		return map;
 	}

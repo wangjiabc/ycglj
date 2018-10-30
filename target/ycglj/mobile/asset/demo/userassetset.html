@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" charset='utf-8'>
+<meta charset="utf-8">
+
+<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
+<script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
+
+<script type="text/javascript">
+  var campusId=1;
+  var redirectUrl="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APPID+"&redirect_uri="+DOMAIN+"/ycglj/mobile/asset/userassetset.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
+</script>
+
+<script type="text/javascript" src="js/userassetset.js"></script>
+
+<link rel="stylesheet" href="../../weixinUI/style/weui.css"/>
+<link rel="stylesheet" href="../../weixinUI/example.css"/>
+
+<link rel="stylesheet" href="css/jquery-weui.css">
+<script type='text/javascript' src='js/fastclick.js' charset='utf-8'></script>
+<script type='text/javascript' src='js/swiper.js' charset='utf-8'></script>
+
+
+<body>
+<div class="mainElement">
+<div class="user" style="height:44px;">
+<img class="headimgUrl" src="" width="44px" height="44px">
+<p class="nickName"></p>
+</div>
+
+<div  style="height:2px; background-color:#c0c0c0"></div>
+</div>
+
+<div class="weui_dialog_alert" id="dialog2" style="display: none;">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title"></strong></div>
+        <div class="weui_dialog_bd"></div>
+        <div class="weui_dialog_ft">
+            <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+        </div>
+    </div>
+</div>
+
+<div class="weui_cells weui_cells_form">
+        <div class="weui_cell" id="w1">
+            <div class="weui_cell_hd"><label class="weui_label">姓名</label></div>
+            <div class="weui_cell_bd weui_cell_primary name">
+                <input class="weui_input" id="name" type="text"  placeholder="请输入您的姓名">
+            </div>
+            <div class="weui_cell_ft">
+                <i class="weui_icon_warn"></i>
+            </div>
+        </div>
+        <div class="weui_cell " id="w2">
+            <div class="weui_cell_hd"><label class="weui_label">手机号</label></div>
+             <div class="weui_cell_bd weui_cell_primary phone">
+                <input class="weui_input" id="phone" type="number" pattern="[0-9]*" placeholder="请输入手机号码">
+            </div>
+            <div class="weui_cell_ft">
+                <i class="weui_icon_warn"></i>
+            </div>
+        </div>
+        <div class="weui_cell">
+            <div class="weui_cell_hd"><label class="weui_label">验证码</label></div>
+            <div class="weui_cell_bd weui_cell_primary">
+                <input class="weui_input" id="regtlx" type="number" pattern="[0-9]*" placeholder="请输入验证码">
+            </div>
+            <div class="weui_cell_ft">
+                <a href="javascript:" class="weui_btn weui_btn_mini weui_btn_default" id="bt01">发送验证码</a> 
+            </div>
+        </div>
+    </div>
+
+<div class="weui_btn_area">
+        <a class="weui_btn weui_btn_primary" href="javascript:" id="showTooltips">确定</a>
+</div>
+
+<div class="footer">
+
+<!--  
+<div class="swiper-container swiper-container-horizontal swiper-container-android">
+    <div class="swiper-wrapper" style="transform: translate3d(-1800px, 0px, 0px); transition-duration: 0ms;"><div class="swiper-slide swiper-slide-duplicate swiper-slide-next" data-swiper-slide-index="2" style="width: 450px;"></div>
+      <div class="swiper-slide" ><img src="1.jpg" alt=""></div>
+    </div>
+  <div class="swiper-pagination swiper-pagination-bullets"><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span></div>
+  </div>
+-->  
+</div>
+
+<script type="text/javascript">
+
+	$(function() {
+		FastClick.attach(document.body);
+	});
+
+	$(".primary").on("click", function() {
+		$("#dialog2").attr("style", "display:none");
+	});
+	
+</script>
+
+<script type='text/javascript' src='../../js/jquery-weui.js' charset='utf-8'></script>
+
+<script type="text/javascript">
+
+
+	$(".swiper-container").swiper({
+		loop : true,
+		autoplay : 3000
+	});
+
+	var bt01 = document.getElementById("bt01");
+
+	var isClick=true;
+
+	bt01.onclick = function() {
+	var name=document.getElementById("name").value;
+	var phone=document.getElementById("phone").value;
+			
+	if(isClick){
+		isClick = false; //不能点击此按钮 
+		if(name==null||name==""){
+			$("#dialog2").attr("style","display:block"); 
+			$(".weui_dialog_title").html("请输入姓名");
+			isClick = true;   //返回后能够重新点击发送的按钮 
+			return false;
+		}
+		
+		if(phone==null||phone==""){
+			$("#dialog2").attr("style","display:block"); 
+			$(".weui_dialog_title").html("请输入手机号");
+			isClick = true;   //返回后能够重新点击发送的按钮 
+			return false;
+		}
+				
+		var xhm = new XMLHttpRequest();
+		xhm.open("GET", "/ycglj/mobile/assetRegister/getValidate.do?phone="+phone+"&name="+name, false);
+		xhm.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		xhm.send();
+		var json = xhm.responseText;
+
+		if (json == 1) {
+
+			isClick = false; //当点击后倒计时时候不能点击此按钮 
+			var time = 60; //倒计时60秒 
+			var timer = setInterval(fun1, 1000); //设置定时器 
+			
+			function fun1() {
+				time--;
+				if (time >= 0) {
+					bt01.innerHTML = time + "s后重新发送";
+				} else {
+					bt01.innerHTML = "重新发送验证码";
+					isClick = true;   //倒计时结束能够重新点击发送的按钮 
+					clearTimeout(timer); //清除定时器 
+					time = 60; //设置循环重新开始条件 
+				}
+			}
+			
+		}else if(json==2){
+			$("#dialog2").attr("style","display:block"); 
+			$(".weui_dialog_title").html("姓名不存在");
+			isClick = true;   //返回后能够重新点击发送的按钮 
+		}else{
+			$("#dialog2").attr("style","display:block"); 
+			$(".weui_dialog_title").html("验证码发送失败");
+			isClick = true;   //返回后能够重新点击发送的按钮 
+		}
+
+
+	}
+  }
+
+
+</script>
+
+<style type="text/css">
+.user{
+   padding:0 0 0 5px;
+   background-color:#f5f5f5;
+}
+
+.headimgUrl{
+  border-radius:50%;
+}
+
+.nickName{
+   position:absolute;
+   display: inline-block;
+   padding:2px 0 0 8px;
+}
+
+.footer{position:absolute;bottom:0;width:100%;height:100px;}
+
+
+</style>
+
+</body>
+
+</html>

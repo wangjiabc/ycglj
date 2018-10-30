@@ -3,16 +3,16 @@
 
 <head>
     <meta charset="utf-8">
-    <title>预约办理</title>
+    <title>日历示例</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
     <link rel="stylesheet" type="text/css" href="./css/reset.css" />
     <link rel="stylesheet" type="text/css" href="./css/calendar.css" />
     <!--jquery weui-->
     <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
     <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
-	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
 </head>
-    <!-- <style>
+<!-- <style>
         body{
             height:500px;
         }
@@ -26,112 +26,53 @@
             height:100%;
         }
     </style> -->
+
 <body>
 
-    <div class="head">
+    <!-- <div class="head">
         <h1>选择日期</h1>
         <i class="ic-back"></i>
-    </div>
+    </div> -->
 
     <div class="wrap">
         <div id="calendar"></div>
     </div>
-          
     <!-- <a href="javascript:;" class="weui-btn weui-btn_primary">确定预约</a>
     <a href="javascript:;" class="weui-btn weui-btn_primary">取消预约</a> -->
 
     <!-- <script src="./js/jqmobi.js"></script> -->
     <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-    <script src="js/calendar.js"></script>
+    <script src="../calendar.js"></script>
     <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
 
     <script>
-    
-    url=document.location.toString();
-    
-    $.ajax({
-	     url : "../../../wechat/sign.do",
-	     data : {
-	    	 campusId:1,
-	    	 url:url
-	     },
-	     async: false,
-	     type : "GET",
-	     success : function(data) {
-	    	 var ticket=JSON.parse(data);
-	    	 
-	    	 wx.config({
-	    		debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-	      		appId: ticket.appId,
-	      		timestamp: ticket.timestamp,
-	      		nonceStr: ticket.nonceStr,
-	      		signature: ticket.signature,
-	      		jsApiList : [ 'checkJsApi', 'onMenuShareTimeline',
-	                            'onMenuShareAppMessage', 'onMenuShareQQ',
-	                            'onMenuShareWeibo', 'hideMenuItems',
-	                            'showMenuItems', 'hideAllNonBaseMenuItem',
-	                            'showAllNonBaseMenuItem', 'translateVoice',
-	                            'startRecord', 'stopRecord', 'onRecordEnd',
-	                            'playVoice', 'pauseVoice', 'stopVoice',
-	                            'uploadVoice', 'downloadVoice', 'chooseImage',
-	                            'previewImage', 'uploadImage', 'downloadImage',
-	                            'getNetworkType', 'openLocation', 'getLocation',
-	                            'hideOptionMenu', 'showOptionMenu', 'closeWindow',
-	                            'scanQRCode', 'chooseWXPay',
-	                            'openProductSpecificView', 'addCard', 'chooseCard',
-	                            'openCard' ]
-	      	});
- 
-	      }
-	 });
-
-    
-    $.post('/ycglj/mobile/register/userinfoByopenId.do', {
-    	campusId : 1
-     }, function(data) {
-    	var obj = $.parseJSON(data);
-    	if (obj.name == null)
-    		location.href = "../userassetset.html";
-     });
-    
         // var xhm = new XMLHttpRequest();
         // xhm.open("GET", "http://doc.88hao.cn/mock/27/calendar", false);
         // xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         // xhm.send();
         // var result = JSON.parse(xhm.responseText);
-
+        var date1;
         var result;
+        var clickdate;
         var calendarIns = new calendar.calendar({
             count: 1,
             selectDate: new Date(),
             //selectDateName: '30人',
-            // minDate: new Date(),
+            minDate: new Date(),
             isShowHoliday: true,
             isShowWeek: true
         });
         (function () {
-            $.ajax({
-                type: "POST",
-                //http://doc.88hao.cn/mock/27/calendar_1540460933748
-                url: "http://doc.88hao.cn/mock/27/calendar",
-                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                data: { month: 10 },
-                dataType: "json",
-                success: function (data) {
-                	console.log(data);
-                    result = data;
-                    initSelect();
-                },
-                error: function (e) {
-                    console.log(e);
-                }
-            });
+            //初始化
+            getData();
+            //月份切换监听
             $(calendarIns).bind('changed', function () {
-                initSelect();
+                getData();
             });
             // 绑定事件
             $(calendarIns).bind('afterSelectDate', function (event, dateObject) {
                 var { curItem, date, dateName } = dateObject;
+                clickdate =dateObject.date
                 var order_number = undefined;
 
                 for (var i = 0; i < result.order.length; i++) {
@@ -177,9 +118,9 @@
             $(document).on('click', '#confirmOrder', function () {
                 confirmOrder();
             }),
-            $(document).on('click', '#cancelOrder', function () {
-                cancelOrder();
-            })
+                $(document).on('click', '#cancelOrder', function () {
+                    cancelOrder();
+                })
             // 这个就只能是你html dom本来就有的元素上，才能监听到， 其他追加的，兼听不到 over
             // 还有你这个渲染，太慢了
             ///为啥子第一次能找到
@@ -198,7 +139,24 @@
             // });
 
         })();
-
+        //数据获取
+        function getData() {
+            $.ajax({
+                type: "get",
+                //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                url: "http://lzxlzc.com/ycglj/mobile/order/getOrderDate.do?time=" + date1,
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                    result = data;
+                    initSelect();
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        }
         //初始化日期样式
         function initSelect() {
             console.log('exec');
@@ -210,33 +168,73 @@
             }
             //设置已经预约的日期样式
             if (result.sub_date.length > 0) {
-                calendarIns.setSubDate(result.sub_date[0],1);
+                calendarIns.setSubDate(result.sub_date[0]);
+            }
+            //设置为默认样式
+            if (result.agree.length > 0) {
+                for (var i = 0; i < result.agree.length; i++) {
+                    calendarIns.setDefaultDate(result.agree[i]);
+                }
+
+            }
+            //设置为不可选样式
+            if (result.disagree.length > 0) {
+                for (var i = 0; i < result.disagree.length; i++) {
+                    calendarIns.setNotChooseDate(result.disagree[i]);
+                }
+
             }
         }
         //取消预约
-        function cancelOrder(){
+        function cancelOrder() {
             if (result.sub_date.length > 0) {
                 $.ajax({
-                type: "POST",
-                url: "xx",
+                    type: "POST",
+                    url: "xx",
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: { datetime: result.sub_date[0] },
+                    dataType: "json",
+                    success: function (data) {
+                        //弹出框提示预约成功并取消预约样式
+                        console.log("取消预约成功");
+                        calendarIns.setSubDate(result.sub_date[0]);
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+            }
+            $.toast("您当前还没预约哦!", "forbidden");
+        }
+        //确认预约
+        function confirmOrder() {
+            $.confirm("您确定要预约"+clickdate+"号?", "确认预约?", function () {
+                $.ajax({
+                type: "get",
+                //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                url: "http://lzxlzc.com/ycglj/mobile/order/insertOrder.do?time=" + clickdate,
                 contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                data: { datetime: result.sub_date[0] },
+                data: {},
                 dataType: "json",
                 success: function (data) {
-                    //弹出框提示预约成功并取消预约样式
-                    console.log("取消预约成功");
-                    calendarIns.setSubDate(result.sub_date[0],0);
+                    result = data;
+                    if(data==1){
+                        $.toast("预约成功!");
+                    }else{
+                        $.toast("error!");
+                    }
+                    getData();
                 },
                 error: function (e) {
                     console.log(e);
                 }
             });
-            }
-            $.toast("您当前还没预约哦!", "forbidden");
-        }
-        //确认预约
-        function confirmOrder(){
-            $.toast("预约成功");
+               
+            
+            }, function () {
+                //取消操作
+                $.closeModal();
+            });
         }
 
 

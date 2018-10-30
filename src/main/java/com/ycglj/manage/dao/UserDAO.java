@@ -3,6 +3,8 @@ package com.ycglj.manage.dao;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.ycglj.manage.daoModel.PreMessage;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.Users;
@@ -22,7 +24,7 @@ public interface UserDAO {
     
     public Integer updateUserDataAffirm(List list);
     
-    public Map<String,Object> getAllUserData(Integer limit, Integer offset, String sort,Map<String, String> search);
+    public Map<String,Object> getAllUserData(HttpServletRequest request,Integer limit, Integer offset, String sort,String order,Map<String, String> search);
     
 	public Map<String, Object> findAllPreMessage(Integer limit, Integer offset, String sort,
 			String order,Map search);

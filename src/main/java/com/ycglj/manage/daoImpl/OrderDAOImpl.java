@@ -1,7 +1,5 @@
 package com.ycglj.manage.daoImpl;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -105,6 +103,18 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 						number = 1;
 					}
 
+					if(number>30){
+						
+						TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+						
+						return -1;
+					
+					}else if(number==30){
+						
+						order_Date.setAgree(0);
+					
+					}
+					
 					order_Date.setOrder_number(number);
 
 					i = UpdateExe.get(this.getJdbcTemplate(), order_Date);
@@ -342,6 +352,112 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 	}
 
 	@Override
+	public int cancelOrder(Order_User order_User) {
+		// TODO Auto-generated method stub
+		int i = 0;
+		
+		String uuid = null;
+		
+		String[] uuidWhere={" open_id = ", order_User.getOpen_id()};
+		
+		Order_User order_User2=new Order_User();
+		
+		order_User2.setLimit(1);
+		order_User2.setOffset(0);
+		order_User2.setNotIn("id");
+		order_User2.setWhere(uuidWhere);
+		
+		List oldDateList=SelectExe.get(this.getJdbcTemplate(), order_User2);
+		
+		try{
+			order_User2=(Order_User) oldDateList.get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		String[] subDateWhere = { " uuid = ",order_User2.getOrder_date_uuid()};
+
+		Order_Date order_Date = new Order_Date();
+
+		order_Date.setLimit(1);
+		order_Date.setOffset(0);
+		order_Date.setNotIn("id");
+		order_Date.setWhere(subDateWhere);
+
+		List orderList = SelectExe.get(this.getJdbcTemplate(), order_Date);
+
+		Order_Date order_Date2 = null;
+
+		try {
+			order_Date2 = (Order_Date) orderList.get(0);
+			uuid=order_Date2.getUuid();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		System.out.println(" uuid2 = "+uuid);
+		
+		Date subDate = order_User.getSub_date();
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+		String d = sdf.format(subDate);
+
+		String[] orderDateWhere = { "convert(varchar(11),sub_date,120 ) =", d };
+		
+		System.out.println("d="+d);
+		
+		Order_Date order_Date3 = new Order_Date();
+
+		order_Date3.setLimit(1);
+		order_Date3.setOffset(0);
+		order_Date3.setNotIn("id");
+		order_Date3.setWhere(orderDateWhere);
+		
+		List orderList3 = SelectExe.get(this.getJdbcTemplate(), order_Date3);
+
+		try {
+			order_Date3 = (Order_Date) orderList3.get(0);
+			uuid=order_Date3.getUuid();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+				
+		if (order_Date2 != null && order_Date2.getSub_date() != null) {
+			
+				int number = order_Date2.getOrder_number();
+
+				System.out.println("number="+number);
+				
+				if (number > 0) {
+					number--;
+				} else {
+					
+				}
+
+				order_Date.setOrder_number(number);
+
+				i = UpdateExe.get(this.getJdbcTemplate(), order_Date);
+
+				if (i < 1) {
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				}
+			
+			}
+		
+		  i=UpdateExe.get(this.getJdbcTemplate(), order_User);
+		
+		  if (i < 1) {
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			}
+		  
+		 return i;
+		 
+	}
+	
+	
+	@Override
 	public Map<String, Object> getAllOrderUser(Integer limit, Integer offset, String sort,String order, Map<String, String> search) {
 		// TODO Auto-generated method stub
 		Map<String,Object> map=new HashMap<>();
@@ -491,5 +607,7 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		
 		return count;
 	}
+
+
 	
 }

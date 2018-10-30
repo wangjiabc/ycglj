@@ -32,8 +32,8 @@ public class Users implements Serializable{
     @SQLString(name="phone")
 	private String phone;
 
-    @SQLString(name="authentication")
-	private String authentication;
+    @SQLInteger(name="authentication")
+	private Integer authentication;
 
     @SQLDateTime(name="authen_date")
 	private Date authen_date;
@@ -100,11 +100,11 @@ public class Users implements Serializable{
 		return phone;
 	}
 
-	public void setAuthentication(String authentication){
+	public void setAuthentication(Integer authentication){
 		this.authentication = authentication;
 	}
 
-	public String getAuthentication(){
+	public Integer getAuthentication(){
 		return authentication;
 	}
 
