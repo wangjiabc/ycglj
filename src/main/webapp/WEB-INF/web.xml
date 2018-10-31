@@ -200,21 +200,22 @@
 		</init-param>
 		<init-param>
 			<param-name>settingPath</param-name>
-			<param-value>/mobile/asset/userassetset.html</param-value>
+			<param-value>/mobile/asset/register/regist.html</param-value>
 		</init-param>
 		<init-param>
 			<param-name>redirectPath</param-name>
-			<param-value>/mobile/asset/restrict_user.html</param-value>
+			<param-value>/mobile/asset/index.html</param-value>
 		</init-param>
 		<init-param>
 			<param-name>mobileLoginPath</param-name>
-			<param-value>/mobile/1/</param-value>
+			<param-value>/mobile/asset/index.html</param-value>
 		</init-param>
 	</filter>
 	
 	<filter-mapping>
 		<filter-name>MobileAssetIsLoginFilter</filter-name>
-		<url-pattern>/mobile/asset/hire/*</url-pattern>
+		<url-pattern>/mobile/asset/authentic/*</url-pattern>
+		<url-pattern>/mobile/asset/order/*</url-pattern>
 	</filter-mapping>
       
 	  <mime-mapping>

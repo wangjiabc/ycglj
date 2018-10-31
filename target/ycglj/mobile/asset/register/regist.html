@@ -64,7 +64,6 @@
         <![endif]-->
 
     <header>
-        <h1>放一张图</h1>
         <nav>
 
         </nav>
@@ -161,16 +160,7 @@
             <section>
                 <div class="weui-msg">
                     <div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
-                    <div class="weui-msg__text-area">
-                        <h2 class="weui-msg__title">操作成功</h2>
-                        <p class="weui-msg__desc">内容详情，可根据实际需要安排，如果换行则不超过规定长度，居中展现<a href="javascript:void(0);">文字链接</a></p>
-                    </div>
-                    <div class="weui-msg__opr-area">
-                        <p class="weui-btn-area">
-                            <a href="javascript:;" class="weui-btn weui-btn_primary">推荐操作</a>
-                            <a href="javascript:;" class="weui-btn weui-btn_default">辅助操作</a>
-                        </p>
-                    </div>
+
                 </div>
             </section>
         </div>
@@ -189,7 +179,7 @@
 
 <script type="text/javascript">
     var campusId = 1;
-    var redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=" + DOMAIN + "/ycglj/mobile/asset/userassetset.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
+    var redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=" + DOMAIN + "/ycglj/mobile/asset/register/regist.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
 </script>
 
 <script type="text/javascript" src="userassetset.js"></script>
@@ -308,7 +298,7 @@
             },
             //完成后的监听
             onFinished: function (event, currentIndex) {
-                alert("注册完成 打开主页面");
+            	history.go(-2);
             }
         });
     });

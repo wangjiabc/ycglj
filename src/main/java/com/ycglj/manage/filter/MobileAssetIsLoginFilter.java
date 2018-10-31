@@ -1,6 +1,9 @@
 package com.ycglj.manage.filter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -19,17 +22,22 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.ycglj.manage.mapper.UsersMapper;
-import com.ycglj.manage.model.Users;
+import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
+
+import cn.jpush.api.report.UsersResult.User;
 
 public class MobileAssetIsLoginFilter implements Filter{
 	
 	ApplicationContext applicationContext=new Connect().get();
 	
 	private UsersMapper usersMapper;
-		
+	
+	UserDAO userDao=(UserDAO) applicationContext.getBean("userdao");
+	
 	 public FilterConfig configAsset=null;
 	    @Override  
 	    public void destroy() {   
@@ -79,30 +87,36 @@ public class MobileAssetIsLoginFilter implements Filter{
 		        	wrapper.sendRedirect(mobileLoginPath);
 		            return;
 		        }else {
-		        	Users users=usersMapper.getUserByOnlyOpenId(openId);
-		        	System.out.println("MobileAssetIsLoginFilter openId ="+openId);
-		        	
-		        	String Charter=users.getCharter();
-		        	String IDNo=users.getIDNo();
-		        	
-		        	if(IDNo==null||IDNo.equals("")||Charter.equals("")) {
-		        		wrapper.sendRedirect(settingPath);
-			            return;
-		        	}else {
-		        		
-		        		try {
 
+		        	Map searchMap=new HashMap<>();
+		    		
+		    		searchMap.put("open_id = ", openId);
+		    		
+		    		List list=(List) userDao.getAllUser(1, 0, "", "", searchMap).get("data");
+
+		        	try {
+
+		        			Users users=(Users) list.get(0);
+		        			
+		        			if(!(users.getName()==null)&&!users.getName().equals("")&&
+		        					!(users.getPhone()==null)&&!users.getPhone().equals("")){
+		        				chain.doFilter(request, response);
+		        			}else{		        			
+		        				wrapper.sendRedirect(settingPath);
+		        			}
+		        			
 		        		}catch (Exception e) {
 							// TODO: handle exception
 		        			e.printStackTrace();
-		        			wrapper.sendRedirect(redirectPath);
+		        			wrapper.sendRedirect(settingPath);
 				            return;
 						}
+		        		
 					}
 	
 		            return;
 		        }   
-	    }   
+	     
 	  
 	    @Override  
 	    public void init(FilterConfig filterConfig) throws ServletException {   

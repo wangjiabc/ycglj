@@ -57,6 +57,8 @@ public class MoblieOrderController {
 		
 		String openId=session.getAttribute("openId").toString();
 		
+		System.out.println("openId="+openId);
+		
 		Date date = null;
 		DateFormat fmt =new SimpleDateFormat("yyyy-MM");
 		
@@ -143,8 +145,7 @@ public class MoblieOrderController {
 		map2.put("disagree",disagree);
 		map2.put("order",order);
 		map2.put("sub_date",sub_date);
-		map2.put("full",full);
-		
+		map2.put("full",full);		
 		
 		Order_User order_User;
 		
@@ -154,8 +155,6 @@ public class MoblieOrderController {
 		search.put("cancel = ", "0");
 		
 		List list=(List) orderDao.getAllOrderUser(1, 0, "","", search).get("data");
-		
-		System.out.println("lsit="+list.get(0));
 		
 		try {
 			order_User=(Order_User) list.get(0);
