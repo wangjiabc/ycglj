@@ -31,4 +31,7 @@ public class MoblieUserController {
 	
 	OrderDAO orderDao=(OrderDAO) applicationContext.getBean("orderdao");
 	
+	
+	
+	
 }

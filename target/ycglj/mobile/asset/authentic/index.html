@@ -149,6 +149,7 @@
                 data: {},
                 dataType: "json",
                 success: function (data) {
+                 console.log(data);
                     result = data;
                     initSelect();
                 },
@@ -166,9 +167,9 @@
                     calendarIns.setFullStatus(result.full[i]);
                 }
             }
-            //设置已经预约的日期样式
-            if (result.sub_date.length > 0) {
-                calendarIns.setSubDate(result.sub_date[0]);
+            if (result.current > 0) {
+                console.log(actionTime(result.current));
+                calendarIns.setSubDate(actionTime(result.current));
             }
             //设置为默认样式
             if (result.agree.length > 0) {
@@ -185,26 +186,40 @@
 
             }
         }
-        //取消预约
+         function actionTime(value) {
+            var date = new Date(value);
+            Y = date.getFullYear() + '-';
+            M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+            D = date.getDate() + '';
+            return Y + M + D ;
+
+        }
+       //取消预约
         function cancelOrder() {
-            if (result.sub_date.length > 0) {
+             $.confirm("您确定要取消当前预约", "预约取消", function () {
                 $.ajax({
-                    type: "POST",
-                    url: "xx",
+                    type: "get",
+                    url: "http://lzxlzc.com/ycglj/mobile/order/cancelOrder.do",
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                    data: { datetime: result.sub_date[0] },
+                    data: {},
                     dataType: "json",
                     success: function (data) {
                         //弹出框提示预约成功并取消预约样式
-                        console.log("取消预约成功");
-                        calendarIns.setSubDate(result.sub_date[0]);
+                        if (data == 1) {
+                            $.toast("取消成功!");
+                    getData();
+                        } else {
+                            $.toast("您当前还没预约哦!", "forbidden");
+                        }
                     },
                     error: function (e) {
                         console.log(e);
                     }
                 });
-            }
-            $.toast("您当前还没预约哦!", "forbidden");
+            }, function () {
+                //取消操作
+                $.closeModal();
+            });
         }
         //确认预约
         function confirmOrder() {
@@ -220,6 +235,7 @@
                     result = data;
                     if(data==1){
                         $.toast("预约成功!");
+                    getData();
                     }else{
                         $.toast("error!");
                     }

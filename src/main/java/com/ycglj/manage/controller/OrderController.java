@@ -128,7 +128,7 @@ public class OrderController {
 			if(time!=null&&!time.equals("")){
 				Date date = null;
 				
-				DateFormat fmt =new SimpleDateFormat("yyyy-MM");
+				DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
 				
 				try {
 					date = fmt.parse(time);

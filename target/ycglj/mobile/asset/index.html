@@ -1,126 +1,207 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
 <head>
-<meta charset="utf-8">
+  <meta charset="utf-8">
+  <title>烟草专卖</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
 
-<script src="/ycglj/js/jquery.min.js"></script>
+  <!--jquery weui-->
+  <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
-<script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
-
-<script type="text/javascript">
-	var redirectUrl="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APPID+"&redirect_uri="+DOMAIN+"/ycglj/mobile/asset/index.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
-</script>
-
-<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
-<script type='text/javascript' src='js/fastclick.js' charset='utf-8'></script>
-<script type='text/javascript' src='js/swiper.js' charset='utf-8'></script>
-<title>泸州市国有公房经营管理有限公司</title>
-<link rel="icon" href="../../img/yt.ico" type="image/x-icon">
-<!-- Buttons 库的核心文件 -->
-  <link rel="stylesheet" href="css/buttons.css">
- 
-
-  <link rel="stylesheet" href="css/weui.css"/>
-    <link rel="stylesheet" href="css/jquery-weui.css">
-  <link rel="stylesheet" href="css/buttons.css">
 </head>
-<body>
-
-<!--  
-  <div class="swiper-container swiper-container-horizontal swiper-container-android">
-    <div class="swiper-wrapper" style="transform: translate3d(-1800px, 0px, 0px); transition-duration: 0ms;"><div class="swiper-slide swiper-slide-duplicate swiper-slide-next" data-swiper-slide-index="2" style="width: 450px;"></div>
-      <div class="swiper-slide" ><img src="1.jpg" alt=""></div>
-    </div>
-  <div class="swiper-pagination swiper-pagination-bullets"><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span></div>
-  </div>
--->
-
-	<div class="container">
-    <div class="row" >
-    <div class="container">
-     <div class="row" >
-     
-
-        
-        <div class="col-xs-4 col-sm-3" 
-        style="text-align:center;">
-          <button id="notHire" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-home"></i></button>
-          <div><span>预约</span></div>
-        </div>
-        
-    
-     <div class="col-xs-4 col-sm-3" 
-        style="text-align:center;">
-          <button id="registration" class="button button-raised button-highlight button-circle button-jumbo"><i class="fa fa-home"></i></button>
-          <div><span>网上办理</span></div>
-        </div>
-        
-    
-    <div class="container">
-     <div class="row" >
-     
-       <div class="col-xs-4 col-sm-3" 
-        style="text-align:center;">
-          <button id="userSetting" class="button button-raised button-primary button-circle button-jumbo"><i class="fa fa-user-o"></i></button>
-          <div><span>用户设置</span></div>
-        </div>
-       
-     </div>
-    </div>
-    
-    <div class="container">
-     <div class="row" >
-        
-        
-        
-        
-     
-     </div>        
-    </div>
-</div>
- 
-     
-      
-    
-</body>
-</html>
-
-<script>
-  $(function() {
-    FastClick.attach(document.body);
-  });
-</script>
-
-<script type='text/javascript' src='../../js/jquery-weui.js' charset='utf-8'></script>
-
-<script>
-      $(".swiper-container").swiper({
-        loop: true,
-        autoplay: 3000
-      });
-    
-</script>
-
-<style type="text/css"> 
-
-  .weui-btn{
-    margin:0px 10px 50px 10px;
-  }
-  .hd{
-    margin:50px 0px 50px 0px;
-  }
-  .page_title{
-    text-align:center;
-    font-family:"微软雅黑";
-    color:#3eb94e;
+<style>
+  img {
+    height: 100%;
+    width: 100%;
+    display: block;
   }
 
-.col-xs-4{
-   padding:15px
-}
+  html,
+  body {
+    height: 100%;
+  }
 
+  .weui-grid {
+    width: 100%;
+    height: 100%;
+  }
+
+  .weui-grid p {
+    color: aliceblue;
+  }
+  section {
+    height: 80%;
+    background-color: rgb(214, 100, 7);
+    margin: 5px;
+  }
+
+  .header {
+    height: 20%;
+  }
+
+  .text {
+    color: white;
+    height: 80%;
+    position: relative;
+  }
+  .text p{
+    line-height:2.5em;
+  }
+
+  .pTitle {
+    text-align: center;
+  }
+  .agree{
+    position: absolute;
+    bottom: 0;
+    width:100%;
+    background-color: beige
+  }
+  .footer{
+    height:10%;
+    text-align: right;
+    
+  }
+  .footer a{
+    top:25%;
+  }
 </style>
+
+<body>
+  <!-- 弹出层模板 -->
+  <div id="guide" class="weui-popup__container">
+    <div class="weui-popup__overlay"></div>
+    <div class="weui-popup__modal">
+      <div class="header">
+        <img src="images/manage.jpg">
+      </div>
+      <section>
+        <div class="text">
+          <p class="pTitle">网上申请须知</p>
+          <p>为方便您申请烟草专卖零售许可证，现开通网上申请功能，请您在申请前仔细阅读本须知：</p>
+          <p>1、请填报本人/单位真实信息</p>
+          <p>2、请勿填写与烟草专卖零售许可证申办无关的信息。</p>
+          <p>3、请勿传输不符合国家法律、法规的资料。</p>
+          <p>4、如您是为法人分支机构提出申请，请以相应分支机构认证登录后提出申请，并提供相应分支机构的材料。</p>
+          <p>5、请认真填写申请信息，以便核对，填表信息如不完整或不直买您将无法成功办理。并可能因提供虚假材料许可证被收回或1年内无法提出申请 。</p>
+          <p></p>
+          <div class="agree">
+            <label for="weuiAgree" class="weui-agree">
+              <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
+              <span class="weui-agree__text">
+                我已阅读并同意
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="footer">
+            <a id="continue" href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary">继续申请</a>
+            <a href="javascript:;" onclick="$.closePopup()" class="weui-btn_mini weui-btn weui-btn_warn">关 闭</a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+
+  <div>
+    <div class="header">
+      <img src="images/manage.jpg">
+    </div>
+
+    <div class="weui-flex">
+      <div class="weui-flex__item">
+        <a href="javascript:void(0)" id="b1" class="weui-grid js_grid">
+          <div>
+            <img src="images/img1.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            预约办理
+          </p>
+        </a>
+      </div>
+      <div class="weui-flex__item">
+        <a id="registration" href="javascript:void(0)" class="weui-grid js_grid open-popup">
+          <div>
+            <img src="images/img2.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            网上办证
+          </p>
+        </a>
+      </div>
+    </div>
+    <div class="weui-flex">
+      <div class="weui-flex__item">
+        <a href="javascript:void(0)" id="b3" class="weui-grid js_grid">
+          <div>
+            <img src="images/img3.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            办证指南
+          </p>
+        </a>
+      </div>
+      <div class="weui-flex__item">
+        <a href="javascript:void(0)" id="b4" class="weui-grid js_grid">
+          <div>
+            <img src="images/img4.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            投诉建议
+          </p>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="weui-tabbar">
+    <a href="#tab1" class="weui-tabbar__item weui-bar__item--on">
+      <!-- <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span> -->
+      <div class="weui-tabbar__icon">
+        <img src="images/img1.png" alt="">
+      </div>
+      <p class="weui-tabbar__label">信息通知</p>
+    </a>
+    <a href="#tab2" class="weui-tabbar__item">
+      <div class="weui-tabbar__icon">
+        <img src="images/img2.png" alt="">
+      </div>
+      <p class="weui-tabbar__label">个人中心</p>
+    </a>
+
+  </div>
+  <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+  <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.js"></script>
+  <script>
+    $(function () {
+      FastClick.attach(document.body);
+    });
+  </script>
+  <script>
+    $('#b1').css("background-color", "#6cc1f8");
+    $('#registration').css("background-color", "#925f39");
+    $('#b3').css("background-color", "#304c68");
+    $('#b4').css("background-color", "#77a3ad");
+    $('#registration').click(function () {
+      $("#guide").popup();
+    })
+    $('#continue').click(function () {
+      if ($('#weuiAgree').get(0).checked) {
+        console.log("选中");
+        //关闭弹层后跳转申请界面
+        $.closePopup()
+        window.location.href = "registration.html";
+      }
+      //关闭弹层
+      else {
+        $.toast('请勾选协议', "forbidden");
+      }
+    })
+  </script>
+
+</body>
+
+</html>

@@ -136,25 +136,7 @@ public class MoblieOrderController {
 			
 		}
 		
-		String[] where={"open_id = ", openId};
-		
-		Order_User order_User=new Order_User();
-		
-		order_User.setWhere(where);
-		
-		Map search=new HashMap<>();
-		
-		searchMap.put("open_id = ", openId);
-		
-		List list=(List) userDao.getAllUserData(request,1, 0, "","", search).get("count");
-		
-		try {
-			order_User=(Order_User) list.get(0);
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		
+				
 		Map map2=new HashMap<>();
 		
 		map2.put("agree",agree);
@@ -163,14 +145,27 @@ public class MoblieOrderController {
 		map2.put("sub_date",sub_date);
 		map2.put("full",full);
 		
-		if(order_User!=null){
-			if(order_User.getSub_date().getTime()>0){
-				map2.put("current", order_User.getSub_date());
-			}else{
-				map2.put("current", order_User.getSub_date());
-			}
-		}else{
+		
+		Order_User order_User;
+		
+		Map search=new HashMap<>();
+		
+		search.put("open_id = ", openId);
+		search.put("cancel = ", "0");
+		
+		List list=(List) orderDao.getAllOrderUser(1, 0, "","", search).get("data");
+		
+		System.out.println("lsit="+list.get(0));
+		
+		try {
+			order_User=(Order_User) list.get(0);
+
 			map2.put("current", order_User.getSub_date());
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			map2.put("current", "");
 		}
 		
 		return map2;
@@ -224,16 +219,47 @@ public class MoblieOrderController {
 		
 		HttpSession session = request.getSession();
 		
-		//String openId=session.getAttribute("openId").toString();
-		String openId="0";
+		String openId=session.getAttribute("openId").toString();
+
 		Order_User order_User=new Order_User();
 		
-		order_User.setOpen_id(openId);
-		order_User.setSub_date(subDate);
-		order_User.setCancel(0);
-		order_User.setDate(new Date());
+		Map search=new HashMap<>();
 		
-		return orderDao.insertOrderUser(order_User);
+		search.put("open_id = ", openId);
+		
+		List list=(List) orderDao.getAllOrderUser(1, 0, "","", search).get("data");
+		
+		try {
+			order_User=(Order_User) list.get(0);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		int i;
+		
+		if(order_User.getOpen_id()!=null){
+			
+			String[] where={"open_id = ",openId};
+			
+			order_User.setOpen_id(openId);
+			order_User.setSub_date(subDate);
+			order_User.setCancel(0);
+			order_User.setWhere(where);
+			
+			i=orderDao.updateOrderUser(order_User);
+			
+		}else{
+			
+			order_User.setOpen_id(openId);
+			order_User.setSub_date(subDate);
+			order_User.setCancel(0);
+			order_User.setDate(new Date());
+			
+			i=orderDao.insertOrderUser(order_User);
+		}
+		
+		return i;
 	}
 	
 	
@@ -278,18 +304,14 @@ public class MoblieOrderController {
 		HttpSession session = request.getSession();
 		
 		String openId=session.getAttribute("openId").toString();
-		
-		String[] where={"open_id = ", openId};
-		
+				
 		Order_User order_User=new Order_User();
-		
-		order_User.setWhere(where);
 		
 		Map searchMap=new HashMap<>();
 		
 		searchMap.put("open_id = ", openId);
 		
-		List list=(List) userDao.getAllUserData(request,1, 0, "","", searchMap).get("data");
+		List list=(List) orderDao.getAllOrderUser(1, 0, "", "", searchMap).get("data");
 		
 		try {
 			order_User=(Order_User) list.get(0);
@@ -299,9 +321,16 @@ public class MoblieOrderController {
 			return -1;
 		}
 				
+		String[] where={" open_id = ", openId };
+ 		
 		order_User.setCancel(1);
+		order_User.setCancel_date(new Date());
+		order_User.setWhere(where);
 		
-		return orderDao.insertOrderUser(order_User);
+		return orderDao.cancelOrder(order_User);
 	}
+	
+	
+	
 	
 }

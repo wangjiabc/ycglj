@@ -242,31 +242,12 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 
 			System.out.println("  1: "+order_Date2.getSub_date()+"   2:  "+order_User.getSub_date());
 			
-			if(order_Date2.getSub_date().getTime()==order_User.getSub_date().getTime()){
+			if(order_Date2.getSub_date().getTime()==order_User.getSub_date().getTime()&&order_User2.getCancel()==0){
 				
-				return 0;
+					return 0;
 				
 			}else{
-			
-				int number = order_Date2.getOrder_number();
-
-				System.out.println("number="+number);
-				
-				if (number > 0) {
-					number--;
-				} else {
-					
-				}
-
-				order_Date.setOrder_number(number);
-
-				i = UpdateExe.get(this.getJdbcTemplate(), order_Date);
-
-				if (i < 1) {
-					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-				}
-				
-				
+							
 				String[] orderDateWhere4 = { "convert(varchar(11),sub_date,120 ) =", d };
 				
 				System.out.println("d="+d);
@@ -339,6 +320,7 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		Order_User order_User4=new Order_User();
 		
 		order_User4.setOrder_date_uuid(uuid);
+		order_User4.setCancel(0);
 		order_User4.setWhere(userWhere);
 		
 		i=UpdateExe.get(this.getJdbcTemplate(), order_User4);
@@ -371,6 +353,9 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		
 		try{
 			order_User2=(Order_User) oldDateList.get(0);
+			if(order_User2.getCancel()>0){
+				return -1;
+			}
 		}catch (Exception e) {
 			// TODO: handle exception
 		}

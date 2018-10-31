@@ -116,7 +116,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		user_Data.setOffset(offset);
 		user_Data.setNotIn("open_id");
 		
-		if(search.equals("")||search.isEmpty()){
+		if(!search.equals("")&&!search.isEmpty()){
 			String[] where=TransMapToString.get(search);
 			user_Data.setWhere(where);
 		}

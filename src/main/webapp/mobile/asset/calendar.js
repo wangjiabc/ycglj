@@ -270,7 +270,7 @@
 
             /**
              * 在日历中是否显示星期
-             * type {boolean} n
+             * type {boolean}
              */
             isShowWeek: true
         };
@@ -481,9 +481,10 @@
             if (lastSltItem.length) {
                 var lastDateNameEl = $(lastSltItem.find('i')[1]);
 
-                lastSltItem.removeClass('cur dl');
+                lastSltItem.removeClass('cur');
                 lastDateNameEl.text('');
                 // if (!lastSltItem.hasClass('jr')) {
+                lastSltItem.removeClass('dl');
                 // }
             }
 
@@ -512,6 +513,7 @@
         },
         // 设置已预约日期状态
         setSubDate: function (date) {
+            console.log('预约'+date);
             date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
                 dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
             var DateNameEl = $(dtItem.find('i')[1]);
@@ -522,14 +524,14 @@
         setDefaultDate: function (date) {
             date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
                 dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
-            dtItem.removeClass('wk');
+                dtItem.removeClass('wk');
             // dtItem.addClass('cur');
         },
         // 设置不可选样式
         setNotChooseDate: function (date) {
             date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
                 dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
-            dtItem.removeClass('sub full');
+                dtItem.removeClass('sub full');
             dtItem.addClass('wk');
         },
 
