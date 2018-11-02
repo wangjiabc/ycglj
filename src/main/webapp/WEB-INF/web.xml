@@ -192,7 +192,7 @@
 		<filter-class>com.ycglj.manage.filter.MobileAssetIsLoginFilter</filter-class>
 		<init-param>
 			<param-name>loginStrings</param-name>
-			<param-value>/login.html;.js;.css;restrict.html;index.html;userassetset.html;/test</param-value>
+			<param-value>/login.html;.js;.css;restrict.html;index.html;regist.html;/test</param-value>
 		</init-param>
 		<init-param>
 			<param-name>includeStrings</param-name>

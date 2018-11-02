@@ -319,6 +319,7 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		
 		Order_User order_User4=new Order_User();
 		
+		order_User4.setSub_date(order_User.getSub_date());
 		order_User4.setOrder_date_uuid(uuid);
 		order_User4.setCancel(0);
 		order_User4.setWhere(userWhere);

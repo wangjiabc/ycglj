@@ -195,25 +195,17 @@
     $('#registration').css("background-color", "#925f39");
     $('#b3').css("background-color", "#304c68");
     $('#b4').css("background-color", "#77a3ad");
-    $('#transact').click(function () {
-        $("#guide").popup();
-      })
+
     $('#registration').click(function () {
       $("#guide").popup();
     })
         
     $('#transact').click(function () {
-      if ($('#weuiAgree').get(0).checked) {
-        console.log("选中");
-        //关闭弹层后跳转申请界面
-        $.closePopup()
+
         window.location.href = "authentic/transact.html";
-      }
-      //关闭弹层
-      else {
-        $.toast('请勾选协议', "forbidden");
-      }
-    })
+    
+
+    });
     
     $('#continue').click(function () {
       if ($('#weuiAgree').get(0).checked) {
