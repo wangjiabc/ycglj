@@ -239,6 +239,13 @@ public class MoblieOrderController {
 		
 		if(order_User.getOpen_id()!=null){
 			
+			if(order_User.getCancel()>0){
+				long days = (new Date().getTime()-order_User.getCancel_date().getTime())/ (1000 * 60 * 60 * 24);
+				if(days<2){
+					return -3;
+				}
+			}
+			
 			String[] where={"open_id = ",openId};
 			
 			order_User.setOpen_id(openId);

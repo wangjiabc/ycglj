@@ -12,20 +12,11 @@
     <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
 
 </head>
-<!-- <style>
-        body{
-            height:500px;
-        }
-        #calendar{
-            height:100%;
-        }
+<style>
         .cal-wrap{
-            height: 100%;
+           top:10px;
         }
-        .wrap{
-            height:100%;
-        }
-    </style> -->
+    </style>
 
 <body>
 
@@ -53,10 +44,10 @@
         // var result = JSON.parse(xhm.responseText);
         var date1;
         var result;
-        var clickdate;
+        var clickdate = new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date(+new Date() + 86400000).getDate();
         var calendarIns = new calendar.calendar({
             count: 1,
-            selectDate: new Date(),
+            selectDate: new Date(+new Date() + 86400000),
             //selectDateName: '30人',
             minDate: new Date(),
             isShowHoliday: true,
@@ -149,7 +140,6 @@
                 data: {},
                 dataType: "json",
                 success: function (data) {
-                    console.log(data);
                     result = data;
                     initSelect();
                 },
@@ -161,14 +151,16 @@
         //初始化日期样式
         function initSelect() {
             console.log('exec');
+            console.log("初始化日期数据"+result);
             //设置人数满的日期样式
             if (result.full.length > 0) {
                 for (var i = 0; i < result.full.length; i++) {
                     calendarIns.setFullStatus(result.full[i]);
                 }
             }
+            //设置已预约样式
             if (result.current > 0) {
-                console.log(actionTime(result.current));
+                console.log("已预约的日期为"+actionTime(result.current));
                 calendarIns.setSubDate(actionTime(result.current));
             }
             //设置为默认样式
@@ -191,6 +183,9 @@
             Y = date.getFullYear() + '-';
             M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
             D = date.getDate() + '';
+            if(D<10){
+                D="0"+D;
+            }
             return Y + M + D;
 
         }
@@ -207,6 +202,8 @@
                         //弹出框提示预约成功并取消预约样式
                         if (data == 1) {
                             $.toast("取消成功!");
+                            console.log(result.current);
+                            calendarIns.setCancelDate(actionTime(result.current));
                             getData();
                         } else {
                             $.toast("您当前还没预约哦!", "forbidden");
@@ -223,36 +220,47 @@
         }
         //确认预约
         function confirmOrder() {
-            $.confirm("您确定要预约" + clickdate + "号?", "确认预约?", function () {
-                $.ajax({
-                    type: "get",
-                    //http://doc.88hao.cn/mock/27/calendar_1540460933748
-                    url: "/ycglj/mobile/order/insertOrder.do?time=" + clickdate,
-                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                    data: {},
-                    dataType: "json",
-                    success: function (data) {
-                        result = data;
-                        if (data == 1) {
-                            $.toast("预约成功!");
-                            getData();
-                        } else {
-                            $.toast("error!","forbidden");
-                        }
-                        getData();
-                    },
-                    error: function (e) {
-                        console.log(e);
-                    }
-                });
+            console.log("yy" + result.current);
+            if (calendarIns.setSelectDate(clickdate) == true) {
+                //如果点击的日期class包含cur 
+                if (result.current == null || result.current == "") {
+                    $.confirm("您确定要预约" + clickdate + "号?", "确认预约?", function () {
+                        $.ajax({
+                            type: "get",
+                            //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                            url: "http://lzxlzc.com/ycglj/mobile/order/insertOrder.do?time=" + clickdate,
+                            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                            data: {},
+                            dataType: "json",
+                            success: function (data) {
+                                result = data;
+                                if (data == 1) {
+                                    $.toast("预约成功!");
+                                    getData();
+                                } else {
+                                    $.toast("error!", "forbidden");
+                                }
+                                getData();
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            }
+                        });
 
 
-            }, function () {
-                //取消操作
-                $.closeModal();
-            });
+                    }, function () {
+                        //取消操作
+                        $.closeModal();
+                    });
+
+
+                } else {
+                    $.toast("您已预约!", "forbidden");
+                }
+            }else{
+                $.toast("请选择预约日期!", "forbidden");
+            }
         }
-
 
     </script>
 

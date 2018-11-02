@@ -56,10 +56,10 @@
         var clickdate;
         var calendarIns = new calendar.calendar({
             count: 1,
-            selectDate: new Date(),
+            //selectDate: getNextDate(new Date,1),
             //selectDateName: '30人',
-            minDate: new Date(),
-            isShowHoliday: true,
+           // minDate: new Date(),
+           // isShowHoliday: true,
             isShowWeek: true
         });
         (function () {
@@ -207,10 +207,11 @@
                         //弹出框提示预约成功并取消预约样式
                         if (data == 1) {
                             $.toast("取消成功!");
-                    getData();
+                             getData();
                         } else {
                             $.toast("您当前还没预约哦!", "forbidden");
                         }
+                        getData();
                     },
                     error: function (e) {
                         console.log(e);

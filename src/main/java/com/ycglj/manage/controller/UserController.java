@@ -94,7 +94,7 @@ public class UserController {
 		searchMap.put("open_id = ", openId);
 		searchMap.put("affirm = ", "1");
 		
-		return userDao.getAllUserData(request,1, 0, "","", searchMap);
+		return userDao.getAllUserData(request,1000, 0, "","", searchMap);
 				
 	}
 	

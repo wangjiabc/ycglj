@@ -109,7 +109,7 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 						
 						return -1;
 					
-					}else if(number==30){
+					}else if(number>=30){
 						
 						order_Date.setAgree(0);
 					
@@ -247,7 +247,24 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 					return 0;
 				
 			}else{
-							
+				
+				int number1 = order_Date2.getOrder_number();
+
+				if (number1 > 0) {
+					number1--;
+					
+					order_Date2.setWhere(subDateWhere);
+					order_Date2.setOrder_number(number1);
+					
+					i=UpdateExe.get(this.getJdbcTemplate(), order_Date2);
+					
+					if (i < 1) {
+						TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+					}
+
+					
+				}
+				
 				String[] orderDateWhere4 = { "convert(varchar(11),sub_date,120 ) =", d };
 				
 				System.out.println("d="+d);
@@ -286,6 +303,18 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 						number2 = 1;
 					}
 
+					if(number2>30){
+						
+						TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+						
+						return -1;
+					
+					}else if(number2>=30){
+						
+						order_Date.setAgree(0);
+					
+					}
+					
 					order_Date4.setOrder_number(number2);
 					order_Date4.setWhere(orderDateWhere4);
 

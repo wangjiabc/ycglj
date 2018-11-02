@@ -148,10 +148,7 @@ ul.week-f li.wk {
     background-color: #e3e654;
     color: #FFFFFF;
 }
-/*选中状态*/
-.cal-wrap ul.day li.cho {
-    background-color: #03C7AD;
+.cal-wrap ul.day li.yy {
+    background-color: #e3e654;
     color: #FFFFFF;
-    box-shadow:0px 0px 5px #d5ff00;
-    border:1px solid #d5ff00;
 }

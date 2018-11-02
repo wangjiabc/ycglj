@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>日历示例</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
+    <link rel="stylesheet" type="text/css" href="./css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="./css/calendar.css" />
+    <!--jquery weui-->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+
+</head>
+<!-- <style>
+        body{
+            height:500px;
+        }
+        #calendar{
+            height:100%;
+        }
+        .cal-wrap{
+            height: 100%;
+        }
+        .wrap{
+            height:100%;
+        }
+    </style> -->
+
+<body>
+
+    <!-- <div class="head">
+        <h1>选择日期</h1>
+        <i class="ic-back"></i>
+    </div> -->
+
+    <div class="wrap">
+        <div id="calendar"></div>
+    </div>
+    <!-- <a href="javascript:;" class="weui-btn weui-btn_primary">确定预约</a>
+    <a href="javascript:;" class="weui-btn weui-btn_primary">取消预约</a> -->
+
+    <!-- <script src="./js/jqmobi.js"></script> -->
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="../calendar.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+
+    <script>
+        // var xhm = new XMLHttpRequest();
+        // xhm.open("GET", "http://doc.88hao.cn/mock/27/calendar", false);
+        // xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        // xhm.send();
+        // var result = JSON.parse(xhm.responseText);
+        var date1;
+        var result;
+        var clickdate;
+        var calendarIns = new calendar.calendar({
+            count: 1,
+            //selectDate: getNextDate(new Date,1),
+            //selectDateName: '30人',
+           // minDate: new Date(),
+           // isShowHoliday: true,
+            isShowWeek: true
+        });
+        (function () {
+            //初始化
+            getData();
+            //月份切换监听
+            $(calendarIns).bind('changed', function () {
+                getData();
+            });
+            // 绑定事件
+            $(calendarIns).bind('afterSelectDate', function (event, dateObject) {
+                var { curItem, date, dateName } = dateObject;
+                clickdate =dateObject.date
+                var order_number = undefined;
+
+                for (var i = 0; i < result.order.length; i++) {
+                    // 这个for的问题，也不是这个问题，是setSelectDate的问题
+                    // 如果点击的日期和数组里的相等 有预约人数
+                    if (new Date(date).getTime() == new Date(result.order[i].datetime).getTime()) {
+                        //默认只有一个被选中，当这个日期被传进来，替换掉别的样式
+                        // calendarIns.setSelectDate(date, result.order[i].order_number);
+                        order_number = result.order[i].order_number;
+                        break;
+                    }
+                }
+                calendarIns.setSelectDate(date, order_number);
+            });
+
+            // 这个操作,是因为你的#prevMonth这货是悄js生成吧,不是dom自带的(你后面渲染上去的), $(document)类似是你加载完了过后，再给你套上监听，具体什么区别你要百度，我说不清，大概是这个意思，这个可以把事件绑定到用js追加的html代码上
+            $(document).on('click', '#prevMonth', function () {
+                calendarIns.prevMonth();
+                //那还是每次都调方法 。 只有调用了 不然可以监听
+                // for (var i = 0; i < result.list.length; i++) {
+                //     calendarIns.setFullStatus(result.list[i].datetime, result.list[i].pNum);
+                // }
+            });
+            $(document).on('click', '#nextMonth', function () {
+                calendarIns.nextMonth();
+                // for (var i = 0; i < result.list.length; i++) {
+                //     calendarIns.setFullStatus(result.list[i].datetime, result.list[i].pNum);
+                // }
+                // $.post("http://doc.88hao.cn/mock/27/calendar_1540460933748", {
+                // }, function (text) {
+                //     //设置人数满的日期样式
+                //     if (text.full.length > 0) {
+                //         for (var i = 0; i < text.full.length; i++) {
+                //             calendarIns.setFullStatus(text.full[i]);
+                //         }
+                //     }
+                //     //设置已经预约的日期样式
+                //     if (text.sub_date.length > 0) {
+                //         calendarIns.setSubDate(text.sub_date[0]);
+                //     }
+                // });
+            });
+            $(document).on('click', '#confirmOrder', function () {
+                confirmOrder();
+            }),
+                $(document).on('click', '#cancelOrder', function () {
+                    cancelOrder();
+                })
+            // 这个就只能是你html dom本来就有的元素上，才能监听到， 其他追加的，兼听不到 over
+            // 还有你这个渲染，太慢了
+            ///为啥子第一次能找到
+            // 调试的有点捉急，我猜 你这个东西在日历初始化的时候，先渲染到dom上了，然后你紧接着监听了事件
+            // 然后你点了一次过后，你这个element没了，事件随着就没了，你再渲染上来的，不一样，而且，你这个是id，选择器默认只处理第一个
+            // 你没事儿可以证实一下，这个事件是不是顺便被干掉了，或者把#换成.试试。
+            // $('#prevMonth').on('click', function () {
+            //     console.log('执行');
+            //     calendarIns.prevMonth();
+            //     calendarIns.setDateStatus("2018-10-16");
+            // });
+
+            // $('#nextMonth').on('click', function () {
+            //     calendarIns.nextMonth();
+            //     calendarIns.setDateStatus("2018-10-16");
+            // });
+
+        })();
+        //数据获取
+        function getData() {
+            $.ajax({
+                type: "get",
+                //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                url: "http://lzxlzc.com/ycglj/mobile/order/getOrderDate.do?time=" + date1,
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                 console.log(data);
+                    result = data;
+                    initSelect();
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        }
+        //初始化日期样式
+        function initSelect() {
+            console.log('exec');
+            //设置人数满的日期样式
+            if (result.full.length > 0) {
+                for (var i = 0; i < result.full.length; i++) {
+                    calendarIns.setFullStatus(result.full[i]);
+                }
+            }
+            if (result.current > 0) {
+                console.log(actionTime(result.current));
+                calendarIns.setSubDate(actionTime(result.current));
+            }
+            //设置为默认样式
+            if (result.agree.length > 0) {
+                for (var i = 0; i < result.agree.length; i++) {
+                    calendarIns.setDefaultDate(result.agree[i]);
+                }
+
+            }
+            //设置为不可选样式
+            if (result.disagree.length > 0) {
+                for (var i = 0; i < result.disagree.length; i++) {
+                    calendarIns.setNotChooseDate(result.disagree[i]);
+                }
+
+            }
+        }
+         function actionTime(value) {
+            var date = new Date(value);
+            Y = date.getFullYear() + '-';
+            M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+            D = date.getDate() + '';
+            return Y + M + D ;
+
+        }
+       //取消预约
+        function cancelOrder() {
+             $.confirm("您确定要取消当前预约", "预约取消", function () {
+                $.ajax({
+                    type: "get",
+                    url: "http://lzxlzc.com/ycglj/mobile/order/cancelOrder.do",
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        //弹出框提示预约成功并取消预约样式
+                        if (data == 1) {
+                            $.toast("取消成功!");
+                             getData();
+                        } else {
+                            $.toast("您当前还没预约哦!", "forbidden");
+                        }
+                        getData();
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+            }, function () {
+                //取消操作
+                $.closeModal();
+            });
+        }
+        //确认预约
+        function confirmOrder() {
+            $.confirm("您确定要预约"+clickdate+"号?", "确认预约?", function () {
+                $.ajax({
+                type: "get",
+                //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                url: "http://lzxlzc.com/ycglj/mobile/order/insertOrder.do?time=" + clickdate,
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                    result = data;
+                    if(data==1){
+                        $.toast("预约成功!");
+                    getData();
+                    }else{
+                        $.toast("error!");
+                    }
+                    getData();
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+               
+            
+            }, function () {
+                //取消操作
+                $.closeModal();
+            });
+        }
+
+
+    </script>
+
+</body>
+
+</html>

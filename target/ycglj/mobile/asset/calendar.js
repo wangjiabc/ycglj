@@ -173,11 +173,11 @@
         //     name: '今天',
         //     date: [ util.formatDate( new Date() ) ]
         // },
-        // {
-        //     name: '明天',
-        //     date: [ util.formatDate( new Date( +new Date() + 86400000 ) ) ]
+        //{
+        //   name: '明天',
+        //    date: [ util.formatDate( new Date( +new Date() + 86400000 ) ) ]
         // },
-        // {
+        //{
         //     name: '后天',
         //     date: [ util.formatDate( new Date( +new Date() + 2 * 86400000 ) ) ]
         // },
@@ -255,7 +255,7 @@
              * 初始化当前选中日期，用于高亮显示
              * type {date object} 日期对象
              */
-            selectDate: new Date(),
+            //selectDate: new Date(),
 
             /**
              * 选中日期时日期下方文案
@@ -446,7 +446,7 @@
                 //初始化当前选中日期状态
                 if (config.selectDate) {
                     if (dateNum == dateToNum(me.selectDate)) {
-                        tmpDayDataArr[i]['class'] += ' cur';
+                        //tmpDayDataArr[i]['class'] += ' cur';
                     }
                 }
             }
@@ -475,9 +475,16 @@
                 dateNum = util.dateToNum(date),
                 //上次选中是cur类 
                 lastSltItem = this.el.find('li.cur'),
+                orderItem = this.el.find('li.yy'),
                 // 如果上次选中的是这个，我不能直接取消
                 curSltItem = $(this.el[0].querySelector('li[data-date="' + date + '"]'));
             //先移到上次选中日期高亮
+            console.log(lastSltItem.length);
+            console.log(orderItem.length);
+            //上一次选中的状态是预约样式 
+            if (orderItem.length == 0) {
+                lastSltItem.removeClass('yy');
+            }
             if (lastSltItem.length) {
                 var lastDateNameEl = $(lastSltItem.find('i')[1]);
 
@@ -498,6 +505,9 @@
                         curDateNameEl.text(order_number + "人");
                     }
                 }
+                if (curSltItem.hasClass('cur')) {
+                    return true;
+                }
             }
         },
         // 设置预约人数满的日期状态
@@ -513,26 +523,34 @@
         },
         // 设置已预约日期状态
         setSubDate: function (date) {
-            console.log('预约'+date);
+            console.log('预约' + date);
             date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
                 dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
             var DateNameEl = $(dtItem.find('i')[1]);
-            dtItem.addClass('dl sub');
+            dtItem.addClass('dl yy sub');
             DateNameEl.text("已预约");
         },
         // 设置默认状态
         setDefaultDate: function (date) {
             date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
                 dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
-                dtItem.removeClass('wk');
+            dtItem.removeClass('wk sub');
             // dtItem.addClass('cur');
         },
         // 设置不可选样式
         setNotChooseDate: function (date) {
             date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
                 dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
-                dtItem.removeClass('sub full');
+            dtItem.removeClass('sub full');
             dtItem.addClass('wk');
+        },
+        //设置取消预约样式 
+        setCancelDate: function (date) {
+            date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
+                dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
+            dtItem.removeClass('cur dl sub full yy');
+            var DateNameEl = $(dtItem.find('i')[1]);
+            DateNameEl.text("");
         },
 
 

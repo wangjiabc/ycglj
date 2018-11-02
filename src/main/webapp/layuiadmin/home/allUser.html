@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -82,7 +82,40 @@ layui.use('table', function(){
     //   });
     // }
     if(obj.event === 'detail'){
-      
+
+
+        var openId = data.open_id;
+        $.post("/ycglj/user/getUserDateById.do", {
+            openId: openId
+        }, function (text) {
+
+            console.log("text="+text);
+
+            var d = $.parseJSON(text);
+
+            var list = d.fileBytes;
+            console.log("list=" + JSON.stringify(list));
+
+            var img;
+
+            if (list[0]!= null) {
+                img = list[0].uri;
+            }
+
+            layer.open({
+                title: '页面层'
+                , type: 1
+                //,skin: 'layui-layer-rim'
+                , shadeClose: true
+                , content: '<div style="padding: 20px;"><img src="/ycglj/' + img + '"/ width="50px" height="50px"></div>' +
+                    '<div style="padding: 20px;">' + list + '</div>' +
+                    '<div style="padding: 20px;">' + JSON.stringify(data) + '</div>'
+            });
+
+        });
+       
+
+
     }
      else if(obj.event === 'edit'){
       layer.prompt({

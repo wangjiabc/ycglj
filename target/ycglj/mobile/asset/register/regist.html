@@ -294,11 +294,11 @@
                 // form.validate().settings.ignore = ":disabled";
                 console.log('event' + event);
                 console.log('currentIndex' + currentIndex);
-                // return form.valid();
+                return true;
             },
             //完成后的监听
             onFinished: function (event, currentIndex) {
-            	history.go(-2);
+            	location.href="/ycglj/mobile/asset";
             }
         });
     });
