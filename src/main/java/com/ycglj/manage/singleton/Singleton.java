@@ -22,10 +22,10 @@ public class Singleton {
 	public static final String ROOMINFOIMGPATH2	="D:\\YC\\pasoft";
 	
 	//短信帐号
-	public static final String UID="泸州市国有公房经营管理有限公司";
+	public static final String UID="合江县烟草专卖局";
 	
 	//短信密钥
-	public static final String KEY="44d75966a2a94d79bb38";
+	public static final String KEY="d41d8cd98f00b204e980";
 	
 	private LinkedHashMap<String,Map<String, Object>> registerMap;
 	

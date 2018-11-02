@@ -160,6 +160,7 @@
             }
             //设置已预约样式
             if (result.current > 0) {
+            $('#current').html('当前预约的日期为:'+actionTime(result.current));
                 console.log("已预约的日期为"+actionTime(result.current));
                 calendarIns.setSubDate(actionTime(result.current));
             }
@@ -202,7 +203,7 @@
                         //弹出框提示预约成功并取消预约样式
                         if (data == 1) {
                             $.toast("取消成功!");
-                            console.log(result.current);
+                            $('#current').html('');
                             calendarIns.setCancelDate(actionTime(result.current));
                             getData();
                         } else {
@@ -228,7 +229,7 @@
                         $.ajax({
                             type: "get",
                             //http://doc.88hao.cn/mock/27/calendar_1540460933748
-                            url: "http://lzxlzc.com/ycglj/mobile/order/insertOrder.do?time=" + clickdate,
+                            url: "/ycglj/mobile/order/insertOrder.do?time=" + clickdate,
                             contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                             data: {},
                             dataType: "json",
@@ -237,7 +238,11 @@
                                 if (data == 1) {
                                     $.toast("预约成功!");
                                     getData();
-                                } else {
+                                }
+                                else if(data == -3){
+                                 $.toast("取消预约后两天内不能进行预约!", "forbidden");
+                                } 
+                                else {
                                     $.toast("error!", "forbidden");
                                 }
                                 getData();

@@ -203,8 +203,8 @@ public class FileUploadController {
 		 
 		 HttpSession session = request.getSession();
 	        
-	     //String openId=session.getAttribute("openId").toString();
-		 String openId="0";
+	     String openId=session.getAttribute("openId").toString();
+
 	     Map map=new HashMap<>();
 	     
 

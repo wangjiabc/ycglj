@@ -232,6 +232,11 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 			i=i+j;
 		}
 		
+		if(i<4){
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return 0;
+		}
+		
 		return i;
 	}
 

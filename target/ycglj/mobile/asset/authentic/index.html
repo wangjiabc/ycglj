@@ -37,6 +37,7 @@
     <div class="wrap">
         <div id="calendar"></div>
     </div>
+    <span id="current" class="weui-cell"></span>
     <!-- <a href="javascript:;" class="weui-btn weui-btn_primary">确定预约</a>
     <a href="javascript:;" class="weui-btn weui-btn_primary">取消预约</a> -->
 
@@ -58,8 +59,8 @@
             count: 1,
             //selectDate: getNextDate(new Date,1),
             //selectDateName: '30人',
-           // minDate: new Date(),
-           // isShowHoliday: true,
+            // minDate: new Date(),
+            // isShowHoliday: true,
             isShowWeek: true
         });
         (function () {
@@ -72,7 +73,7 @@
             // 绑定事件
             $(calendarIns).bind('afterSelectDate', function (event, dateObject) {
                 var { curItem, date, dateName } = dateObject;
-                clickdate =dateObject.date
+                clickdate = dateObject.date
                 var order_number = undefined;
 
                 for (var i = 0; i < result.order.length; i++) {
@@ -149,7 +150,7 @@
                 data: {},
                 dataType: "json",
                 success: function (data) {
-                 console.log(data);
+                    console.log(data);
                     result = data;
                     initSelect();
                 },
@@ -169,6 +170,7 @@
             }
             if (result.current > 0) {
                 console.log(actionTime(result.current));
+                 $('#current').html("您当前预约的日期为:" + actionTime(result.current));
                 calendarIns.setSubDate(actionTime(result.current));
             }
             //设置为默认样式
@@ -186,17 +188,17 @@
 
             }
         }
-         function actionTime(value) {
+        function actionTime(value) {
             var date = new Date(value);
             Y = date.getFullYear() + '-';
             M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
             D = date.getDate() + '';
-            return Y + M + D ;
+            return Y + M + D;
 
         }
-       //取消预约
+        //取消预约
         function cancelOrder() {
-             $.confirm("您确定要取消当前预约", "预约取消", function () {
+            $.confirm("您确定要取消当前预约", "预约取消", function () {
                 $.ajax({
                     type: "get",
                     url: "http://lzxlzc.com/ycglj/mobile/order/cancelOrder.do",
@@ -207,7 +209,8 @@
                         //弹出框提示预约成功并取消预约样式
                         if (data == 1) {
                             $.toast("取消成功!");
-                             getData();
+                            $('#current').html('');
+                            getData();
                         } else {
                             $.toast("您当前还没预约哦!", "forbidden");
                         }
@@ -224,30 +227,30 @@
         }
         //确认预约
         function confirmOrder() {
-            $.confirm("您确定要预约"+clickdate+"号?", "确认预约?", function () {
+            $.confirm("您确定要预约" + clickdate + "号?", "确认预约?", function () {
                 $.ajax({
-                type: "get",
-                //http://doc.88hao.cn/mock/27/calendar_1540460933748
-                url: "http://lzxlzc.com/ycglj/mobile/order/insertOrder.do?time=" + clickdate,
-                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                data: {},
-                dataType: "json",
-                success: function (data) {
-                    result = data;
-                    if(data==1){
-                        $.toast("预约成功!");
-                    getData();
-                    }else{
-                        $.toast("error!");
+                    type: "get",
+                    //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                    url: "http://lzxlzc.com/ycglj/mobile/order/insertOrder.do?time=" + clickdate,
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        result = data;
+                        if (data == 1) {
+                            $.toast("预约成功!");
+                            getData();
+                        } else {
+                            $.toast("error!");
+                        }
+                        getData();
+                    },
+                    error: function (e) {
+                        console.log(e);
                     }
-                    getData();
-                },
-                error: function (e) {
-                    console.log(e);
-                }
-            });
-               
-            
+                });
+
+
             }, function () {
                 //取消操作
                 $.closeModal();

@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>layer 组件功能演示</title>
+    <title>预约弹出层</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -12,50 +12,77 @@
 </head>
 
 <body>
-    <form class="layui-form" action="">
-        <div style="background-color: #ee0606;height: 10px;width:10px;display:inline-block;"></div>
+    <!-- <div id="view"></div> -->
+    <form class="layui-form" lay-filter="setStatus" action="">
+        <!-- <div style="background-color: #ee0606;height: 10px;width:10px;display:inline-block;"></div>
         <span>预约人数已满</span>
         <span>预约人数为:{{ d.title }}</span>
         {{# layui.each(d.order, function(index, item){ }}
         <span>预约日期为:{{item.datetime}}</span>
-        {{# }); }}
+        {{# }); }} -->
 
         <div class="layui-form-item">
-            <label class="layui-form-label">单行输入框</label>
+            <label class="layui-form-label">设置日期</label>
             <div class="layui-input-block">
-                <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                <input name="time" disabled type="text" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">验证必填项</label>
+            <label class="layui-form-label">预约人数</label>
             <div class="layui-input-block">
-                <input type="text" name="username" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+                <input name="order_num" disabled type="text" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">开关-默认关</label>
+            <label class="layui-form-label">预约状态</label>
             <div class="layui-input-block">
-                <input type="checkbox" name="close" lay-skin="switch" lay-text="ON|OFF">
+                <input name="order_status" type="checkbox" lay-filter="encrypt" lay-skin="switch" lay-text="开启预约|关闭预约">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">开关-默认开</label>
-            <div class="layui-input-block">
-                <input type="checkbox" checked="" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="ON|OFF">
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <input type="checkbox" name="zzz" lay-skin="switch" lay-text="开启预约|关闭预约">
+            <button id="save" lay-submit lay-filter="save" class="layui-btn">保 存</button>
         </div>
     </form>
-    <button id="saveStatus" class="layui-btn">保 存</button>
 
 
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <script src="../../../layuiadmin/layui/layui.js"></script>
     <script>
-        layui.use(['layer', 'form'], function () {
-            var layer = layer.layer,
-            form = layer.form;
+        // layui.form.on('switch(filter)', function (data) {
+        //     console.log(data);
+        // });
+        //传过来的日期
+        var date2 = window.location.href.split('?')[1];
+        layui.use(['layer', 'form'], function() {
+            var layer = layui.layer,
+                form = layer.form;
+            console.log("111" + date2);
+            $.ajax({
+                type: "get",
+                //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                // url: "http://lzxlzc.com/ycglj/order/insertOrderDate.do?subTime=" + subTime + "&agree=" + agree,
+                url: "/ycglj/order/getOrderDate.do?time=" + date2,
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {},
+                dataType: "json",
+                success: function(data) {
+                    //表单初始赋值
+                    layui.form.val('setStatus', {
+                        "time": date2,
+                        "order_num": "18人",
+                        "order_status": true
+                    })
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+            layui.form.on('submit(save)', function(data) {
+
+                console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+                return false;
+            })
+
         })
     </script>
 </body>

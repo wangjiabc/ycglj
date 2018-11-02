@@ -151,6 +151,7 @@
         '<ul class="day">',
         '{%day%}',
         '</ul>',
+        '<span id="current" class="weui-cell"></span>',
         '<a id="cancelOrder" href="javascript:;" class="weui-btn weui-btn_warn">取消预约</a>',
         '<a id="confirmOrder" href="javascript:;" class="weui-btn weui-btn_primary">确认预约</a>',
         '</div>',
