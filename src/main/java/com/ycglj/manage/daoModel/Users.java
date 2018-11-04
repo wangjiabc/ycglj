@@ -35,6 +35,9 @@ public class Users implements Serializable{
     @SQLInteger(name="authentication")
 	private Integer authentication;
 
+    @SQLString(name="causa")
+	private String causa;
+
     @SQLDateTime(name="authen_date")
 	private Date authen_date;
 
@@ -106,6 +109,14 @@ public class Users implements Serializable{
 
 	public Integer getAuthentication(){
 		return authentication;
+	}
+
+	public void setCausa(String causa){
+		this.causa = causa;
+	}
+
+	public String getCausa(){
+		return causa;
 	}
 
 	public void setAuthen_date(Date authen_date){

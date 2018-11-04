@@ -319,6 +319,7 @@
                     dateStr = curDate.year + '年' + util.formatNum(curDate.month) + '月',
                     dayList = this._getDayList(curDate.year, curDate.month),
                     week = '';
+                     date1 = curDate.year + '-' + util.formatNum(curDate.month);
 
                 if (config.isShowWeek) {
                     week = weekTpl;
@@ -507,22 +508,25 @@
             DateNameEl.text("已满");
             // dtItem.text(pNum+"人");
         },
-        // 设置预约人数满的日期状态
-        setSubDate: function (date, toggle) {
+       // 设置默认状态
+        setDefaultDate: function (date) {
             date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
                 dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
-            if (toggle == 1) {
-                dtItem.addClass('dl');
-                dtItem.addClass('sub');
-                var DateNameEl = $(dtItem.find('i')[1]);
-                DateNameEl.text("已预约");
-            }
-            else if (toggle == 0) {
-                dtItem.removeClass('dl');
-                dtItem.removeClass('sub');
-                var DateNameEl = $(dtItem.find('i')[1]);
-                DateNameEl.text(" ");
-            }
+                console.log(date);
+                if(dtItem.hasClass('dl')){
+                    dtItem.removeClass('dl');
+                    var DateNameEl = $(dtItem.find('i')[1]);
+                    DateNameEl.text("");
+                }
+            dtItem.removeClass('wk full');
+            // dtItem.addClass('cur');
+        },
+        // 设置不可选样式
+        setNotChooseDate: function (date) {
+            date = (typeof date == 'string') ? date : util.formatDate(date),//日期转为string
+                dtItem = $(this.el[0].querySelector('li[data-date="' + date + '"]')); //获取date一样的li元素
+            // dtItem.removeClass('full');
+            dtItem.addClass('wk');
         },
 
 

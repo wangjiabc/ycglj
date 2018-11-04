@@ -206,8 +206,25 @@
     	campusId : 1
      }, function(data) {
     	var obj = $.parseJSON(data);
-    	if (obj.name == null)
+    	if (obj.name == null){
     		location.href = "../register/regist.html";
+    	}else{
+    		  $.post('/ycglj/mobile/user/getUserAuthen.do', {
+
+    		     }, function(data) {
+    		    	 if(data==3){
+    		    		 $.alert({
+    	                   	 	title: "提示",
+    	                    	text: "你的资料正在审核中,不能重复提交",
+    	                   	 	onOK: function () {
+    	                        //点击确认
+    	                   	 	location.href = "/ycglj/mobile/asset";
+    	                   	 }
+    	                  });
+    		    	 }
+    		     });
+    		     
+    	}
      });
     
     $(document).ready(function () {

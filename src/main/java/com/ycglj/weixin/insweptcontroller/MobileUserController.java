@@ -74,7 +74,12 @@ public class MobileUserController {
 	
 	@RequestMapping(value="updateAffire")
 	public @ResponseBody Integer uploadFilesSpecifyPath(@RequestParam String arrays,HttpServletRequest request,HttpServletResponse response) throws Exception {  
-		 long startTime=System.currentTimeMillis();   //获取开始时间  
+
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		long startTime=System.currentTimeMillis();   //获取开始时间  
 		 
 		 JSONArray jsonArray = JSONArray.parseArray(arrays);
 
@@ -92,7 +97,7 @@ public class MobileUserController {
 	                    list.add(uuid);
 	                }
 
-	                up=userDao.updateUserDataAffirm(list);
+	                up=userDao.updateUserDataAffirm(openId,list);
 	                
 	                //上传成功
 	                if(up>0){

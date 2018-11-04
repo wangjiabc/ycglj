@@ -108,7 +108,7 @@
                     title: '设置预约状态',
                     type: 2,
                     // content: '当前选中的日期是' + date + '显示状态和预约人数 设置预约状态',
-                    content: '../componet/layer/orderDialog.html?' + date,
+                    content: '/ycglj/layuiadmin/order/orderDialog.html?' + date,
                     area: ['350px', '260px'],
                     end: function () {
                         console.log("层销毁回调");
@@ -122,7 +122,7 @@
                 $.ajax({
                     type: "get",
                     //http://doc.88hao.cn/mock/27/calendar_1540460933748
-                    url: "/ycglj/mobile/order/getOrderDate.do?time=" + date1,
+                    url: "/ycglj/order/getOrderDate.do?time=" + date1,
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     dataType: "json",

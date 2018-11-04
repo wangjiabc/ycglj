@@ -28,6 +28,26 @@ import com.ycglj.manage.daoModel.Users;
 public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 
 	@Override
+	public Users getUser(Users users) {
+		// TODO Auto-generated method stub
+		Users users2=new Users();
+		
+		try{
+			users2=(Users) SelectExe.get(this.getJdbcTemplate(), users).get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if(users2!=null){
+			return users2;
+		}else{
+			return null;
+		}
+		
+	}
+	
+	@Override
 	public Integer insertPreMessage(PreMessage preMessage) {
 		// TODO Auto-generated method stub
 		return InsertExe.get(this.getJdbcTemplate(), preMessage);
@@ -193,7 +213,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	}
 
 	@Override
-	public Integer updateUserDataAffirm(List list) {
+	public Integer updateUserDataAffirm(String openId , List list) {
 		// TODO Auto-generated method stub
 		
 		Iterator<String> iterator=list.iterator();
@@ -204,7 +224,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		
 		user_Data.setCurrently(0);
 
-		String[] where0={"affirm >= ","0"};
+		String[] where0={"open_id = ",openId,"affirm >= ","0"};
 
 		user_Data.setWhere(where0);
 		
@@ -235,6 +255,21 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		if(i<4){
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			return 0;
+		}else{
+			
+			Users users=new Users();
+			users.setAuthentication(3);
+			
+			String[] where={"open_id = ",openId};
+			users.setWhere(where);
+			
+			i=UpdateExe.get(this.getJdbcTemplate(), users);
+			
+			if(i<1){
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				return 0;
+			}
+			
 		}
 		
 		return i;

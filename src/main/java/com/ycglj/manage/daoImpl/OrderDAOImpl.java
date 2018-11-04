@@ -250,7 +250,7 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 				
 				int number1 = order_Date2.getOrder_number();
 
-				if (number1 > 0) {
+				if (number1 > 0&&order_User2.getCancel()==0) {
 					number1--;
 					
 					order_Date2.setWhere(subDateWhere);

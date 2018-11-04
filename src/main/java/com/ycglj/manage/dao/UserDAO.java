@@ -12,6 +12,8 @@ import com.ycglj.manage.daoModel.Users;
 
 public interface UserDAO {
 
+	public Users getUser(Users users);
+	
 	public Integer insertUser(Users users);
 	
     public Integer updateUser(Users users);
@@ -22,7 +24,7 @@ public interface UserDAO {
 	
     public Integer updateUserData(User_Data user_Data);
     
-    public Integer updateUserDataAffirm(List list);
+    public Integer updateUserDataAffirm(String openId,List list);
     
     public Map<String,Object> getAllUserData(HttpServletRequest request,Integer limit, Integer offset, String sort,String order,Map<String, String> search);
     
