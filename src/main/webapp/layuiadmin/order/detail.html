@@ -1,0 +1,240 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>预约详情</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
+    <link rel="stylesheet" type="text/css" href="../layui/css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="../layui/css/calendar.css" />
+    <!--jquery weui-->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+
+</head>
+
+<body>
+    <div class="wrap">
+        <div id="calendar"></div>
+    </div>
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="../layui/calendar.js"></script>
+    <script src="../layui/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+    <script>
+
+    </script>
+    <script>
+        var date1;
+        //一般直接写在一个js文件中
+        layui.use(['layer', 'form'], function () {
+            var layer = layui.layer
+                , form = layui.form;
+            // form.render();
+
+            var result;
+            var calendarIns = new calendar.calendar({
+                count: 1,
+                selectDate: new Date(),
+                //selectDateName: '30人',
+                minDate: new Date(),
+                isShowHoliday: true,
+                isShowWeek: true
+            });
+            (function () {
+                getData();
+                //监听日期改变事件
+                $(calendarIns).bind('changed', function () {
+                    getData();
+                });
+                // 绑定事件
+                $(calendarIns).bind('afterSelectDate', function (event, dateObject) {
+                    var { curItem, date, dateName } = dateObject;
+                    var order_number = undefined;
+                    var orderStatus = 0;
+                    setStatus(date);
+
+                    for (var i = 0; i < result.order.length; i++) {
+                        // 这个for的问题，也不是这个问题，是setSelectDate的问题
+                        // 如果点击的日期和数组里的相等 有预约人数
+                        if (new Date(date).getTime() == new Date(result.order[i].datetime).getTime()) {
+                            //默认只有一个被选中，当这个日期被传进来，替换掉别的样式
+                            // calendarIns.setSelectDate(date, result.order[i].order_number);
+                            order_number = result.order[i].order_number;
+                            console.log(result.order);
+                            console.log(result.order[i].agree);
+
+                            break;
+                        }
+                    }
+                    calendarIns.setSelectDate(date, order_number);
+                    console.log("点击的:" + date);
+                    console.log("点击的:" + order_number);
+                    // console.log("点击的:"+orderStatus);
+                });
+
+                $(document).on('click', '#prevMonth', function () {
+                    calendarIns.prevMonth();
+                });
+                $(document).on('click', '#nextMonth', function () {
+                    calendarIns.nextMonth();
+                });
+                //保存预约状态 
+                // $(document).on('click', '#saveStatus', function () {
+                //     console.log('保存预约');
+                //     //提交预约选中状态和预约日期
+                //     $.ajax({
+                //         type: "POST",
+                //         //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                //         url: "http://doc.88hao.cn/mock/27/calendar",
+                //         contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                //         data: {},
+                //         dataType: "json",
+                //         success: function (data) {
+                //             //保存成功，刷新日期界面
+                //             initSelect();
+                //         },
+                //         error: function (e) {
+                //             console.log(e);
+                //         }
+                //     });
+                // });
+            })();
+            //弹出dialog 设置预约状态
+            function setStatus(date) {
+                layer.open({
+                    title: '设置预约状态',
+                    type: 2,
+                    // content: '当前选中的日期是' + date + '显示状态和预约人数 设置预约状态',
+                    content: '/ycglj/layuiadmin/order/orderDialog.html?' + date,
+                    area: ['350px', '260px'],
+                    end: function () {
+                        console.log("层销毁回调");
+                        initSelect();
+                    }
+                });
+
+            }
+            //数据获取
+            function getData() {
+                $.ajax({
+                    type: "get",
+                    //http://doc.88hao.cn/mock/27/calendar_1540460933748
+                    url: "/ycglj/order/getOrderDate.do?time=" + date1,
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        result = data;
+                        initSelect();
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+            }
+            //初始化日期样式
+            function initSelect() {
+                console.log('exec');
+                //设置人数满的日期样式
+                if (result.full.length > 0) {
+                    for (var i = 0; i < result.full.length; i++) {
+                        calendarIns.setFullStatus(result.full[i]);
+                    }
+                }
+                //设置为默认样式
+                if (result.agree.length > 0) {
+                    for (var i = 0; i < result.agree.length; i++) {
+                        calendarIns.setDefaultDate(result.agree[i]);
+                    }
+
+                }
+                //设置为不可选样式
+                if (result.disagree.length > 0) {
+                    for (var i = 0; i < result.disagree.length; i++) {
+                        calendarIns.setNotChooseDate(result.disagree[i]);
+                    }
+
+                }
+                //设置已经预约的日期样式
+                // if (result.sub_date.length > 0) {
+                //     calendarIns.setSubDate(result.sub_date[0], 1);
+                // }
+            }
+        });
+    </script>
+
+ 
+ <script>
+    layui.use('table', function(){
+      var table = layui.table;
+      
+      table.render({
+        elem: '#test'
+        ,url:'http://doc.88hao.cn/mock/27/customer'
+        ,toolbar: '#toolbarDemo'
+        ,title: '用户数据表'
+        ,page:true
+        ,cols: [[
+        {type: 'checkbox'},
+          {field:'customerId', title: 'ID', sort: true}
+          ,{field:'customerName', title: '用户名'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+          ,{field:'customerName', title: '性别', sort: true}
+          ,{field:'money', title: '城市'}
+          ,{field:'status', title: '签名'}
+          ,{field:'date', title: '职业', align: 'center'} //单元格内容水平居中
+          ,{fixed: 'right', title:'操作', toolbar: '#barDemo'}
+        ]]
+      });
+      
+      //头工具栏事件
+      table.on('toolbar(test)', function(obj){
+        var checkStatus = table.checkStatus(obj.config.id);
+        switch(obj.event){
+          case 'getCheckData':
+            var data = checkStatus.data;
+            layer.alert(JSON.stringify(data));
+          break;
+          case 'getCheckLength':
+            var data = checkStatus.data;
+            layer.msg('选中了：'+ data.length + ' 个');
+          break;
+          case 'isAll':
+            layer.msg(checkStatus.isAll ? '全选': '未全选');
+          break;
+        };
+      });
+      
+      //监听行工具事件
+      table.on('tool(test)', function(obj){
+        var data = obj.data;
+        //console.log(obj)
+        // if(obj.event === 'del'){
+        //   layer.confirm('真的删除行么', function(index){
+        //     obj.del();
+        //     layer.close(index);
+        //   });
+        // }
+        if(obj.event === 'detail'){
+          
+        }
+         else if(obj.event === 'edit'){
+          layer.prompt({
+            formType: 2
+            ,value: data.email
+          }, function(value, index){
+            obj.update({
+              email: value
+            });
+            layer.close(index);
+          });
+        }
+      });
+    });
+    </script>
+</body>
+
+</html>

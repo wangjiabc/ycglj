@@ -239,7 +239,11 @@ public class MoblieOrderController {
 		
 		if(order_User.getOpen_id()!=null){
 			
-			if(order_User.getCancel()>0){
+			if(order_User.getOverdue_number()>3){
+				
+				return -4;
+				
+			}else if(order_User.getCancel()>0){
 				long days = (new Date().getTime()-order_User.getCancel_date().getTime())/ (1000 * 60 * 60 * 24);
 				if(days<2){
 					return -3;
@@ -259,6 +263,7 @@ public class MoblieOrderController {
 			
 			order_User.setOpen_id(openId);
 			order_User.setSub_date(subDate);
+			order_User.setOverdue(0);
 			order_User.setCancel(0);
 			order_User.setDate(new Date());
 			

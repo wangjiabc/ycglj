@@ -62,9 +62,7 @@
                     var num = 0;
                     console.log(text.count);
                     if (text.count > 0) {
-       
-                            num = text.data[0].order_number;
-                      
+                        num = text.data[0].order_number;
                         if (text.data[0].disagree == 1) {
                             status = false;
                         }
@@ -83,32 +81,30 @@
             });
             layui.form.on('submit(save)', function(data) {
                 var status;
-                if (data.order_status == "on") {
+                if (data.field.order_status == "on") {
                     status = "agree"
                 } else {
                     status = "disagree"
                 }
                 $.ajax({
                     type: "get",
-                    //http://doc.88hao.cn/mock/27/calendar_1540460933748
-                    // url: "http://lzxlzc.com/ycglj/order/insertOrderDate.do?subTime=" + subTime + "&agree=" + agree,
-                    url: "http://lzxlzc.com/ycglj/order/insertOrderDate.do?subTime=" + data.time + "&" + status + "=1",
+                    url: "http://lzxlzc.com/ycglj/order/insertOrderDate.do?subTime=" + data.field.time + "&" + status + "=1",
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     dataType: "json",
                     success: function(data) {
-                        console.log("tijiaochengg" + data);
                         if (data == 1) {
+                            console.log("ok");
+                            //提示成功 刷新界面
+                            parent.layui.layer.closeAll();
                         }
                     },
                     error: function(e) {
                         console.log(e);
                     }
                 })
-
-                console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
-                return false;
             })
+            return false;
         })
 
     </script>

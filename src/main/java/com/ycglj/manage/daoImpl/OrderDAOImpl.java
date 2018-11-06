@@ -12,12 +12,15 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.ycglj.manage.tools.TransMapToString;
 import com.ycglj.manage.daoModel.WeiXin_User;
+import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.daoSQL.DeleteExe;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.daoModel.Order_Date;
 import com.ycglj.manage.daoModel.Order_User;
+import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoSQL.InsertExe;
 import com.ycglj.manage.daoSQL.SelectExe;
+import com.ycglj.manage.daoSQL.SelectJoinExe;
 import com.ycglj.manage.daoSQL.UpdateExe;
 
 public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
@@ -351,6 +354,7 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		order_User4.setSub_date(order_User.getSub_date());
 		order_User4.setOrder_date_uuid(uuid);
 		order_User4.setCancel(0);
+		order_User4.setOverdue(0);
 		order_User4.setWhere(userWhere);
 		
 		i=UpdateExe.get(this.getJdbcTemplate(), order_User4);
@@ -363,6 +367,14 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		return i;
 	}
 
+	
+	@Override
+	public int updateOverdueNumber(Order_User order_User) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), order_User);
+	}
+
+	
 	@Override
 	public int cancelOrder(Order_User order_User) {
 		// TODO Auto-generated method stub
@@ -621,6 +633,50 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), weiXin_User).get("");
 		
 		return count;
+	}
+
+	@Override
+	public Map<String, Object> getAllUser_Order_Join(Integer limit, Integer offset, String sort, String order,
+			Map<String, String> search) {
+		// TODO Auto-generated method stub
+		Users users=new Users();
+		
+		users.setLimit(limit);
+		users.setOffset(offset);
+		users.setNotIn("id");
+		
+		Order_User order_User=new Order_User();
+		
+		order_User.setLimit(limit);
+		order_User.setOffset(offset);
+		order_User.setNotIn("id");
+		
+		if(search!=null&&!search.isEmpty()&&!search.equals("")){
+			String[] where=TransMapToString.get(search);
+			users.setWhere(where);
+			order_User.setWhere(where);
+		}
+		
+		Object[] objects={users,order_User};
+		
+		String[] join={"open_id"};
+		
+		User_Order_Join user_Order_Join=new User_Order_Join();
+		
+		List list=SelectJoinExe.get(this.getJdbcTemplate(), objects, user_Order_Join, join);
+	
+		int count=(int) SelectJoinExe.getCount(this.getJdbcTemplate(), objects,join).get("");
+		
+		Map<String, Object> map=new HashMap<>();
+		
+		map.put("code", "0");
+		
+		map.put("data", list);
+		
+		map.put("count", count);
+		
+		return map;
+		
 	}
 
 

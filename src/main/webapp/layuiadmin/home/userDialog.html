@@ -19,8 +19,8 @@
         .upload-img {
             position: relative;
             display: inline-block;
-            width: 300px;
-            height: 200px;
+            width: 200px;
+            height: 150px;
             margin: 0 10px 10px 0;
             transition: box-shadow .25s;
             border-radius: 4px;
@@ -31,8 +31,8 @@
         }
  
         .layui-upload-img {
-            width: 300px;
-            height: 200px;
+            width: 200px;
+            height: 150px;
             border-radius: 4px;
         }
  
@@ -79,10 +79,33 @@
     <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <script src="../layui/layui.js"></script>
     <script id="img_template" type="text/html">
-        <div class="upload-img" filename="{{ d.index }}">
-            <input type="checkbox" name="" lay-skin="primary">
-            <img src="{{  d.result }}" alt="{{ d.name }}" class="layui-upload-img">
-        </div>
+       
+            {{#  layui.each(d.fileBytes, function(index, item){ }}
+            <div class="upload-img" filename="{{ d.index }}">
+                <input type="checkbox" name="" lay-skin="switch">
+                <img src="../..{{  item.uri }}" alt="该图片不存在" title="{{showdataType(item.dataType)}}" class="layui-upload-img">
+            </div>
+          {{#  }); }}
+       
+          {{# 
+            function showdataType(type){
+                switch(type){
+                case 'identity':
+                    return '身份证正面照';
+                    break;
+                    case 'conIdentity':
+                    return '身份证正面照';
+                    break;
+                    case 'license':
+                    return '营业执照';
+                    break;
+                    case 'sing':
+                    return '签名照';
+                    break;
+                }
+            }
+        }}
+       
     </script>
 
     <script>
@@ -92,6 +115,7 @@
                 laytpl = layui.laytpl,
                 upload = layui.upload
                 ;
+            var text;
             $.ajax({
                 type: "post",
                 url: "/ycglj/user/getUserDateById.do",
@@ -100,16 +124,16 @@
                 dataType: "json",
                 success: function(text) {
                     console.log(text);
-                    var img;
-                    if (text[0] != null) {
-                        img = list[0].uri;
-                        console.log("图片" + img);
-                    }
+                    //将预览html 追加
+                    laytpl(img_template.innerHTML).render(text, function(html) {
+                        $('#imgs').append(html);
+                    });
                 },
                 error: function(e) {
                     console.log(e);
                 }
             });
+
         })
 
     </script>

@@ -92,7 +92,7 @@ public class UserController {
 		Map searchMap=new HashMap<>();
 		
 		searchMap.put("open_id = ", openId);
-		searchMap.put("affirm = ", "1");
+		searchMap.put("currently = ", "1");
 		
 		return userDao.getAllUserData(request,1000, 0, "","", searchMap);
 				

@@ -22,38 +22,51 @@
   <script type="text/javascript" src="js/index.js"></script>
 </head>
 <style>
-  img {
+  .header img {
     height: 100%;
     width: 100%;
     display: block;
   }
-
+  .header
+  {
+      height:30%;
+  }
+  .weui-grid__icon{
+    height: 68px;
+    width: 68px;
+  }
+.weui-grid__label
+{
+    font-size:18px;
+}
+  section {
+    background-color: rgb(214, 100, 7);
+    margin: 5px;
+  }
   html,
   body {
      height: 100%; 
   }
 
   .weui-grid {
-    width: 100%;
-    height: 100%;
+    width: 50%;
+    height:50%;
+    padding-top:18%;
+  }
+  .weui-tab{
+    height:90%;
   }
 
   .weui-grid p {
     color: aliceblue;
   }
-  section {
-    /* height: 80%; */
+  /* section {
     background-color: rgb(214, 100, 7);
     margin: 5px;
-  }
-
-  /* .header {
-    height: 20%;
   } */
 
   .text {
     color: white;
-    /* height: 80%; */
     position: relative;
   }
   .text p{
@@ -70,16 +83,16 @@
     background-color: beige
   }
   .footer{
-    /* height:10%; */
+    height:80px;
     text-align: right;
-    
+  }
+  .weui-btn_mini
+  {
+      padding:0 2.32em;
   }
   .footer a{
-    top:25%;
+    top:20%;
   }
-  
-  
-  
   .bottom-bar
   {
       position:fixed !important;
@@ -87,7 +100,12 @@
   }
   #tab1 
   {
-      margin-bottom: 55px;
+      margin-bottom: 66px;
+  }
+  .weui-tabbar__icon
+  {
+      width:40px;
+      height:40px;
   }
 </style>
 
@@ -126,114 +144,124 @@
       </section>
     </div>
   </div>
+  <!-- 弹出层模板 -->
+  <div id="guide2" class="weui-popup__container">
+    <div class="weui-popup__overlay"></div>
+    <div class="weui-popup__modal">
+      <section style="height:100%;margin:0px">
+        <div class="text">
+          <p class="pTitle">网上预约须知</p>
+          <p>1、预约时间：周一至周五可以进行预约，节假日不安排预约</p>
+          <p>2、取消预约：因故不能如约办理，请至少提前一个工作日取消预约</p>
+          <p>3、爽约处理：无故爽约累积达到2次将进入爽约黑名单，此后三个月内将无法享受网上办理服务。</p>
+          <p>4、预约限制：同1零售户只能预约1次;在同一个工作日的预约人数问题不超过70人次</p>
+         
+        </div>
+
+        <div class="footer" style="position:fixed;bottom: 0;width: 100%">
+          <a id="continue2" href="javascript:;" class="weui-btn weui-btn_primary">我已阅读并同意</a>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <div class="weui-tab">
     <div id="tab1" class="weui-tab__bd">
       <div class="header">
         <img src="images/manage.jpg">
       </div>
-
-      <div class="weui-flex">
-        <div class="weui-flex__item">
-          <a id="transact" href="javascript:void(0)" class="weui-grid js_grid">
-            <div>
-              <img src="images/img1.png" alt="">
-            </div>
-            <p class="weui-grid__label">
-              预约办理
-            </p>
-          </a>
-        </div>
-        <div class="weui-flex__item">
-          <a id="registration" href="javascript:void(0)" class="weui-grid js_grid open-popup">
-            <div>
-              <img src="images/img2.png" alt="">
-            </div>
-            <p class="weui-grid__label">
-              网上办证
-            </p>
-          </a>
-        </div>
+      <div class="weui-grids" style="height:70%">
+        <a id="transact" href="javascript:void(0)" class="weui-grid js_grid">
+          <div class="weui-grid__icon">
+            <img src="images/img1.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            预约办理
+          </p>
+        </a>
+        <a id="registration" href="javascript:void(0)" class="weui-grid js_grid">
+          <div class="weui-grid__icon">
+            <img src="images/img2.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            网上办证
+          </p>
+        </a>
+        <a id="b3" href="javascript:void(0)" class="weui-grid js_grid">
+          <div class="weui-grid__icon">
+            <img src="images/img3.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            办证指南
+          </p>
+        </a>
+        <a id="b4" href="javascript:void(0)" class="weui-grid js_grid">
+          <div class="weui-grid__icon">
+            <img src="images/img4.png" alt="">
+          </div>
+          <p class="weui-grid__label">
+            投诉建议
+          </p>
+        </a>
       </div>
-      <div class="weui-flex">
-        <div class="weui-flex__item">
-          <a href="javascript:void(0)" id="b3" class="weui-grid js_grid">
-            <div>
-              <img src="images/img3.png" alt="">
-            </div>
-            <p class="weui-grid__label">
-              办证指南
-            </p>
-          </a>
-        </div>
-        <div class="weui-flex__item">
-          <a href="javascript:void(0)" id="b4" class="weui-grid js_grid">
-            <div>
-              <img src="images/img4.png" alt="">
-            </div>
-            <p class="weui-grid__label">
-              投诉建议
-            </p>
-          </a>
-        </div>
+      <div class="weui-tabbar bottom-bar">
+        <a href="#tab1" class="weui-tabbar__item weui-bar__item--on">
+          <!-- <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span>  -->
+          <div class="weui-tabbar__icon">
+            <img src="images/img1.png" alt="">
+          </div>
+          <p class="weui-tabbar__label">信息通知</p>
+        </a>
+        <a href="#tab2" class="weui-tabbar__item">
+          <div class="weui-tabbar__icon">
+            <img src="images/img2.png" alt="">
+          </div>
+          <p class="weui-tabbar__label">个人中心</p>
+        </a>
+
       </div>
     </div>
-    <div class="weui-tabbar bottom-bar">
-      <a href="#tab1" class="weui-tabbar__item weui-bar__item--on">
-        <!-- <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span> -->
-        <div class="weui-tabbar__icon">
-          <img src="images/img1.png" alt="">
-        </div>
-        <p class="weui-tabbar__label">信息通知</p>
-      </a>
-      <a href="#tab2" class="weui-tabbar__item">
-        <div class="weui-tabbar__icon">
-          <img src="images/img2.png" alt="">
-        </div>
-        <p class="weui-tabbar__label">个人中心</p>
-      </a>
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+    <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.js"></script>
+    <script>
+        $(function() {
+            FastClick.attach(document.body);
+        });
+    </script>
+    <script>
+        $('#transact').css("background-color", "#6cc1f8");
+        $('#registration').css("background-color", "#925f39");
+        $('#b3').css("background-color", "#304c68");
+        $('#b4').css("background-color", "#77a3ad");
 
-    </div>
-  </div>
-  <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-  <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
-  <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.js"></script>
-  <script>
-      $(function() {
-          FastClick.attach(document.body);
-      });
-  </script>
-  <script>
-      $('#transact').css("background-color", "#6cc1f8");
-      $('#registration').css("background-color", "#925f39");
-      $('#b3').css("background-color", "#304c68");
-      $('#b4').css("background-color", "#77a3ad");
+        // 触发弹层
+        $('#registration').click(function() {
+            $("#guide").popup();
+        })
+        $('#transact').click(function() {
+            $("#guide2").popup();
+        });
 
-      $('#registration').click(function() {
-          $("#guide").popup();
-      })
+        //弹层事件
+        $('#continue2').click(function() {
+            window.location.href = "authentic/transact.html";
+        })
 
-      $('#transact').click(function() {
+        $('#continue').click(function() {
+            if ($('#weuiAgree').get(0).checked) {
+                console.log("选中");
+                //关闭弹层后跳转申请界面
+                $.closePopup()
+                window.location.href = "order/registration.html";
+            }
+            //关闭弹层
+            else {
+                $.toast('请勾选协议', "forbidden");
+            }
+        })
 
-          window.location.href = "authentic/transact.html";
-
-
-      });
-
-      $('#continue').click(function() {
-          if ($('#weuiAgree').get(0).checked) {
-              console.log("选中");
-              //关闭弹层后跳转申请界面
-              $.closePopup()
-              window.location.href = "order/registration.html";
-          }
-          //关闭弹层
-          else {
-              $.toast('请勾选协议', "forbidden");
-          }
-      })
-
-  </script>
+    </script>
 
 </body>
 

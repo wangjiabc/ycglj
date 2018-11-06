@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ycglj.manage.daoModel.WeiXin_User;
+import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.daoModel.Order_Date;
 import com.ycglj.manage.daoModel.Order_User;
 
@@ -14,6 +15,8 @@ public interface OrderDAO {
 	
 	int updateOrderUser(Order_User order_User);
 	
+	int updateOverdueNumber(Order_User order_User);
+	
 	int cancelOrder(Order_User order_User);
 	
 	Map<String,Object> getAllOrderUser(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
@@ -22,7 +25,7 @@ public interface OrderDAO {
 	
 	int updateOrderDate(Order_Date order_Date);
 	
-	Map<String,Object> getAllOrderDate(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
+	public Map<String,Object> getAllOrderDate(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
 
 	public Integer insertWeiXinUser(WeiXin_User weiXin_User);
 	
@@ -31,4 +34,6 @@ public interface OrderDAO {
 	public Integer updateWeiXinUser(WeiXin_User weiXin_User);
 	
 	public Integer selectCountWeiXinUser(WeiXin_User weiXin_User);
+	
+	public Map<String,Object> getAllUser_Order_Join(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
 }
