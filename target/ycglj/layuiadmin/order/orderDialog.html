@@ -53,7 +53,7 @@
                 type: "get",
                 //http://doc.88hao.cn/mock/27/calendar_1540460933748
                 // url: "http://lzxlzc.com/ycglj/order/insertOrderDate.do?subTime=" + subTime + "&agree=" + agree,
-                url: "http://lzxlzc.com/ycglj/order/getAllOrderDate.do?day=" + date2 + "&limit=10&page=1",
+                url: "/ycglj/order/getAllOrderDate.do?day=" + date2 + "&limit=10&page=1",
                 contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                 data: {},
                 dataType: "json",
@@ -88,7 +88,7 @@
                 }
                 $.ajax({
                     type: "get",
-                    url: "http://lzxlzc.com/ycglj/order/insertOrderDate.do?subTime=" + data.field.time + "&" + status + "=1",
+                    url: "/ycglj/order/insertOrderDate.do?subTime=" + data.field.time + "&" + status + "=1",
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     dataType: "json",

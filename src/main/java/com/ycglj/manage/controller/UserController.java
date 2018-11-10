@@ -46,7 +46,7 @@ public class UserController {
 	
 	@RequestMapping("getAllUser")
 	public @ResponseBody Map<String, Object> getAllUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
-			String search,Integer search2,HttpServletRequest request){
+			String search,String authentication,HttpServletRequest request){
 			
 			Map searchMap=new HashMap<>();
 			
@@ -55,9 +55,8 @@ public class UserController {
 				searchMap.put("name like ", search);
 			}		
 			
-			if(search2!=null&&search2>0){
-				search="%"+search+"%";  
-				searchMap.put("authentication = ", search2);
+			if(authentication!=null&&!authentication.equals("")){
+				searchMap.put("authentication = ", authentication);
 			}	
 			
 			int offset=(page-1)*limit;
@@ -98,6 +97,23 @@ public class UserController {
 				
 	}
 	
+	
+	@RequestMapping("setAuthentication")
+	public @ResponseBody Integer setAuthentication(@RequestParam String openId,
+			@RequestParam  Integer authentication,HttpServletRequest request) {
+					
+		Users users=new Users();
+		
+		users.setAuthentication(authentication);
+        users.setAuthen_date(new Date());
+		
+		String[] where={"open_id = ", openId};
+		
+		users.setWhere(where);
+		
+		return userDao.updateUser(users);
+	
+	}
 	
 	
 }

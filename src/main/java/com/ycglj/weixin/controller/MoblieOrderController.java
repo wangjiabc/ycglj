@@ -241,7 +241,34 @@ public class MoblieOrderController {
 			
 			if(order_User.getOverdue_number()>3){
 				
-				return -4;
+				Calendar cal=Calendar.getInstance();
+				Date date=new Date();
+				cal.setTime(date);
+				
+				
+				Date date2=new Date();
+				Calendar cal2=Calendar.getInstance();
+
+				cal2.setTime(order_User.getSub_date());
+				
+				int diff=cal.get(Calendar.MONTH)-cal2.get(Calendar.MONTH);
+				
+				if(diff<3){
+				
+					return -4;
+				
+				}else{
+					
+					Order_User order_User2=new Order_User();
+					order_User2.setOverdue(0);
+					order_User2.setOverdue_number(0);
+					
+					String[] where={"open_id = ", openId};					
+					order_User2.setWhere(where);
+					
+					orderDao.updateOverdueNumber(order_User2);
+					
+				}
 				
 			}else if(order_User.getCancel()>0){
 				long days = (new Date().getTime()-order_User.getCancel_date().getTime())/ (1000 * 60 * 60 * 24);

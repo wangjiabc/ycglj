@@ -96,7 +96,7 @@ public class OrderController {
 	
 	@RequestMapping("getAllOrderUser")
 	public @ResponseBody Map<String, Object> getAllOrderUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
-			String search, String day,String time,HttpServletRequest request){
+			String search, String day,String time,String overdue,HttpServletRequest request){
 			
 			Map searchMap=new HashMap<>();
 			
@@ -162,6 +162,12 @@ public class OrderController {
 		        
 		        searchMap.put("convert(varchar(11),sub_date,120 ) >", startTime);
 				searchMap.put("convert(varchar(11),sub_date,120 ) <=", endTime);
+			}
+			
+			if(overdue!=null&&!overdue.equals("")){
+				
+				searchMap.put(" overdue = ", overdue);
+				
 			}
 			
 			int offset=(page-1)*limit;

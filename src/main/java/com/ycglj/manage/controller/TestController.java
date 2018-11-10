@@ -3,6 +3,7 @@ package com.ycglj.manage.controller;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -82,6 +83,20 @@ public class TestController {
 		
 			if(user_Order_Join.getAuthentication()==3){
 
+				Calendar cal=Calendar.getInstance();
+				Date date=new Date();
+				cal.setTime(date);
+				
+				
+				Date date2=new Date();
+				Calendar cal2=Calendar.getInstance();
+
+				cal2.setTime(user_Order_Join.getSub_date());
+				
+				int diff=cal.get(Calendar.MONTH)-cal2.get(Calendar.MONTH);
+				
+				System.out.println("diff="+diff);
+				
 				Order_User order_User = new Order_User();
 
 				order_User.setOverdue(1);

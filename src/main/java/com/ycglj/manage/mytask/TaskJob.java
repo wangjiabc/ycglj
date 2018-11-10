@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,7 +53,11 @@ private SellerService sellerService;
     	
     	Map searchMap=new HashMap<>();
 		
-    	Date date=new Date();
+    	Calendar cal=Calendar.getInstance();
+    	
+    	cal.add(Calendar.DATE,-1);
+    	
+    	Date date=cal.getTime();
 			
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 

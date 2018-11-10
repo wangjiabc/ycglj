@@ -16,10 +16,10 @@ public class Singleton {
 	public final static String filePath="\\Desktop\\pasoft\\photo";
 	
 	//资产管理系统图片目录
-	public static final String ROOMINFOIMGPATH	="D:\\YC\\";
+	public static final String ROOMINFOIMGPATH	="E:\\YC\\";
 	
 	//资产管理系统图片目录2
-	public static final String ROOMINFOIMGPATH2	="D:\\YC\\pasoft";
+	public static final String ROOMINFOIMGPATH2	="E:\\YC\\pasoft";
 	
 	//短信帐号
 	public static final String UID="合江县烟草专卖局";
