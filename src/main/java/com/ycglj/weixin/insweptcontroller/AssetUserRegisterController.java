@@ -271,7 +271,6 @@ public class AssetUserRegisterController {
 
 			Date upTime = new Date();
 
-
 			Users users = new Users();
 
 			com.ycglj.manage.daoModel.Users users2=new com.ycglj.manage.daoModel.Users();
@@ -305,7 +304,33 @@ public class AssetUserRegisterController {
 			if (testRepeat == 0) {
 				type = userService.insertUsersInfo(users);
 				users2.setDate(upTime);
-				userDao.insertUser(users2);
+				
+				com.ycglj.manage.daoModel.Users users3=new com.ycglj.manage.daoModel.Users();
+				String[] where={"phone = ",phone};
+				users3.setWhere(where);
+				users3.setLimit(1);
+				users3.setOffset(0);
+				users3.setUp_date(upTime);
+				
+				com.ycglj.manage.daoModel.Users users4=null;
+				
+				users4=userDao.getUser(users3);
+				
+				System.out.println("users4=");
+				
+				MyTestUtil.print(users4);
+				
+				if(users4!=null&&users4.getPhone()!=null&&!users4.getPhone().equals("")
+						&&users4.getOpen_id()!=null&&!users4.getOpen_id().equals("")){
+				
+					users3.setOpen_id(openId);
+					userDao.updateUser(users3);
+					
+				}else{
+				
+					userDao.insertUser(users2);
+				
+				}
 			} else {
 				type = userService.updateUsersInfo(users);
 				String[] where={"open_id = ",openId};

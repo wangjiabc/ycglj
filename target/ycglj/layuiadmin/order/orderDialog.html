@@ -12,27 +12,29 @@
 </head>
 
 <body>
-    <form class="layui-form" lay-filter="setStatus" action="">
+    <form class="layui-form" lay-filter="setStatus" action="" style="margin:20px;">
         <div class="layui-form-item">
             <label class="layui-form-label">设置日期</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input name="time" disabled type="text" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">预约人数</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input name="order_num" disabled type="text" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">预约状态</label>
-            <div class="layui-input-block">
+            <div class="layui-input-inline">
                 <input name="order_status" type="checkbox" lay-filter="encrypt" lay-skin="switch" lay-text="开启预约|关闭预约">
             </div>
         </div>
         <div class="layui-form-item">
-            <button id="save" lay-submit lay-filter="save" class="layui-btn">保 存</button>
+            <div class="layui-input-block" style="float:right">
+                <button id="save" lay-submit lay-filter="save" class="layui-btn">保存设置</button>
+            </div>
         </div>
     </form>
 
@@ -45,7 +47,7 @@
         // });
         //传过来的日期
         var date2 = window.location.href.split('?')[1];
-        layui.use(['layer', 'form'], function() {
+        layui.use(['layer', 'form'], function () {
             var layer = layui.layer,
                 form = layer.form;
             console.log("111" + date2);
@@ -57,7 +59,7 @@
                 contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                 data: {},
                 dataType: "json",
-                success: function(text) {
+                success: function (text) {
                     var status = true;
                     var num = 0;
                     console.log(text.count);
@@ -75,11 +77,11 @@
                         "order_status": status
                     })
                 },
-                error: function(e) {
+                error: function (e) {
                     console.log(e);
                 }
             });
-            layui.form.on('submit(save)', function(data) {
+            layui.form.on('submit(save)', function (data) {
                 var status;
                 if (data.field.order_status == "on") {
                     status = "agree"
@@ -92,14 +94,15 @@
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     dataType: "json",
-                    success: function(data) {
+                    success: function (data) {
                         if (data == 1) {
                             console.log("ok");
                             //提示成功 刷新界面
-                            parent.layui.layer.closeAll();
+                            // parent.layui.layer.closeAll();
+                            window.parent.location.reload();
                         }
                     },
-                    error: function(e) {
+                    error: function (e) {
                         console.log(e);
                     }
                 })

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+</head>
+<body>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">上传图片</h4>
+            </div>
+            <div id="preview_box"></div>
+            <div class="modal-body">
+             <input id="img_input" type="file" accept="image/*"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" onclick="upload();" class="btn btn-primary">提交更改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</body>
+<script type="text/javascript">
+ function upload(){
+
+	 var fileObj = $("#img_input").prop("files")[0];
+	 
+     var FileController = "/ycglj/user/inputImage.do"; // 接收上传文件的后台地址
+     
+     if (fileObj){
+         // FormData 对象
+         var form = new FormData();
+         form.append("file", fileObj);// 文件对象
+         form.append("openId", 0);
+         form.append("data_type", "license");
+         // XMLHttpRequest 对象
+         var xhr = new XMLHttpRequest();
+         xhr.open("post", FileController, true);
+         xhr.onload = function () {
+
+         };
+         xhr.send(form);
+         xhr.onreadystatechange=function(){
+         	 if(xhr.readyState == 4 && xhr.status == 200){    
+         	     var b = xhr.responseText;    
+         	        if(b == 1){    
+         	        	alert("添加图片成功！"); 
+         	          
+         	        }else{    
+         	            alert("添加图片失败！"); 
+         	           
+         	        }           
+         	    }    
+         };
+     }
+     
+ }
+ </script>
+
+</html>

@@ -56,7 +56,27 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	@Override
 	public Integer insertUser(Users users) {
 		// TODO Auto-generated method stub
-		return InsertExe.get(this.getJdbcTemplate(), users);
+		
+		String[] where={"phone=",users.getPhone()};
+		
+		users.setLimit(1);
+		users.setOffset(0);
+		users.setWhere(where);
+		
+		int repeat=0;
+		
+		try{
+			repeat=(int) SelectExe.getCount(this.getJdbcTemplate(), users).get("");
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if(repeat==0){
+			return InsertExe.get(this.getJdbcTemplate(), users);
+		}else{
+			return -1;
+		}
 	}
 
 	@Override

@@ -28,7 +28,9 @@
 
     </script>
     <script>
+        //年月
         var date1;
+        var table;
         //一般直接写在一个js文件中
         layui.use(['layer', 'form'], function () {
             var layer = layui.layer
@@ -55,7 +57,6 @@
                     var { curItem, date, dateName } = dateObject;
                     var order_number = undefined;
                     var orderStatus = 0;
-                    setStatus(date);
 
                     for (var i = 0; i < result.order.length; i++) {
                         // 这个for的问题，也不是这个问题，是setSelectDate的问题
@@ -66,16 +67,20 @@
                             order_number = result.order[i].order_number;
                             console.log(result.order);
                             console.log(result.order[i].agree);
-
                             break;
                         }
                     }
                     calendarIns.setSelectDate(date, order_number);
-                    console.log("点击的:" + date);
-                    console.log("点击的:" + order_number);
-                    // console.log("点击的:"+orderStatus);
                 });
 
+
+                $(calendarIns).bind('afterSelectDate', function (event, dateObject) {
+                    var { curItem, date, dateName } = dateObject;
+                    // 重载
+                    table.reload("test", {
+                        url: '/ycglj/order/getAllOrderUser.do?day=' + date
+                    });
+                })
                 $(document).on('click', '#prevMonth', function () {
                     calendarIns.prevMonth();
                 });
@@ -103,21 +108,6 @@
                 //     });
                 // });
             })();
-            //弹出dialog 设置预约状态
-            function setStatus(date) {
-                layer.open({
-                    title: '设置预约状态',
-                    type: 2,
-                    // content: '当前选中的日期是' + date + '显示状态和预约人数 设置预约状态',
-                    content: '/ycglj/layuiadmin/order/orderDialog.html?' + date,
-                    area: ['350px', '260px'],
-                    end: function () {
-                        console.log("层销毁回调");
-                        initSelect();
-                    }
-                });
-
-            }
             //数据获取
             function getData() {
                 $.ajax({
@@ -164,76 +154,113 @@
                 //     calendarIns.setSubDate(result.sub_date[0], 1);
                 // }
             }
-        });
+        })
     </script>
 
- 
- <script>
-    layui.use('table', function(){
-      var table = layui.table;
-      
-      table.render({
-        elem: '#test'
-        ,url:'http://doc.88hao.cn/mock/27/customer'
-        ,toolbar: '#toolbarDemo'
-        ,title: '用户数据表'
-        ,page:true
-        ,cols: [[
-        {type: 'checkbox'},
-          {field:'customerId', title: 'ID', sort: true}
-          ,{field:'customerName', title: '用户名'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-          ,{field:'customerName', title: '性别', sort: true}
-          ,{field:'money', title: '城市'}
-          ,{field:'status', title: '签名'}
-          ,{field:'date', title: '职业', align: 'center'} //单元格内容水平居中
-          ,{fixed: 'right', title:'操作', toolbar: '#barDemo'}
-        ]]
-      });
-      
-      //头工具栏事件
-      table.on('toolbar(test)', function(obj){
-        var checkStatus = table.checkStatus(obj.config.id);
-        switch(obj.event){
-          case 'getCheckData':
-            var data = checkStatus.data;
-            layer.alert(JSON.stringify(data));
-          break;
-          case 'getCheckLength':
-            var data = checkStatus.data;
-            layer.msg('选中了：'+ data.length + ' 个');
-          break;
-          case 'isAll':
-            layer.msg(checkStatus.isAll ? '全选': '未全选');
-          break;
-        };
-      });
-      
-      //监听行工具事件
-      table.on('tool(test)', function(obj){
-        var data = obj.data;
-        //console.log(obj)
-        // if(obj.event === 'del'){
-        //   layer.confirm('真的删除行么', function(index){
-        //     obj.del();
-        //     layer.close(index);
-        //   });
-        // }
-        if(obj.event === 'detail'){
-          
-        }
-         else if(obj.event === 'edit'){
-          layer.prompt({
-            formType: 2
-            ,value: data.email
-          }, function(value, index){
-            obj.update({
-              email: value
+    <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+  </script>
+    <script type="text/html" id="checkboxTpl">
+    <form class="layui-form" action="">
+            <!-- <input type="checkbox" name="lock" value="{{d.id}}" title="锁定" lay-filter="lockDemo" {{ d.id == 10006 ? 'checked' : '' }}> -->
+    <input type="checkbox" name="lock" value="" title="通过" lay-filter="pass">
+    </form>
+  </script>
+    <script>
+        var openId;
+        layui.use('table', function () {
+            table = layui.table;
+            table.render({
+                elem: '#test'
+                , toolbar: '#toolbarDemo'
+                , title: '用户数据表'
+                , page: true
+                , cols: [[
+                    { type: 'checkbox' },
+                    { field: 'id', title: 'ID', sort: true }
+                    , { field: 'name', title: '用户名' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    , { field: 'id_number', title: '证件号', sort: true }
+                    , { field: 'phone', title: '电话' }
+                    , { field: 'sex', title: '性别' }
+                    , { field: 'date', title: '日期', align: 'center' } //单元格内容水平居中
+                    , { title: '操作', toolbar: '#barDemo' }
+                    , { field: 'pass', title: '是否通过', templet: '#checkboxTpl', unresize: true }
+                ]]
             });
-            layer.close(index);
-          });
-        }
-      });
-    });
+
+            //头工具栏事件
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'getCheckData':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+                };
+            });
+
+            //监听行工具事件
+            table.on('tool(test)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    openId = data.open_id;
+                    layer.open({
+                        title: '零售户资料信息'
+                        , type: 2
+                        , shadeClose: true
+                        , area: ['960px', '420px']
+                        , content: '/ycglj/layuiadmin/home/userDialog.html?' + openId,
+                    });
+                }
+                else if (obj.event === 'edit') {
+                    layer.prompt({
+                        formType: 2
+                        , value: data.email
+                    }, function (value, index) {
+                        obj.update({
+                            email: value
+                        });
+                        layer.close(index);
+                    });
+                }
+            });
+
+            layui.form.on('checkbox(pass)', function (data) {
+                console.log("openID" + openId);
+                console.log(data.elem.checked); //开关是否开启，true或者false
+                var status = 2;
+                if (data.elem.checked == true) {
+                    status = 1;
+                }
+                $.ajax({
+                    type: "get",
+                    url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=" + status,
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        console.log("成功" + data);
+                        if (data == 1) {
+                            layer.alert('设置成功', { icon: 1 });
+                        }else{
+                            layer.alert('请先审核图片资料', { icon: 2 });
+                            layui.form.render();
+                        }
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                })
+            });
+        });
     </script>
 </body>
 

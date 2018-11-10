@@ -12,7 +12,29 @@
 </head>
 
 <body>
-
+  <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+    <div class="layui-form-item">
+      <div class="layui-inline">
+        <label class="layui-form-label">审核状态</label>
+        <div class="layui-input-block">
+          <select lay-filter="status" name="status">
+            <option value="">请选择审核状态</option>
+            <option value="1">通过审核</option>
+            <option value="2">未能过需要重新提交</option>
+            <option value="3">已提交照片待审核</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline">
+        <input type="text" id="search" lay-verify="search" autocomplete="off" placeholder="请输入搜索内容" class="layui-input">
+      </div>
+      <div class="layui-inline">
+        <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="search">
+          <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+        </button>
+      </div>
+    </div>
+  </div>
   <table class="layui-hide" id="test" lay-filter="test"></table>
 
   <script type="text/html" id="toolbarDemo">
@@ -50,7 +72,7 @@
           , { field: 'id_number', title: '证件号', sort: true }
           , { field: 'phone', title: '电话' }
           , { field: 'sex', title: '性别' }
-          , { field: 'date', title: '职业', align: 'center' } //单元格内容水平居中
+          , { field: 'date', title: '日期', align: 'center' } //单元格内容水平居中
           , { fixed: 'right', title: '操作', toolbar: '#barDemo' }
         ]]
       });
@@ -76,44 +98,16 @@
       //监听行工具事件
       table.on('tool(test)', function (obj) {
         var data = obj.data;
-        //console.log(obj)
-        // if(obj.event === 'del'){
-        //   layer.confirm('真的删除行么', function(index){
-        //     obj.del();
-        //     layer.close(index);
-        //   });
-        // }
         if (obj.event === 'detail') {
 
           var openId = data.open_id;
-          // $.post("/ycglj/user/getUserDateById.do", {
-          //   openId: openId
-          // }, function (text) {
-          //   console.log("text=" + text);
-          //   var d = $.parseJSON(text);
-          //   var list = d.fileBytes;
-          //   console.log("list=" + JSON.stringify(list));
-          //   var img;
-          //   if (list[0] != null) {
-          //     img = list[0].uri;
-          //   }
-            // layer.open({
-            //         title: '零售户资料信息',
-            //         type: 2,
-            //         content: '../componet/layer/orderDialog.html?' + date,
-            //         area: ['350px', '260px'],
-            //         end: function () {
-            //             console.log("层销毁回调");
-            //             getData();
-            //         }
-            //     });
-            layer.open({
-              title: '零售户资料信息'
-              , type:2
-              , shadeClose: true
-              , area: ['960px', '420px']
-              , content: '/ycglj/layuiadmin/home/userDialog.html?'+openId,
-            });
+          layer.open({
+            title: '零售户资料信息'
+            , type: 2
+            , shadeClose: true
+            , area: ['960px', '420px']
+            , content: '/ycglj/layuiadmin/home/userDialog.html?' + openId,
+          });
           // });
         }
         else if (obj.event === 'edit') {
@@ -127,6 +121,23 @@
             layer.close(index);
           });
         }
+      });
+      var authentication;
+      layui.form.on('select(status)', function (data) {
+        //下拉框
+        authentication = data.value;
+      })
+      //监听搜索
+      layui.form.on('submit(search)', function (data) {
+        //input值
+        var search = $('#search').val();
+        var field = data.field;
+
+        //执行重载
+        table.reload('test', {
+          where: field,
+          url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication,
+        });
       });
     });
   </script>
