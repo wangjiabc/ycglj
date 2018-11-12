@@ -489,18 +489,31 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		// TODO Auto-generated method stub
 		Map<String,Object> map=new HashMap<>();
 		
+		Users users=new Users();
+		
+		users.setLimit(limit);
+		users.setOffset(offset);
+		users.setNotIn("id");
+		
 		Order_User order_User=new Order_User();
 		
 		order_User.setLimit(limit);
 		order_User.setOffset(offset);
 		order_User.setNotIn("id");
 		
-		if(!search.equals("")&&!search.isEmpty()){
+		if(search!=null&&!search.isEmpty()&&!search.equals("")){
 			String[] where=TransMapToString.get(search);
+			users.setWhere(where);
 			order_User.setWhere(where);
 		}
 		
-		List<Order_User> list=SelectExe.get(this.getJdbcTemplate(), order_User);
+		Object[] objects={users,order_User};
+		
+		String[] join={"open_id"};
+		
+		User_Order_Join user_Order_Join=new User_Order_Join();
+		
+		List list=SelectJoinExe.get(this.getJdbcTemplate(), objects, user_Order_Join, join);
 		
 		int total=(int) SelectExe.getCount(this.getJdbcTemplate(), order_User).get("");
 		

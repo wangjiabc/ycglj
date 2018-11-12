@@ -39,6 +39,9 @@
 
   <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
+      <button class="layui-btn layui-btn-sm" lay-event="addUser">
+          <i class="layui-icon">&#xe608;</i> 添加
+        </button>
     <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
     <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
     <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
@@ -49,16 +52,26 @@
   <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
   <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
 </script>
-
+  <!-- <script type="text/html" id="checkboxTpl"> -->
+  <!-- <form class="layui-form" action="">
+  {{#  if(d.authentication == 1){ }}
+  <input type="checkbox" name="lock" value="" title="通过" lay-filter="pass" checked=true>
+{{#  } else { }}
+<input type="checkbox" name="lock" value="" title="通过" lay-filter="pass" checked=false>
+{{#  } }}
+  </form>
+</script> -->
 
   <script src="../layui/layui.js"></script>
   <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
   <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
   <script>
-    layui.use('table', function () {
-      var table = layui.table;
-
+    layui.use(['table', 'laytpl', 'layer'], function () {
+      var table = layui.table,
+        layer = layui.layer,
+        laytpl = layui.laytpl;
+      var openId;
       table.render({
         elem: '#test'
         , url: '/ycglj/user/getAllUser.do?'
@@ -68,77 +81,133 @@
         , cols: [[
           { type: 'checkbox' },
           { field: 'id', title: 'ID', sort: true }
-          , { field: 'name', title: '用户名' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-          , { field: 'id_number', title: '证件号', sort: true }
-          , { field: 'phone', title: '电话' }
+          , { field: 'name', edit: 'text', title: '用户名' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+          , { field: 'id_number', edit: 'text', title: '证件号', sort: true }
+          , { field: 'phone', edit: 'text', title: '电话' }
           , { field: 'sex', title: '性别' }
           , { field: 'date', title: '日期', align: 'center' } //单元格内容水平居中
-          , { fixed: 'right', title: '操作', toolbar: '#barDemo' }
+          , { title: '操作', toolbar: '#barDemo' }
+          // , { field: 'pass', title: '是否通过', templet: '#checkboxTpl', unresize: true }
+          , {
+            field: 'pass',
+            title: '是否通过',
+            templet: function (d) {
+              openId = d.open_id;
+              if (d.authentication == 1) {
+                return '<form class="layui-form"><input type="checkbox" name="lock" value="" title="通过" lay-filter="pass" checked></form>'
+              } else {
+                return '<form><input type="checkbox" name="lock" value="" title="通过" lay-filter="pass"></form>'
+              }
+            }
+          }
         ]]
       });
-
-      //头工具栏事件
-      table.on('toolbar(test)', function (obj) {
-        var checkStatus = table.checkStatus(obj.config.id);
-        switch (obj.event) {
-          case 'getCheckData':
-            var data = checkStatus.data;
-            layer.alert(JSON.stringify(data));
-            break;
-          case 'getCheckLength':
-            var data = checkStatus.data;
-            layer.msg('选中了：' + data.length + ' 个');
-            break;
-          case 'isAll':
-            layer.msg(checkStatus.isAll ? '全选' : '未全选');
-            break;
-        };
-      });
-
-      //监听行工具事件
-      table.on('tool(test)', function (obj) {
-        var data = obj.data;
-        if (obj.event === 'detail') {
-
-          var openId = data.open_id;
+      
+    });
+    //头工具栏事件
+    table.on('toolbar(test)', function (obj) {
+      var checkStatus = table.checkStatus(obj.config.id);
+      switch (obj.event) {
+        case 'addUser':
           layer.open({
-            title: '零售户资料信息'
-            , type: 2
-            , shadeClose: true
-            , area: ['960px', '420px']
-            , content: '/ycglj/layuiadmin/home/userDialog.html?' + openId,
-          });
-          // });
-        }
-        else if (obj.event === 'edit') {
-          layer.prompt({
-            formType: 2
-            , value: data.email
-          }, function (value, index) {
-            obj.update({
-              email: value
-            });
-            layer.close(index);
-          });
-        }
-      });
-      var authentication;
-      layui.form.on('select(status)', function (data) {
-        //下拉框
-        authentication = data.value;
-      })
-      //监听搜索
-      layui.form.on('submit(search)', function (data) {
-        //input值
-        var search = $('#search').val();
-        var field = data.field;
+            title: '添加用户信息',
+            type: 2,
+            content: '/ycglj/layuiadmin/home/addUserDialog.html',
+            area: ['440px', '290px'],
+            end: function () {
 
-        //执行重载
-        table.reload('test', {
-          where: field,
-          url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication,
+            }
+          });
+          break;
+        case 'getCheckData':
+          var data = checkStatus.data;
+          layer.alert(JSON.stringify(data));
+          break;
+        case 'getCheckLength':
+          var data = checkStatus.data;
+          layer.msg('选中了：' + data.length + ' 个');
+          break;
+        case 'isAll':
+          layer.msg(checkStatus.isAll ? '全选' : '未全选');
+          break;
+      };
+    });
+
+    //监听行工具事件
+    table.on('tool(test)', function (obj) {
+      var data = obj.data;
+      if (obj.event === 'detail') {
+
+        var openId = data.open_id;
+        layer.open({
+          title: '零售户资料信息'
+          , type: 2
+          , shadeClose: true
+          , area: ['960px', '420px']
+          , content: '/ycglj/layuiadmin/home/userDialog.html?' + openId,
         });
+        // });
+      }
+      else if (obj.event === 'edit') {
+        layer.prompt({
+          formType: 2
+          , value: data.email
+        }, function (value, index) {
+          obj.update({
+            email: value
+          });
+          layer.close(index);
+        });
+      }
+    });
+    var authentication;
+    //监听下拉框
+    layui.form.on('select(status)', function (data) {
+      authentication = data.value;
+      table.reload('test', {
+        url: '/ycglj/user/getAllUser.do?authentication=' + authentication
       });
+    })
+    //监听搜索
+    layui.form.on('submit(search)', function (data) {
+      //input值
+      var search = $('#search').val();
+      var field = data.field;
+
+      //执行重载
+      table.reload('test', {
+        where: field,
+        url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication,
+      });
+    });
+    //监听checkbox
+    layui.form.on('checkbox(pass)', function (data) {
+      console.log(data.elem.checked); //开关是否开启，true或者false
+      console.log("openID" + openId);
+      var status = 2;
+      if (data.elem.checked == true) {
+        status = 1;
+      }
+      $.ajax({
+        type: "get",
+        url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=" + status,
+        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+        data: {},
+        dataType: "json",
+        success: function (data) {
+          console.log("成功" + data);
+          if (data == 1) {
+            layer.alert('设置成功', { icon: 1 });
+          } else {
+            layer.alert('error', { icon: 2 });
+            layui.form.render();
+          }
+        },
+        error: function (e) {
+          console.log(e);
+        }
+      })
+    });
     });
   </script>
 

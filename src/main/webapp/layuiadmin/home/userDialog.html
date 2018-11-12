@@ -66,10 +66,9 @@
             </div>
         </blockquote>
         <div class="mark_button">
-            <button type="button" class="layui-btn layui-btn-normal" id="sele_imgs">选择文件</button>
-            <button type="button" class="layui-btn" id="upload_imgs" disabled>开始上传</button>
-
-            <button type="button" class="layui-btn layui-btn-danger" id="dele_imgs">删除选中图片</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="sele_imgs"><i class="layui-icon">&#xe67c;</i>上传图片</button>
+            <!-- <button type="button" class="layui-btn" id="upload_imgs" disabled>开始上传</button> -->
+            <!-- <button type="button" class="layui-btn layui-btn-danger" id="dele_imgs">删除选中图片</button> -->
         </div>
 
     </div>
@@ -79,14 +78,13 @@
     <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <script src="../layui/layui.js"></script>
     <script id="img_template" type="text/html">
-       
+
             {{#  layui.each(d.fileBytes, function(index, item){ }}
-            <div class="upload-img" filename="{{ d.index }}">
-                <input type="checkbox" name="" lay-skin="switch">
+            <div class="upload-img" filename="{{ index }}" onclick="clickImg(`{{item.dataType}}`, this)">
+                <input type="checkbox" lay-skin="primary">
                 <img src="../..{{  item.uri }}" alt="该图片不存在" title="{{showdataType(item.dataType)}}" class="layui-upload-img">
             </div>
           {{#  }); }}
-       
           {{# 
             function showdataType(type){
                 switch(type){
@@ -109,12 +107,54 @@
     </script>
 
     <script>
+        var type;
+        function clickImg(dataType, obj) {
+            var checked = $(obj).children('input[type=checkbox]').attr('checked');
+            console.log('xuanzhong', checked);
+            if (checked == undefined) {
+                console.log('should set true', checked);
+                $(obj).children('input[type=checkbox]').attr('checked', true);
+            } else {
+                console.log('should remove', checked);
+                $(obj).children('input[type=checkbox]').attr('checked', false);
+            }
+            console.log(dataType);
+            switch (dataType) {
+                case 'identity':
+                    type = "identity";
+                    break;
+                case 'conIdentity':
+                    type = "conIdentity";
+                    break;
+                case 'license':
+                    type = "license";
+                    break;
+                case 'sing':
+                    type = "sing";
+                    break;
+            }
+            $('input:checked').each(function (index, value) {
+                console.log('index' + index);
+                console.log('value' + value);
+            });
+
+        }
         var openId = window.location.href.split('?')[1];
-        layui.use(['layer', 'laytpl', 'upload'], function() {
+        layui.use(['layer', 'laytpl', 'upload', 'form'], function () {
             var layer = layui.layer,
                 laytpl = layui.laytpl,
-                upload = layui.upload
+                upload = layui.upload,
+                form = layui.form
                 ;
+            //批量删除 单击事件
+            // $('#dele_imgs').click(function () {
+            //     $('input:checked').each(function (index, value) {
+            //         var filename = $(this).parent().attr("filename");
+            //         delete imgFiles[filename];
+            //         $(this).parent().remove()
+            //     });
+            // });
+
             var text;
             $.ajax({
                 type: "post",
@@ -122,15 +162,41 @@
                 contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                 data: { openId: openId },
                 dataType: "json",
-                success: function(text) {
+                success: function (text) {
                     console.log(text);
                     //将预览html 追加
-                    laytpl(img_template.innerHTML).render(text, function(html) {
+                    laytpl(img_template.innerHTML).render(text, function (html) {
                         $('#imgs').append(html);
                     });
                 },
-                error: function(e) {
+                error: function (e) {
                     console.log(e);
+                }
+            });
+            var fileObj;
+            //执行上传实例
+            var uploadInst = upload.render({
+                elem: '#sele_imgs' //绑定元素
+                , url: '/ycglj/user/inputImage.do' //上传接口
+                , before: function (obj) {
+                    layer.load(); //上传loading
+                    obj.preview(function (index, file, result) {
+                        fileObj = file;
+                    });
+                }
+                , data: {
+                    openId: openId,
+                    file: fileObj,
+                    data_type: type,
+                }
+                // ,data{openId:"xx",}
+                , done: function (res) {
+                    //上传完毕回调
+                    layer.closeAll('loading'); //关闭loading
+                }
+                , error: function () {
+                    layer.closeAll('loading'); //关闭loading
+                    //请求异常回调
                 }
             });
 
