@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.manage.tools.TransMapToString;
 import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
@@ -384,6 +385,8 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		
 		String[] uuidWhere={" open_id = ", order_User.getOpen_id()};
 		
+		System.out.println("uuidWhere="+uuidWhere.toString());
+		MyTestUtil.print(uuidWhere);
 		Order_User order_User2=new Order_User();
 		
 		order_User2.setLimit(1);
@@ -401,6 +404,9 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		}catch (Exception e) {
 			// TODO: handle exception
 		}
+		
+		MyTestUtil.print(order_User2);
+		
 		String[] subDateWhere = { " uuid = ",order_User2.getOrder_date_uuid()};
 
 		Order_Date order_Date = new Order_Date();
@@ -431,6 +437,10 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		String d = sdf.format(subDate);
 
 		String[] orderDateWhere = { "convert(varchar(11),sub_date,120 ) =", d };
+		
+		System.out.println("orderDateWhere=");
+		
+		MyTestUtil.print(orderDateWhere);
 		
 		System.out.println("d="+d);
 		

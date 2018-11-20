@@ -104,6 +104,7 @@
     var advice = ($('#advice').val())
     var time = (new Date()).getTime()
     $('#save').click(function () {
+        $.toast("操作成功");
         $.ajax({
             type: "get",
             url: "",

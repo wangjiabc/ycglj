@@ -56,12 +56,13 @@
                     success: function (data) {
                         if (data == 1) {
                             //提示成功 刷新界面
-                            parent.layui.layer.closeAll('iframe');
                             layer.alert('添加成功', { icon: 1 });
+                            parent.layui.layer.closeAll('iframe');
                         }
                         // window.parent.location.reload();
                     },
                     error: function (e) {
+                        parent.layui.layer.closeAll('iframe');
                         console.log(e);
                     }
                 })

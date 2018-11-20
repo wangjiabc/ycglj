@@ -172,6 +172,8 @@ public class OrderController {
 			
 			int offset=(page-1)*limit;
 			
+			searchMap.put("[cancel] =", "0");
+			
 			return orderDao.getAllOrderUser(limit, offset, sort,order, searchMap);
 				
 	}

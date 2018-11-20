@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>烟草专卖</title>
+  <title>合江县烟草专卖局</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
 
   <script src="/ycglj/js/jquery.min.js"></script>
@@ -217,37 +217,37 @@
             <div class="weui-cell__bd">
               <p>手机号</p>
             </div>
-            <div class="weui-cell__ft">133333333</div>
+            <div id="uesr_num" class="weui-cell__ft">133333333</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>身份证号</p>
             </div>
-            <div class="weui-cell__ft">5105555555555</div>
+            <div id="user_idnum" class="weui-cell__ft">5105555555555</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>许可证号</p>
             </div>
-            <div class="weui-cell__ft">32134555555</div>
+            <div id="user_liscence" class="weui-cell__ft">32134555555</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>经营地址</p>
             </div>
-            <div class="weui-cell__ft">合江县少岷路</div>
+            <div id="user_address" class="weui-cell__ft">合江县少岷路</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>我的预约</p>
             </div>
-            <div class="weui-cell__ft">预约成功2018年11月19日</div>
+            <div id="order_time" class="weui-cell__ft">预约成功2018年11月19日</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>我的办理</p>
             </div>
-            <div class="weui-cell__ft">我的办理2018年11月19日</div>
+            <div id="guide_time" class="weui-cell__ft">我的办理2018年11月19日</div>
           </div>
         </div>
       </div>
@@ -282,7 +282,8 @@
     $('#registration').css("background-color", "#925f39");
     $('#b3').css("background-color", "#304c68");
     $('#b4').css("background-color", "#77a3ad");
-$('#username').html('李四');
+
+
     // 触发弹层
     $('#registration').click(function () {
       $("#guide").popup();
@@ -311,6 +312,16 @@ $('#username').html('李四');
         $.toast('请勾选协议', "forbidden");
       }
     })
+    //设置用户界面值
+    function setUserValue(data) {
+      $('#user_name').text('aaaa');
+      $('#uesr_num').text('aaaa');
+      $('#user_idnum').text('aaaa');
+      $('#user_liscence').text('aaaa');
+      $('#user_address').text('aaaa');
+      $('#order_time').text('预约成功aaaa');
+      $('#guide_time').text('办理时间aaaa');
+    }
 
   </script>
 

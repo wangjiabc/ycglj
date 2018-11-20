@@ -28,6 +28,7 @@ import com.ycglj.manage.daoModel.Order_Date;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
+import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 
 @Controller
@@ -231,7 +232,13 @@ public class MoblieOrderController {
 		List list=(List) orderDao.getAllOrderUser(1, 0, "","", search).get("data");
 		
 		try {
-			order_User=(Order_User) list.get(0);
+			User_Order_Join user_Order_Join=(User_Order_Join) list.get(0);
+			order_User.setOpen_id(user_Order_Join.getOpen_id());
+			order_User.setOrder_date_uuid(user_Order_Join.getOrder_date_uuid());
+			order_User.setSub_date(user_Order_Join.getSub_date());
+			order_User.setOverdue_number(user_Order_Join.getOverdue_number());
+			order_User.setCancel(user_Order_Join.getCancel());
+			order_User.setCancel_date(user_Order_Join.getCancel_date());
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -353,8 +360,10 @@ public class MoblieOrderController {
 		
 		List list=(List) orderDao.getAllOrderUser(1, 0, "", "", searchMap).get("data");
 		
+		User_Order_Join user_Order_Join;
+		
 		try {
-			User_Order_Join user_Order_Join=(User_Order_Join) list.get(0);
+			user_Order_Join=(User_Order_Join) list.get(0);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -364,6 +373,9 @@ public class MoblieOrderController {
 		String[] where={" open_id = ", openId };
  		
 		order_User.setCancel(1);
+		order_User.setOpen_id(openId);
+		order_User.setOrder_date_uuid(user_Order_Join.getOrder_date_uuid());
+		order_User.setSub_date(user_Order_Join.getSub_date());
 		order_User.setCancel_date(new Date());
 		order_User.setWhere(where);
 		
