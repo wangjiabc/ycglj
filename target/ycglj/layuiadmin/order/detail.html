@@ -159,13 +159,10 @@
 
     <script type="text/html" id="barDemo">
                 <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
-                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="refuse">拒绝申请</a>
   </script>
     <script type="text/html" id="checkboxTpl">
-    <form class="layui-form" action="">
-            <!-- <input type="checkbox" name="lock" value="{{d.id}}" title="锁定" lay-filter="lockDemo" {{ d.id == 10006 ? 'checked' : '' }}> -->
-    <input type="checkbox" name="lock" value="" title="通过" lay-filter="pass">
-    </form>
+    <input type="checkbox" name="lock" value="{{d.open_id}}" title="通过" lay-filter="pass" {{ d.authentication == 1 ? 'checked' : '' }}>
   </script>
     <script>
         var openId;
@@ -183,9 +180,11 @@
                     , { field: 'id_number', title: '证件号', sort: true }
                     , { field: 'phone', title: '电话' }
                     , { field: 'sex', title: '性别' }
-                    , { field: 'date', title: '日期', align: 'center' } //单元格内容水平居中
+                    , { field: 'date', title: '日期', align: 'center', templet: function (d) { return createTime(d.date); } }
+                    , { field: 'status', title: '审核状态', align: 'center', templet: function (d) { return setStatus(d.authentication); } }
                     , { title: '操作', toolbar: '#barDemo' }
                     , { field: 'pass', title: '是否通过', templet: '#checkboxTpl', unresize: true }
+
                 ]]
             });
 
@@ -220,24 +219,43 @@
                         , content: '/ycglj/layuiadmin/home/userDialog.html?' + openId,
                     });
                 }
-                else if (obj.event === 'edit') {
-                    layer.prompt({
-                        formType: 2
-                        , value: data.email
-                    }, function (value, index) {
-                        obj.update({
-                            email: value
-                        });
-                        layer.close(index);
-                    });
-                }
-            });
+                else if (obj.event === "refuse") {
+                    layer.confirm('确认拒绝该零售户申请吗?', { icon: 3, title: '提示' }, function (index) {
+                        $.ajax({
+                            type: "get",
+                            url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=2",
+                            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                            data: {},
+                            dataType: "json",
+                            success: function (data) {
+                                layer.close(index);
+                                table.reload('test');
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            }
+                        })
 
-            layui.form.on('checkbox(pass)', function (data) {
-                console.log("openID" + openId);
-                console.log(data.elem.checked); //开关是否开启，true或者false
-                var status = 2;
-                if (data.elem.checked == true) {
+                    });
+
+                }
+                // else if (obj.event === 'edit') {
+                //     layer.prompt({
+                //         formType: 2
+                //         , value: data.email
+                //     }, function (value, index) {
+                //         obj.update({
+                //             email: value
+                //         });
+                //         layer.close(index);
+                //     });
+                // }
+            });
+            //监听checkbox
+            layui.form.on('checkbox(pass)', function (obj) {
+                var openId = this.value;
+                var status = 3;
+                if (obj.elem.checked == true) {
                     status = 1;
                 }
                 $.ajax({
@@ -250,8 +268,9 @@
                         console.log("成功" + data);
                         if (data == 1) {
                             layer.alert('设置成功', { icon: 1 });
-                        }else{
-                            layer.alert('请先审核图片资料', { icon: 2 });
+                            table.reload('test');
+                        } else {
+                            layer.alert('error', { icon: 2 });
                             layui.form.render();
                         }
                     },
@@ -260,7 +279,39 @@
                     }
                 })
             });
+
         });
+        //时间戳日期转换
+        function createTime(v) {
+            var date = new Date(v);
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? '0' + m : m;
+            var d = date.getDate();
+            d = d < 10 ? ("0" + d) : d;
+            var h = date.getHours();
+            h = h < 10 ? ("0" + h) : h;
+            var M = date.getMinutes();
+            M = M < 10 ? ("0" + M) : M;
+            var str = y + "-" + m + "-" + d + " " + h + ":" + M;
+            return str;
+        }
+        //设置状态
+        function setStatus(status) {
+            switch (status) {
+                case 1:
+                    return "<span style='color:#5FB878;'>通过审核</span>";
+                    break;
+                case 2:
+                    return "<span style='color:#FF5722;'>拒绝通过</span>";
+                    break;
+                case 3:
+                    return "<span style='color:#d2d2d2;'>待审核</span>";
+                    break;
+            }
+            return "<span style='color:#d2d2d2;'>待审核</span>";
+        }
+    </script>
     </script>
 </body>
 

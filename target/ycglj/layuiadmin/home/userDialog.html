@@ -66,7 +66,7 @@
             </div>
         </blockquote>
         <div class="mark_button">
-            <button type="button" class="layui-btn layui-btn-normal" id="sele_imgs"><i class="layui-icon">&#xe67c;</i>上传图片</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="sele_imgs"><i class="layui-icon">&#xe67c;</i>替换图片</button>
             <!-- <button type="button" class="layui-btn" id="upload_imgs" disabled>开始上传</button> -->
             <!-- <button type="button" class="layui-btn layui-btn-danger" id="dele_imgs">删除选中图片</button> -->
         </div>
@@ -92,7 +92,7 @@
                     return '身份证正面照';
                     break;
                     case 'conIdentity':
-                    return '身份证正面照';
+                    return '身份证反面照';
                     break;
                     case 'license':
                     return '营业执照';
@@ -107,55 +107,73 @@
     </script>
 
     <script>
-        var type;
-        function clickImg(dataType, obj) {
-            var checked = $(obj).children('input[type=checkbox]').attr('checked');
-            console.log('xuanzhong', checked);
-            if (checked == undefined) {
-                console.log('should set true', checked);
-                $(obj).children('input[type=checkbox]').attr('checked', true);
-            } else {
-                console.log('should remove', checked);
-                $(obj).children('input[type=checkbox]').attr('checked', false);
-            }
-            console.log(dataType);
-            switch (dataType) {
-                case 'identity':
-                    type = "identity";
-                    break;
-                case 'conIdentity':
-                    type = "conIdentity";
-                    break;
-                case 'license':
-                    type = "license";
-                    break;
-                case 'sing':
-                    type = "sing";
-                    break;
-            }
-            $('input:checked').each(function (index, value) {
-                console.log('index' + index);
-                console.log('value' + value);
-            });
-
-        }
         var openId = window.location.href.split('?')[1];
+        var d_type;
+        var uploader;
+        var choose_index;
+        function clickImg(dataType, obj) {
+            var checked = $(obj).children('input[type=checkbox]').prop('checked');
+            console.log('xuanzhong', checked);
+            if (checked == false) {
+                $(obj).children('input[type=checkbox]').prop('checked', true);
+            } else {
+                $(obj).children('input[type=checkbox]').prop('checked', false);
+            }
+            console.log('点击图片的类型' + dataType);
+            d_type = dataType;
+            $('input:checked').each(function (index, value) {
+                choose_index = index;
+            });
+            if (choose_index == 0) {
+                init();
+            } else if (choose_index > 0) {
+                layer.msg('只能选择一种上传类型', { icon: 2 });
+            } else {
+                layer.msg('请选择上传类型', { icon: 2 });
+            }
+        }
+        function init() {
+            var fileObj;
+            uploader.render({
+                elem: '#sele_imgs' //绑定元素
+                , url: '/ycglj/user/inputImage.do' //上传接口
+                , before: function (obj) {
+                    layer.load(); //上传loading
+                    console.log(d_type);
+                    obj.preview(function (index, file, result) {
+                        fileObj = file;
+                    });
+                }
+                ,
+                data: {
+                    openId: openId,
+                    file: fileObj,
+                    data_type: function () {
+                        return d_type
+                    }
+                }
+                , done: function (res) {
+                    //上传完毕回调
+                    layer.closeAll('loading'); //关闭loading
+                    layer.msg('上传图片成功', { icon: 1 });
+                    location.reload();
+                }
+                , error: function () {
+                    layer.closeAll('loading'); //关闭loading
+                    //请求异常回调
+                }
+            });
+        }
         layui.use(['layer', 'laytpl', 'upload', 'form'], function () {
+            console.log("先执行，")
             var layer = layui.layer,
                 laytpl = layui.laytpl,
                 upload = layui.upload,
                 form = layui.form
                 ;
-            //批量删除 单击事件
-            // $('#dele_imgs').click(function () {
-            //     $('input:checked').each(function (index, value) {
-            //         var filename = $(this).parent().attr("filename");
-            //         delete imgFiles[filename];
-            //         $(this).parent().remove()
-            //     });
-            // });
-
+            uploader = layui.upload;
             var text;
+            var fileObj;
             $.ajax({
                 type: "post",
                 url: "/ycglj/user/getUserDateById.do",
@@ -173,33 +191,6 @@
                     console.log(e);
                 }
             });
-            var fileObj;
-            //执行上传实例
-            var uploadInst = upload.render({
-                elem: '#sele_imgs' //绑定元素
-                , url: '/ycglj/user/inputImage.do' //上传接口
-                , before: function (obj) {
-                    layer.load(); //上传loading
-                    obj.preview(function (index, file, result) {
-                        fileObj = file;
-                    });
-                }
-                , data: {
-                    openId: openId,
-                    file: fileObj,
-                    data_type: type,
-                }
-                // ,data{openId:"xx",}
-                , done: function (res) {
-                    //上传完毕回调
-                    layer.closeAll('loading'); //关闭loading
-                }
-                , error: function () {
-                    layer.closeAll('loading'); //关闭loading
-                    //请求异常回调
-                }
-            });
-
         })
 
     </script>

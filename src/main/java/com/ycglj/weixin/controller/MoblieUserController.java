@@ -3,6 +3,8 @@ package com.ycglj.weixin.controller;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.sqlserver.context.Connect;
 
@@ -66,6 +69,43 @@ public class MoblieUserController {
 			return 0;
 		}
 		
+	}
+	
+	
+	@RequestMapping("getUserData")
+	public @ResponseBody Map<String, Object> getUserData(HttpServletRequest request){
+			
+			Map searchMap=new HashMap<>();
+			
+			HttpSession session = request.getSession();
+			
+			String openId=session.getAttribute("openId").toString();
+			
+			searchMap.put("open_id = ", openId);
+			
+			Map map=new HashMap<>();
+			
+			map=userDao.getAllUser(1, 0, null,null, searchMap);
+			
+			List list=(List) map.get("data");
+			
+			try{
+				
+				Users users=(Users) list.get(0);
+				
+				searchMap.put("currently = ", "1");
+				
+				Map map2=userDao.getAllUserData(request,1000, 0, "","", searchMap);
+				
+				map.put("imgData", map2);
+				
+			}catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
+			return map;
+			
 	}
 	
 }

@@ -33,7 +33,7 @@ private WeiXinService weixinService;
 	}
 	
 	@RequestMapping("getCampusInfo")
-	public @ResponseBody List<WeiXin>
+	public @ResponseBody Map
 	getCampusInfo(HttpServletRequest request){		
 		String campusAdmin;
 		Short type;
@@ -60,21 +60,28 @@ private WeiXinService weixinService;
 			weixin.setUrl("http://"+homeUrl+"/wechat/security.do?campusId="+currentId);
 		}
 		
-		return weixins;
+		Map map=new HashMap<>();
+		
+		map.put("code", "0");
+		
+		map.put("data", weixins);
+		
+		return map;
 		
 	}
 	
 	@RequestMapping("insertIntoCampus")
 	public @ResponseBody 
-	Integer insetIntoCampus(HttpServletRequest request , @RequestParam Integer campusId,@RequestParam String campusName
-			,@RequestParam String customService,@RequestParam String appId , @RequestParam String appSecret
-			,@RequestParam String token,@RequestParam String userName) {
+	Integer insetIntoCampus(HttpServletRequest request , String campusName
+			, String customService,String appId ,  String appSecret
+			,String token, String userName) {
 		Map<String, Object> paramMap=new HashMap<>();
 		Integer  cityId , flag ;
 		WeiXin be=null;
 		
-		HttpSession session=request.getSession();  //ȡ��session��type�������ж��Ƿ�Ϊ���ںŹ���Ա
+		HttpSession session=request.getSession();  
 		cityId=(Integer) session.getAttribute("cityId");
+		Integer campusId=(Integer) session.getAttribute("campusId");
 		
 		Short type=(Short)session.getAttribute("type");
 		if(type==1){

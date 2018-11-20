@@ -25,6 +25,7 @@ import com.ycglj.manage.model.Sellers;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.tools.Constants;
 import com.ycglj.manage.tools.Md5;
+import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 
 @Controller
@@ -114,6 +115,8 @@ public class SellerController {
 			
 			Sellers sellers = sellerService.selectByCampusAdmin(campusAdmin);
 			
+			MyTestUtil.print(sellers);
+			
 			if (sellers != null) {
 			 if (sellers.getCampusAdmin().equals("admin")&&sellers.getPassword().equals(Md5.GetMD5Code(password))) {
 					map.put(Constants.STATUS, Constants.SUCCESS);
@@ -123,6 +126,7 @@ public class SellerController {
 					session.setAttribute("campusAdmin",
 							sellers.getCampusAdmin());
 					session.setAttribute("cityId", sellers.getCityId());
+					session.setAttribute("campusId", sellers.getCampusId());
 					Date date = new Date();
 					sellerService.updateLastLoginTime(date, campusAdmin);
 				} else {

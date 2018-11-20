@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>微信设置</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+  <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+
+<body>
+
+  <table class="layui-hide" id="test" lay-filter="test"></table>
+
+  <script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-sm" lay-event="edit">编辑</button>
+  </div>
+</script>
+
+
+  <script src="../layui/layui.js"></script>
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+  <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
+  <script>
+    layui.use('table', function () {
+      var table = layui.table;
+
+      table.render({
+        elem: '#test'
+        , url: '../../weixinset/getCampusInfo.do'
+        , toolbar: '#toolbarDemo'
+        , title: '用户数据表'
+        , page: true
+        , cols: [[
+          { type: 'checkbox' },
+          { field: 'campusId', title: '公众号ID', edit: 'text', sort: true }
+          , { field: 'campusName', title: '公众号名称', edit: 'text' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+          , { field: 'customService', title: '电话号码', edit: 'text', sort: true }
+          , { field: 'homePage', title: '用户主页地址', hide: true }
+          , { field: 'token', title: 'Token验证', edit: 'text', hide: true }
+          , { field: 'uesrName', title: '原始ID', edit: 'text', hide: true }
+          , { field: 'appId', title: 'AppId', edit: 'text', hide: true }
+          , { field: 'appSecret', title: 'AppSecret', edit: 'text', hide: true }
+          , { field: 'accessToken', title: 'AccessToken', hide: true }
+          , { field: 'createTime', title: 'CreateTime', hide: true }
+
+        ]]
+      });
+
+      //头工具栏事件
+      table.on('toolbar(test)', function (obj) {
+        var checkStatus = table.checkStatus(obj.config.id);
+        switch (obj.event) {
+          case 'edit':
+            break;
+        };
+      });
+      //监听单元格编辑
+      table.on('edit(test)', function (obj) {
+        var value = obj.value //得到修改后的值
+          , data = obj.data //得到所在行所有键值
+          , field = obj.field; //得到字段
+          console.log(data);
+        // layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+        // layer.msg(field);
+
+        $.ajax({
+          type: "post",
+          url: "../../weixinset/insertIntoCampus.do",
+          contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+          data: {
+            field: value
+          },
+          dataType: "json",
+          success: function (data) {
+            if (data == -1 || data == 0) {
+              layer.msg('没有权限', { icon: 2 });
+            } else {
+              layer.msg('修改成功', { icon: 1 });
+              // layui.form.render();
+            }
+          },
+          error: function (e) {
+            console.log(e);
+          }
+        })
+      });
+    });
+  </script>
+
+</body>
+
+</html>

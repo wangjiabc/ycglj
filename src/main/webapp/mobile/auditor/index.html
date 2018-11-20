@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>烟草专卖</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
+
+  <script src="/ycglj/js/jquery.min.js"></script>
+  <!--jquery weui-->
+  <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+
+  <script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
+
+  <script type="text/javascript">
+    var redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=" + DOMAIN + "/ycglj/mobile/asset/index.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
+  </script>
+
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
+  <script type="text/javascript" src="../asset/js/index.js"></script>
+</head>
+<style>
+  .header img {
+    height: 100%;
+    width: 100%;
+    display: block;
+  }
+  .header
+  {
+      height:30%;
+  }
+  .weui-grid__icon{
+    height: 68px;
+    width: 68px;
+  }
+.weui-grid__label
+{
+    font-size:18px;
+}
+  section {
+    background-color: rgb(214, 100, 7);
+    margin: 5px;
+  }
+  html,
+  body {
+     height: 100%; 
+  }
+
+  .weui-grid {
+    width: 50%;
+    height:50%;
+    padding-top:18%;
+  }
+  .weui-grid p {
+    color: aliceblue;
+  }
+  /* section {
+    background-color: rgb(214, 100, 7);
+    margin: 5px;
+  } */
+
+  .text {
+    color: white;
+    position: relative;
+  }
+  .text p{
+    line-height:2.5em;
+  }
+
+  .pTitle {
+    text-align: center;
+  }
+  .agree{
+    position: absolute;
+    bottom: 0;
+    width:100%;
+    background-color: beige
+  }
+  .footer{
+    height:80px;
+    text-align: right;
+  }
+  .weui-btn_mini
+  {
+      padding:0 2.32em;
+  }
+  .footer a{
+    top:20%;
+  }
+  .bottom-bar
+  {
+      position:fixed !important;
+      z-index: 9;
+  }
+  .weui-tabbar__icon
+  {
+      width:40px;
+      height:40px;
+  }
+  .weui-tab__bd{
+    height:90%;
+  }
+  .weui-tabbar{
+    height:10%;
+    z-index: 9;
+  }
+</style>
+
+<body>
+  <!-- 弹出层模板 -->
+  <div id="guide" class="weui-popup__container">
+    <div class="weui-popup__overlay"></div>
+    <div class="weui-popup__modal">
+      <div class="header">
+        <img src="../asset/images/manage.jpg">
+      </div>
+      <section>
+        <div class="text">
+          <p class="pTitle">网上申请须知</p>
+          <p>为方便您申请烟草专卖零售许可证，现开通网上申请功能，请您在申请前仔细阅读本须知：</p>
+          <p>1、请填报本人/单位真实信息</p>
+          <p>2、请勿填写与烟草专卖零售许可证申办无关的信息。</p>
+          <p>3、请勿传输不符合国家法律、法规的资料。</p>
+          <p>4、如您是为法人分支机构提出申请，请以相应分支机构认证登录后提出申请，并提供相应分支机构的材料。</p>
+          <p>5、请认真填写申请信息，以便核对，填表信息如不完整或不直买您将无法成功办理。并可能因提供虚假材料许可证被收回或1年内无法提出申请 。</p>
+          <p></p>
+          <div class="agree">
+            <label for="weuiAgree" class="weui-agree">
+              <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
+              <span class="weui-agree__text">
+                我已阅读并同意
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="footer">
+          <a id="continue" href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary">继续申请</a>
+          <a href="javascript:;" onclick="$.closePopup()" class="weui-btn_mini weui-btn weui-btn_warn">关 闭</a>
+        </div>
+      </section>
+    </div>
+  </div>
+  <!-- 弹出层模板 -->
+  <div id="guide2" class="weui-popup__container">
+    <div class="weui-popup__overlay"></div>
+    <div class="weui-popup__modal">
+      <section style="height:100%;margin:0px">
+        <div class="text">
+          <p class="pTitle">网上预约须知</p>
+          <p>1、预约时间：周一至周五可以进行预约，节假日不安排预约</p>
+          <p>2、取消预约：因故不能如约办理，请至少提前一个工作日取消预约</p>
+          <p>3、爽约处理：无故爽约累积达到2次将进入爽约黑名单，此后三个月内将无法享受网上办理服务。</p>
+          <p>4、预约限制：同1零售户只能预约1次;在同一个工作日的预约人数问题不超过70人次</p>
+
+        </div>
+
+        <div class="footer" style="position:fixed;bottom: 0;width: 100%">
+          <a id="continue2" href="javascript:;" class="weui-btn weui-btn_primary">我已阅读并同意</a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="weui-tab">
+    <div class="weui-tab__bd">
+      <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+        <div class="header">
+          <img src="../asset/images/manage.jpg">
+        </div>
+        <div class="weui-grids" style="height:70%">
+          <a id="transact" href="javascript:void(0)" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+              <img src="../asset/images/position.png" alt="">
+            </div>
+            <p class="weui-grid__label">
+              零售点位
+            </p>
+          </a>
+          <a id="registration" href="javascript:void(0)" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+              <img src="../asset/images/case.png" alt="">
+            </div>
+            <p class="weui-grid__label">
+              案件录入
+            </p>
+          </a>
+          <a id="b3" href="javascript:void(0)" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+              <img src="../asset/images/chart.png" alt="">
+            </div>
+            <p class="weui-grid__label">
+              信息统计
+            </p>
+          </a>
+          <a id="b4" href="advice.html" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+              <img src="../asset/images/sup.png" alt="">
+            </div>
+            <p class="weui-grid__label">
+              办案辅助
+            </p>
+          </a>
+        </div>
+      </div>
+      <div id="tab2" class="weui-tab__bd-item">
+        <div class="weui-cells">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>用户姓名</p>
+            </div>
+            <div class="weui-cell__ft">说明文字</div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>手机号</p>
+            </div>
+            <div class="weui-cell__ft">说明文字</div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>身份证号</p>
+            </div>
+            <div class="weui-cell__ft">说明文字</div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>经营地址</p>
+            </div>
+            <div class="weui-cell__ft">说明文字</div>
+          </div>
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>许可证号</p>
+            </div>
+            <div class="weui-cell__ft">说明文字</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="weui-tabbar">
+      <a href="#tab1" class="weui-tabbar__item weui-bar__item--on">
+        <!-- <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span>  -->
+        <div class="weui-tabbar__icon">
+          <img src="../asset/images/img1.png" alt="">
+        </div>
+        <p class="weui-tabbar__label">信息通知</p>
+      </a>
+      <a href="#tab2" class="weui-tabbar__item">
+        <div class="weui-tabbar__icon">
+          <img src="../asset/images/img2.png" alt="">
+        </div>
+        <p class="weui-tabbar__label">个人中心</p>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+  <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.js"></script>
+  <script>
+    $(function () {
+      FastClick.attach(document.body);
+    });
+  </script>
+  <script>
+    $('#transact').css("background-color", "#6cc1f8");
+    $('#registration').css("background-color", "#925f39");
+    $('#b3').css("background-color", "#304c68");
+    $('#b4').css("background-color", "#77a3ad");
+
+    // 触发弹层
+    $('#registration').click(function () {
+      $("#guide").popup();
+    })
+    $('#transact').click(function () {
+      $("#guide2").popup();
+    });
+    $('#b3').click(function () {
+      window.location.href = "guide.html";
+    });
+
+    //弹层事件
+    $('#continue2').click(function () {
+      window.location.href = "authentic/transact.html";
+    })
+
+    $('#continue').click(function () {
+      if ($('#weuiAgree').get(0).checked) {
+        console.log("选中");
+        //关闭弹层后跳转申请界面
+        $.closePopup()
+        window.location.href = "order/registration.html";
+      }
+      //关闭弹层
+      else {
+        $.toast('请勾选协议', "forbidden");
+      }
+    })
+
+  </script>
+
+</body>
+
+</html>

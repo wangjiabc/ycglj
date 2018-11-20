@@ -96,17 +96,20 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		users.setOffset(offset);
 		users.setNotIn("id");
 		
-		if(sort!=null){
+		if(sort!=null&&!sort.equals("")){
 
 		}else{
-			sort="date";
+			sort="id";
 		}
 		
-		if(order!=null&&order.equals("asc")){
-			order="asc";
-		}else{
+		if(order!=null&&order.equals("desc")){
 			order="desc";
+		}else{
+			order="asc";
 		}
+		
+		users.setOrder(order);
+		users.setSort(sort);
 		
 		if(!search.equals("")&&!search.isEmpty()){
 			String[] where=TransMapToString.get(search);
@@ -129,6 +132,17 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	@Override
 	public Integer insertUserData(User_Data user_Data) {
 		// TODO Auto-generated method stub
+		
+		String openId=user_Data.getOpen_id();
+		String dataType=user_Data.getData_type();
+		String[] where={"open_id=",openId,"data_type=",dataType};
+		
+		User_Data user_Data2=new User_Data();
+		user_Data2.setCurrently(0);
+		user_Data2.setWhere(where);
+		
+		UpdateExe.get(this.getJdbcTemplate(), user_Data2);
+		
 		return InsertExe.get(this.getJdbcTemplate(), user_Data);
 	}
 

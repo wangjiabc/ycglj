@@ -53,7 +53,7 @@ public class UserController {
 	
 	@RequestMapping("getAllUser")
 	public @ResponseBody Map<String, Object> getAllUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
-			String search,String authentication,HttpServletRequest request){
+			String search,String authentication,String region,HttpServletRequest request){
 			
 			Map searchMap=new HashMap<>();
 			
@@ -62,8 +62,14 @@ public class UserController {
 				searchMap.put("name like ", search);
 			}		
 			
-			if(authentication!=null&&!authentication.equals("")){
+			System.out.print("authentication="+authentication);
+			
+			if(authentication!=null&&!authentication.equals("")&&!authentication.equals("undefined")){
 				searchMap.put("authentication = ", authentication);
+			}	
+			
+			if(region!=null&&!region.trim().equals("")){
+				searchMap.put("region =", region);
 			}	
 			
 			int offset=(page-1)*limit;

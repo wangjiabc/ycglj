@@ -88,6 +88,7 @@
                 } else {
                     status = "disagree"
                 }
+
                 $.ajax({
                     type: "get",
                     url: "/ycglj/order/insertOrderDate.do?subTime=" + data.field.time + "&" + status + "=1",
@@ -95,17 +96,23 @@
                     data: {},
                     dataType: "json",
                     success: function (data) {
+                        console.log('data' + data);
+                        //提示成功 刷新界面
+                        // layui.layer.closeAll();
                         if (data == 1) {
-                            console.log("ok");
-                            //提示成功 刷新界面
-                            // parent.layui.layer.closeAll();
-                            window.parent.location.reload();
+                           alert('设置成功');
+                            parent.layui.layer.closeAll();
                         }
+
+                        // window.parent.location.reload();
                     },
                     error: function (e) {
+                        parent.layui.layer.closeAll();
+                        //    window.parent.location.reload();
                         console.log(e);
                     }
                 })
+
             })
             return false;
         })

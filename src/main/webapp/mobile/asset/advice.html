@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- head 中 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
+    <title>投诉建议</title>
+</head>
+<style>
+    img {
+    height: 100%;
+    width: 100%;
+    display: block;
+  }
+</style>
+<div id="pop" class="weui-popup__container popup-bottom">
+    <div class="weui-popup__overlay"></div>
+    <div class="weui-popup__modal">
+        <div class="weui-cells weui-cells_form">
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">姓名</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text" placeholder="请输入名字">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label for="date" class="weui-label">日期</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="date" type="text">
+                </div>
+                <div style="text-align: center" class="weui-cell__hd"><label for="date1" class="weui-label">至</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="date1" type="text">
+                </div>
+            </div>
+            <div class="weui-cells__title">业态</div>
+            <div id="yt" class="weui-cells__title">
+            </div>
+            <div class="weui-cells__title">案由</div>
+            <div id="ay" class="weui-cells__title">
+            </div>
+            <div class="weui-btn-area">
+                <a class="weui-btn weui-btn_primary" href="javascript:" id="search">搜 索</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="weui-cells">
+    <a class="weui-cell weui-cell_access open-popup" data-target="#pop" href="javascript:;">
+        <div class="weui-cell__bd">
+            <p>搜索条件</p>
+        </div>
+        <div class="weui-cell__ft">
+        </div>
+    </a>
+</div>
+<div class="weui-cells weui-cells_form">
+    <img src="images/report.png">
+    <div class="weui-cells__title">投诉建议</div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <textarea id="advice" class="weui-textarea" placeholder="此处录入宝贵意见" rows="3"></textarea>
+        </div>
+    </div>
+    <div class="weui-btn-area">
+        <a id="save" href="javascript:;" class="weui-btn weui-btn_primary">提 交</a>
+    </div>
+</div>
+
+<body>
+
+</body>
+<!-- body 最后 -->
+<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+<script>
+    var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
+    var ay = ["非渠道", "售假", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+    for (var i = 0; i < yt.length; i++) {
+        $('#yt').append('<button href="javascript:;" style="margin-left:5px" onclick="toggle(' + i + ')" class="weui-btn weui-btn_mini weui-btn_default">' + yt[i] + '</button>');
+    }
+    function toggle(index) {
+        $('#yt button:eq(' + index + ')').toggleClass('weui-btn_primary')
+    }
+
+    for (var i = 0; i < ay.length; i++) {
+        console.log(ay[i]);
+        $('#ay').append('<button href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default">' + ay[i] + '</button>');
+    }
+
+    $("#date").calendar({
+        onChange: function (p, values, displayValues) {
+            console.log(values, displayValues);
+        }
+    });
+    $("#date1").calendar({
+        onChange: function (p, values, displayValues) {
+            console.log(values, displayValues);
+        }
+    });
+    var advice = ($('#advice').val())
+    var time = (new Date()).getTime()
+    $('#save').click(function () {
+        $.ajax({
+            type: "get",
+            url: "",
+            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                $.toast("操作成功");
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+    })
+</script>
+
+</html>

@@ -16,19 +16,19 @@
         <div class="layui-form-item">
             <label class="layui-form-label">姓 名</label>
             <div class="layui-input-inline">
-                <input name="name" type="text" autocomplete="off" class="layui-input">
+                <input name="name" type="text" lay-filter="name" lay-verify="required" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">手机号</label>
             <div class="layui-input-inline">
-                <input name="phone" type="text" autocomplete="off" class="layui-input">
+                <input name="phone" type="text" lay-filter="phone" lay-verify="required|phone" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">身份证号</label>
             <div class="layui-input-inline">
-                <input name="idNumber" type="text" autocomplete="off" class="layui-input">
+                <input name="number" type="text" lay-filter="number" lay-verify="required|identity" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
@@ -46,21 +46,20 @@
             var layer = layui.layer,
                 form = layer.form;
             layui.form.on('submit(save)', function (data) {
-                var status;
-
+                console.log(data.field);
                 $.ajax({
                     type: "get",
-                    url: "/ycglj/order/insertUser.do?name=" + data.field.name + "&idNumber=" + data.filed.idNumber + "&phone=" + data.field.phone,
+                    url: "/ycglj/user/insertUser.do?name=" + data.field.name + "&idNumber=" + data.field.number + "&phone=" + data.field.phone,
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     dataType: "json",
                     success: function (data) {
                         if (data == 1) {
                             //提示成功 刷新界面
+                            parent.layui.layer.closeAll('iframe');
                             layer.alert('添加成功', { icon: 1 });
-                            parent.layui.layer.closeAll();
-                            // window.parent.location.reload();
                         }
+                        // window.parent.location.reload();
                     },
                     error: function (e) {
                         console.log(e);

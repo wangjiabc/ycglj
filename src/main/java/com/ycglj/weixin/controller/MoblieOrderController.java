@@ -26,6 +26,7 @@ import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Order_Date;
 import com.ycglj.manage.daoModel.Order_User;
+import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.sqlserver.context.Connect;
 
@@ -151,15 +152,16 @@ public class MoblieOrderController {
 		
 		Map search=new HashMap<>();
 		
-		search.put("open_id = ", openId);
+		
+		search.put("[Order_User].open_id = ", openId);
 		search.put("cancel = ", "0");
 		
 		List list=(List) orderDao.getAllOrderUser(1, 0, "","", search).get("data");
 		
 		try {
-			order_User=(Order_User) list.get(0);
+			User_Order_Join user_Order_Join=(User_Order_Join) list.get(0);
 
-			map2.put("current", order_User.getSub_date());
+			map2.put("current", user_Order_Join.getSub_date());
 			
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -224,7 +226,7 @@ public class MoblieOrderController {
 		
 		Map search=new HashMap<>();
 		
-		search.put("open_id = ", openId);
+		search.put("[Order_User].open_id = ", openId);
 		
 		List list=(List) orderDao.getAllOrderUser(1, 0, "","", search).get("data");
 		
@@ -347,12 +349,12 @@ public class MoblieOrderController {
 		
 		Map searchMap=new HashMap<>();
 		
-		searchMap.put("open_id = ", openId);
+		searchMap.put("[Order_User].open_id = ", openId);
 		
 		List list=(List) orderDao.getAllOrderUser(1, 0, "", "", searchMap).get("data");
 		
 		try {
-			order_User=(Order_User) list.get(0);
+			User_Order_Join user_Order_Join=(User_Order_Join) list.get(0);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

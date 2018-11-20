@@ -13,7 +13,8 @@
 	</resultMap>
 
 	<sql id="Base_Column_List">
-		campus_admin,password,type,city_id,last_login_date
+		campus_admin,password,type,campus_admin.city_id,
+		campus_id,last_login_date
 	</sql>
 
 	<select id="selectByCampusAdmin" resultMap="BaseResultMap"
@@ -22,7 +23,8 @@
 		<include refid="Base_Column_List">
 		</include>
 		from
-		campus_admin
+		campus_admin left join campus
+		on campus_admin.city_id=campus.city_id
 		where
 		campus_admin=#{campusAdmin,jdbcType=VARCHAR}
 	</select>

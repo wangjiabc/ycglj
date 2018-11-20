@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,13 +40,9 @@ public class WechatMenu {
 		Integer campusId=0;
 		String accessToken,appId, appSecret;
 		 
-		Cookie[] cookies = request.getCookies();  
-		if(cookies!=null){
-			for(Cookie i:cookies){
-				if(i.getName().equalsIgnoreCase("campusId"))
-					campusId=Integer.parseInt(i.getValue());
-			}
-		}
+		HttpSession session = request.getSession();
+		
+		campusId=(Integer) session.getAttribute("campusId");
 		
 		System.out.println("campudid="+campusId);
 		
@@ -94,13 +91,8 @@ public class WechatMenu {
 		Integer campusId=0;
 		 String accessToken,appId, appSecret;
 		 
-		Cookie[] cookies = request.getCookies();  
-		if(cookies!=null){
-			for(Cookie i:cookies){
-				if(i.getName().equalsIgnoreCase("campusId"))
-					campusId=Integer.parseInt(i.getValue());
-			}
-		}
+		 HttpSession session=request.getSession();  //ȡ��session��type�������ж��Ƿ�Ϊ���ںŹ���Ա
+		 campusId=(Integer) session.getAttribute("campusId");
 		
 		System.out.println("campudid="+campusId);
 		

@@ -191,11 +191,15 @@ public class AssetUserRegisterController {
 		
 		Map searchMap=new HashMap<>();
 		
-		searchMap.put("Charter like ", "%"+name.trim()+"%");
-		
+		searchMap.put("name like ", "%"+name.trim()+"%");
+		searchMap.put("phone = ", phone);
 
 		try{
 
+			int count=(int) userDao.getAllUser(1, 0, null, null, searchMap).get("count");
+			if(count<1){
+				return 2;
+			}
 		}catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

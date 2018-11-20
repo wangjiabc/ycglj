@@ -14,7 +14,7 @@
   <script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
 
   <script type="text/javascript">
-      var redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=" + DOMAIN + "/ycglj/mobile/asset/index.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
+    var redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=" + DOMAIN + "/ycglj/mobile/asset/index.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
   </script>
 
   <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
@@ -53,10 +53,6 @@
     height:50%;
     padding-top:18%;
   }
-  .weui-tab{
-    height:90%;
-  }
-
   .weui-grid p {
     color: aliceblue;
   }
@@ -98,14 +94,17 @@
       position:fixed !important;
       z-index: 9;
   }
-  #tab1 
-  {
-      margin-bottom: 66px;
-  }
   .weui-tabbar__icon
   {
       width:40px;
       height:40px;
+  }
+  .weui-tab__bd{
+    height:90%;
+  }
+  .weui-tabbar{
+    height:10%;
+    z-index: 9;
   }
 </style>
 
@@ -155,7 +154,7 @@
           <p>2、取消预约：因故不能如约办理，请至少提前一个工作日取消预约</p>
           <p>3、爽约处理：无故爽约累积达到2次将进入爽约黑名单，此后三个月内将无法享受网上办理服务。</p>
           <p>4、预约限制：同1零售户只能预约1次;在同一个工作日的预约人数问题不超过70人次</p>
-         
+
         </div>
 
         <div class="footer" style="position:fixed;bottom: 0;width: 100%">
@@ -166,102 +165,154 @@
   </div>
 
   <div class="weui-tab">
-    <div id="tab1" class="weui-tab__bd">
-      <div class="header">
-        <img src="images/manage.jpg">
+    <div class="weui-tab__bd">
+      <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+        <div class="header">
+          <img src="images/manage.jpg">
+        </div>
+        <div class="weui-grids" style="height:70%">
+          <a id="transact" href="javascript:void(0)" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+              <img src="images/img1.png" alt="">
+            </div>
+            <p class="weui-grid__label">
+              预约办理
+            </p>
+          </a>
+          <a id="registration" href="javascript:void(0)" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+              <img src="images/img2.png" alt="">
+            </div>
+            <p class="weui-grid__label">
+              网上办证
+            </p>
+          </a>
+          <a id="b3" href="javascript:void(0)" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+              <img src="images/img3.png" alt="">
+            </div>
+            <p class="weui-grid__label">
+              办证指南
+            </p>
+          </a>
+          <a id="b4" href="advice.html" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+              <img src="images/img4.png" alt="">
+            </div>
+            <p class="weui-grid__label">
+              投诉建议
+            </p>
+          </a>
+        </div>
       </div>
-      <div class="weui-grids" style="height:70%">
-        <a id="transact" href="javascript:void(0)" class="weui-grid js_grid">
-          <div class="weui-grid__icon">
-            <img src="images/img1.png" alt="">
+      <div id="tab2" class="weui-tab__bd-item">
+        <div class="weui-cells">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>用户姓名</p>
+            </div>
+            <div id="user_name" class="weui-cell__ft"></div>
           </div>
-          <p class="weui-grid__label">
-            预约办理
-          </p>
-        </a>
-        <a id="registration" href="javascript:void(0)" class="weui-grid js_grid">
-          <div class="weui-grid__icon">
-            <img src="images/img2.png" alt="">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>手机号</p>
+            </div>
+            <div class="weui-cell__ft">133333333</div>
           </div>
-          <p class="weui-grid__label">
-            网上办证
-          </p>
-        </a>
-        <a id="b3" href="javascript:void(0)" class="weui-grid js_grid">
-          <div class="weui-grid__icon">
-            <img src="images/img3.png" alt="">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>身份证号</p>
+            </div>
+            <div class="weui-cell__ft">5105555555555</div>
           </div>
-          <p class="weui-grid__label">
-            办证指南
-          </p>
-        </a>
-        <a id="b4" href="javascript:void(0)" class="weui-grid js_grid">
-          <div class="weui-grid__icon">
-            <img src="images/img4.png" alt="">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>许可证号</p>
+            </div>
+            <div class="weui-cell__ft">32134555555</div>
           </div>
-          <p class="weui-grid__label">
-            投诉建议
-          </p>
-        </a>
-      </div>
-      <div class="weui-tabbar bottom-bar">
-        <a href="#tab1" class="weui-tabbar__item weui-bar__item--on">
-          <!-- <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span>  -->
-          <div class="weui-tabbar__icon">
-            <img src="images/img1.png" alt="">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>经营地址</p>
+            </div>
+            <div class="weui-cell__ft">合江县少岷路</div>
           </div>
-          <p class="weui-tabbar__label">信息通知</p>
-        </a>
-        <a href="#tab2" class="weui-tabbar__item">
-          <div class="weui-tabbar__icon">
-            <img src="images/img2.png" alt="">
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>我的预约</p>
+            </div>
+            <div class="weui-cell__ft">预约成功2018年11月19日</div>
           </div>
-          <p class="weui-tabbar__label">个人中心</p>
-        </a>
-
+          <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>我的办理</p>
+            </div>
+            <div class="weui-cell__ft">我的办理2018年11月19日</div>
+          </div>
+        </div>
       </div>
     </div>
-    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
-    <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.js"></script>
-    <script>
-        $(function() {
-            FastClick.attach(document.body);
-        });
-    </script>
-    <script>
-        $('#transact').css("background-color", "#6cc1f8");
-        $('#registration').css("background-color", "#925f39");
-        $('#b3').css("background-color", "#304c68");
-        $('#b4').css("background-color", "#77a3ad");
 
-        // 触发弹层
-        $('#registration').click(function() {
-            $("#guide").popup();
-        })
-        $('#transact').click(function() {
-            $("#guide2").popup();
-        });
+    <div class="weui-tabbar">
+      <a href="#tab1" class="weui-tabbar__item weui-bar__item--on">
+        <!-- <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span>  -->
+        <div class="weui-tabbar__icon">
+          <img src="images/information.png" style="top:-3em" alt="">
+        </div>
+        <p class="weui-tabbar__label">信息通知</p>
+      </a>
+      <a href="#tab2" class="weui-tabbar__item">
+        <div class="weui-tabbar__icon">
+          <img src="images/person.png" alt="">
+        </div>
+        <p class="weui-tabbar__label">个人中心</p>
+      </a>
+    </div>
+  </div>
+  <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+  <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.js"></script>
+  <script>
+    $(function () {
+      FastClick.attach(document.body);
+    });
+  </script>
+  <script>
+    $('#transact').css("background-color", "#6cc1f8");
+    $('#registration').css("background-color", "#925f39");
+    $('#b3').css("background-color", "#304c68");
+    $('#b4').css("background-color", "#77a3ad");
+$('#username').html('李四');
+    // 触发弹层
+    $('#registration').click(function () {
+      $("#guide").popup();
+    })
+    $('#transact').click(function () {
+      $("#guide2").popup();
+    });
+    $('#b3').click(function () {
+      window.location.href = "guide.html";
+    });
 
-        //弹层事件
-        $('#continue2').click(function() {
-            window.location.href = "authentic/transact.html";
-        })
+    //弹层事件
+    $('#continue2').click(function () {
+      window.location.href = "authentic/transact.html";
+    })
 
-        $('#continue').click(function() {
-            if ($('#weuiAgree').get(0).checked) {
-                console.log("选中");
-                //关闭弹层后跳转申请界面
-                $.closePopup()
-                window.location.href = "order/registration.html";
-            }
-            //关闭弹层
-            else {
-                $.toast('请勾选协议', "forbidden");
-            }
-        })
+    $('#continue').click(function () {
+      if ($('#weuiAgree').get(0).checked) {
+        console.log("选中");
+        //关闭弹层后跳转申请界面
+        $.closePopup()
+        window.location.href = "order/registration.html";
+      }
+      //关闭弹层
+      else {
+        $.toast('请勾选协议', "forbidden");
+      }
+    })
 
-    </script>
+  </script>
 
 </body>
 
