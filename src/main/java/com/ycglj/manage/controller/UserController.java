@@ -26,9 +26,11 @@ import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
+import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 
 @Controller
@@ -79,7 +81,7 @@ public class UserController {
 	
 	
     @RequestMapping("insertUser")
-	public @ResponseBody Integer insertUser(@RequestParam String name,String idNumber,
+	public @ResponseBody Integer insertUser(@RequestParam String license,@RequestParam String name,String idNumber,
 			@RequestParam String phone,HttpServletRequest request) {
     	
     	Users users = new Users();
@@ -87,12 +89,20 @@ public class UserController {
     	users.setName(name);
     	users.setOpen_id(phone);
     	users.setPhone(phone);
-    	
+
     	if(idNumber!=null&&!idNumber.equals("")){
     		users.setId_number(idNumber);
     	}
     	
-    	return userDao.insertUser(users);
+    	User_License user_License=new User_License();
+    	
+    	user_License.setLicense(license);
+    	user_License.setOpen_id(phone);
+    	user_License.setPhone(phone);
+
+    	userDao.insertUser(users);
+    	
+    	return userDao.insertUserLicense(user_License);
     	
     }
 	
@@ -153,6 +163,8 @@ public class UserController {
 		searchMap.put("open_id = ", openId);
 		searchMap.put("currently = ", "1");
 		
+		MyTestUtil.print(searchMap);
+		
 		return userDao.getAllUserData(request,1000, 0, "","", searchMap);
 				
 	}
@@ -175,7 +187,7 @@ public class UserController {
 	
 	
 	@RequestMapping(value="inputImage")
-	public @ResponseBody Integer uploadFilesSpecifyPath(@RequestParam("file") MultipartFile[] file,@RequestParam String openId,@RequestParam String data_type,HttpServletRequest request,HttpServletResponse response) throws Exception {  
+	public @ResponseBody Integer uploadFilesSpecifyPath(@RequestParam("file") MultipartFile[] file,@RequestParam String openId,@RequestParam String data_type,String license,HttpServletRequest request,HttpServletResponse response) throws Exception {  
 		 long startTime=System.currentTimeMillis();   //获取开始时间  
 	      /*  if(!file.isEmpty()){  
 	            try {  
@@ -209,7 +221,7 @@ public class UserController {
 
 	                        //上传文件，随机名称，";"分号隔开
 	                       // fileName.add(FileUtil.uploadImage(request, "/upload/"+"/", file[i], true));
-	                    	upimage=uploadImage(request, "/upload/", file[i],openId,data_type, true);
+	                    	upimage=uploadImage(request, "/upload/", file[i],openId,data_type,license,true);
 	                    	fileName.add(upimage);
 	                    }
 	                }
@@ -250,7 +262,7 @@ public class UserController {
      * @param isRandomName 是否随机名称
      * @return 完整文件路径
      */
-    public  String uploadImage(HttpServletRequest request,String path_deposit,MultipartFile file,String openId,String data_type,boolean isRandomName) {
+    public  String uploadImage(HttpServletRequest request,String path_deposit,MultipartFile file,String openId,String data_type,String license,boolean isRandomName) {
         
     	//获得物理路径webapp所在路径  
         String pathRoot = System.getProperty("user.home");
@@ -317,7 +329,8 @@ public class UserController {
                              user_Data.setAffirm(1);
                              user_Data.setDate(new Date());
                              user_Data.setUri(origName);
-                             
+                             if(license!=null&&!license.equals(""))
+                            	 user_Data.setLicense(license);
                              userDao.insertUserData(user_Data);
 
                         }catch (Exception e) {

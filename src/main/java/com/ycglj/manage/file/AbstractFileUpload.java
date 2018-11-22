@@ -35,7 +35,7 @@ public abstract class AbstractFileUpload {
         String pathRoot = System.getProperty("user.home");
                
         BufferedOutputStream os=null;
-        
+        license="789797789";
       //mime type 检测文件类型
         String mimeType="";
         Map<String,String> map=FileTypeTest.getFileType();

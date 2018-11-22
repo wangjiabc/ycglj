@@ -23,6 +23,7 @@ import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
+import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 
 @Controller
@@ -58,8 +59,8 @@ public class MoblieUserController {
 		user_License.setLimit(1);
 		user_License.setOffset(0);
 		user_License.setNotIn("open_id");
-		user_License.setOrder("authentication");
-		user_License.setSort("desc");
+		user_License.setOrder("desc");
+		user_License.setSort("authentication");
 		
 		String[] where={"open_id = ",openId};
 		user_License.setWhere(where);
@@ -82,14 +83,20 @@ public class MoblieUserController {
 		String openId=session.getAttribute("openId").toString();
 	
 		User_License user_License=new User_License();
-		user_License.setLimit(1);
+		user_License.setLimit(1000);
 		user_License.setOffset(0);
 		user_License.setNotIn("open_id");
 		
 		String[] where={"open_id = ",openId};
 		user_License.setWhere(where);
 		
-		return userDao.getUserLicenseById(user_License);
+		List list=userDao.getUserLicenseById(user_License);
+	
+		System.out.println("openId="+openId);
+		
+		MyTestUtil.print(list);
+		
+	    return list;
 	}
 	
 	@RequestMapping("getUserData")
@@ -101,18 +108,19 @@ public class MoblieUserController {
 			
 			String openId=session.getAttribute("openId").toString();
 			
-			searchMap.put("open_id = ", openId);
+			searchMap.put("[Users].open_id = ", openId);
 			
 			Map map=new HashMap<>();
 			
-			map=userDao.getAllUser(1, 0, null,null, searchMap);
+			map=userDao.getAllUserJoin(100, 0, null,null, searchMap);
 			
 			List list=(List) map.get("data");
 			
 			try{
 				
-				Users users=(Users) list.get(0);
+				searchMap=new HashMap<>();
 				
+				searchMap.put("open_id = ", openId);
 				searchMap.put("currently = ", "1");
 				
 				Map map2=userDao.getAllUserData(request,1000, 0, "","", searchMap);

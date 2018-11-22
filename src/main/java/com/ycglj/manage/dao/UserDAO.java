@@ -23,6 +23,8 @@ public interface UserDAO {
 
     public Map<String,Object> getAllUserJoin(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
     
+    public Integer insertUserLicense(User_License user_License);
+    
     public Integer updateUserLicense(User_License user_License);
     
 	public Integer insertUserData(User_Data user_Data);
@@ -37,7 +39,7 @@ public interface UserDAO {
 			String order,Map search);
 	
 	public Integer insertPreMessage(PreMessage preMessage);
-    
+
 	public User_License getUserLicense(User_License user_License);
 	
 	public List getUserLicenseById(User_License user_License);

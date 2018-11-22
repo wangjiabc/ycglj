@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
 
   <script src="/ycglj/js/jquery.min.js"></script>
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <!--jquery weui-->
   <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
   <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
@@ -22,6 +23,55 @@
   <script type="text/javascript" src="js/index.js"></script>
 </head>
 <style>
+  .page-bd li {
+            background-color: #fff;
+            border-radius: 2px;
+            cursor: pointer;
+            margin: 10px 0;
+            overflow: hidden;
+            vertical-align: bottom;
+            display: block;
+        }
+        .page-bd li.js-show .weui-flex {
+            opacity: 0.4;
+        }
+        .page-bd li.js-show .page-category {
+            height: auto;
+        }
+        .page-bd li.js-show .page-category-content {
+            opacity: 1;
+            transform: translateY(0px);
+        }
+        .page-bd li:first-child {
+            margin-top: 0;
+        }
+        .page-bd .page-category {
+            height: 0;
+            overflow: hidden;
+        }
+        .page-bd .page-category-content {
+            opacity: 0;
+            transform: translateY(-50%);
+            transition: 0.3s;
+        }
+        .page-bd .weui-flex {
+
+            align-items: center;
+            padding:10px;
+            transition: all 0.3s ease 0s;
+            display: -webkit-flex;
+            display: -webkit-box;
+            display: flex;
+        }
+        .page-bd .weui-flex--item {
+            -webkit-flex: 1 1 0;
+            flex: 1 1 0;
+        }
+        .page-bd .weui-cells {
+            margin-top: 0;
+        }
+
+
   .header img {
     height: 100%;
     width: 100%;
@@ -206,50 +256,60 @@
         </div>
       </div>
       <div id="tab2" class="weui-tab__bd-item">
-        <div class="weui-cells">
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>用户姓名</p>
+        <ul>
+          <li>
+            <div class="weui-flex js-category">
+              <div class="weui-flex__item">零售点位1</div>
+              <i class="fa fa-angle-down"></i>
             </div>
-            <div id="user_name" class="weui-cell__ft">null</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>手机号</p>
+            <div class="page-category js-categoryInner">
+              <div class="weui-cells page-category-content">
+                <div class="weui-cell">
+                  <div class="weui-cell__bd">
+                    <p>用户姓名</p>
+                  </div>
+                  <div id="user_name" class="weui-cell__ft">null</div>
+                </div>
+                <div class="weui-cell">
+                  <div class="weui-cell__bd">
+                    <p>手机号</p>
+                  </div>
+                  <div id="uesr_num" class="weui-cell__ft">null</div>
+                </div>
+                <div class="weui-cell">
+                  <div class="weui-cell__bd">
+                    <p>身份证号</p>
+                  </div>
+                  <div id="user_idnum" class="weui-cell__ft">null</div>
+                </div>
+                <div class="weui-cell">
+                  <div class="weui-cell__bd">
+                    <p>许可证号</p>
+                  </div>
+                  <div id="user_liscence" class="weui-cell__ft">null</div>
+                </div>
+                <div class="weui-cell">
+                  <div class="weui-cell__bd">
+                    <p>经营地址</p>
+                  </div>
+                  <div id="user_address" class="weui-cell__ft">null</div>
+                </div>
+                <div class="weui-cell">
+                  <div class="weui-cell__bd">
+                    <p>我的预约</p>
+                  </div>
+                  <div id="order_time" class="weui-cell__ft">null</div>
+                </div>
+                <div class="weui-cell">
+                  <div class="weui-cell__bd">
+                    <p>我的办理</p>
+                  </div>
+                  <div id="guide_time" class="weui-cell__ft">null</div>
+                </div>
+              </div>
             </div>
-            <div id="uesr_num" class="weui-cell__ft">null</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>身份证号</p>
-            </div>
-            <div id="user_idnum" class="weui-cell__ft">null</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>许可证号</p>
-            </div>
-            <div id="user_liscence" class="weui-cell__ft">null</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>经营地址</p>
-            </div>
-            <div id="user_address" class="weui-cell__ft">null</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>我的预约</p>
-            </div>
-            <div id="order_time" class="weui-cell__ft">null</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>我的办理</p>
-            </div>
-            <div id="guide_time" class="weui-cell__ft">null</div>
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -282,6 +342,23 @@
     $('#registration').css("background-color", "#925f39");
     $('#b3').css("background-color", "#304c68");
     $('#b4').css("background-color", "#77a3ad");
+
+    $(function () {
+      $('.js-category').click(function () {
+        $parent = $(this).parent('li');
+        if ($parent.hasClass('js-show')) {
+          $parent.removeClass('js-show');
+          $(this).children('i').removeClass('fa-angle-down').addClass('fa-angle-up');
+        } else {
+          $parent.siblings().removeClass('js-show');
+          $parent.addClass('js-show');
+          $(this).children('i').removeClass('fa-angle-up').addClass('fa-angle-down');
+          $parent.siblings().find('i').removeClass('fa-angle-down').addClass('fa-angle-up');
+        }
+      });
+
+
+    });
 
 
     // 触发弹层
@@ -326,10 +403,20 @@
           $('#user_name').text(data.data[0].name);
           $('#uesr_num').text(data.data[0].phone);
           $('#user_idnum').text(data.data[0].id_number);
-          $('#user_liscence').text(data.data[0].liscence);
+          $('#user_liscence').text(data.data[0].license);
           $('#user_address').text(data.data[0].address);
           $('#order_time').text(data.data[0].up_date);
-          $('#guide_time').text();
+          if (data.data[0].authentication == 1) {
+            $('#guide_time').text('已通过');
+          }
+          else if (data.data[0].authentication == 2) {
+            $('#guide_time').text('未通过请重新提交');
+          } else if (data.data[0].authentication == 3) {
+            $('#guide_time').text('待审核');
+          } else {
+            $('#guide_time').text('暂无');
+          }
+
         },
         error: function (e) {
           console.log(e);

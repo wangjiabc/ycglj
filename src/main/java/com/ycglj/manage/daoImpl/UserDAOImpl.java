@@ -84,6 +84,12 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	}
 
 	@Override
+	public Integer insertUserLicense(User_License user_License) {
+		// TODO Auto-generated method stub
+		return InsertExe.get(this.getJdbcTemplate(), user_License);
+	}
+	
+	@Override
 	public Integer updateUser(Users users) {
 		// TODO Auto-generated method stub
 		return UpdateExe.get(this.getJdbcTemplate(), users);
@@ -354,14 +360,28 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 				return 0;
 			}
-			User_License user_License=new User_License();			
-			user_License.setWhere(where);
 			
-			i=UpdateExe.get(this.getJdbcTemplate(), user_License);
+			user_Data.setLimit(1);
+			user_Data.setOffset(0);
+			user_Data.setNotIn("open_id");
 			
-			if(i<1){
-				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-				return 0;
+			try{
+				
+				User_Data user_Data2 = (User_Data) SelectExe.get(this.getJdbcTemplate(), user_Data).get(0);
+
+				String[] where2 = { "open_id=", user_Data2.getOpen_id(),"authentication !=","1",
+						"license=", user_Data2.getLicense()};
+
+				User_License user_License = new User_License();
+				user_License.setAuthentication(3);
+				user_License.setWhere(where2);
+
+				if (user_Data2 != null)
+					UpdateExe.get(this.getJdbcTemplate(), user_License);
+
+			}catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
 			}
 			
 			i=i+j;
@@ -370,20 +390,6 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		if(i<4){
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			return 0;
-		}else{
-			
-			Users users=new Users();
-			
-			String[] where={"open_id = ",openId};
-			users.setWhere(where);
-			
-			i=UpdateExe.get(this.getJdbcTemplate(), users);
-			
-			if(i<1){
-				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-				return 0;
-			}
-	
 		}
 		
 		return i;
@@ -413,6 +419,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		// TODO Auto-generated method stub
 		return SelectExe.get(this.getJdbcTemplate(), user_License);
 	}
+
 
     
 }

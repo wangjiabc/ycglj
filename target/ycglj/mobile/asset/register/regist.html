@@ -21,6 +21,10 @@
         padding: 2px 0 0 8px;
     }
 
+    body {
+        font-size: 14px;
+    }
+
     .footer {
         position: absolute;
         bottom: 0;
@@ -34,7 +38,7 @@
     }
 
     #wizard .content {
-        min-height: 30em;
+        min-height: 20em;
     }
 
     #wizard .weui-input {
@@ -99,10 +103,10 @@
                     </div>
                 </div>
                 <label for="weuiAgree" class="weui-agree">
-                    <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
-                    <span class="weui-agree__text">
+                    <!-- <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox"> -->
+                    <!-- <span class="weui-agree__text">
                         阅读并同意<a href="javascript:void(0);">《相关条款》</a>
-                    </span>
+                    </span> -->
                 </label>
                 <div class="weui_dialog_alert" id="dialog2" style="display: none;">
                     <div class="weui_mask"></div>
@@ -160,10 +164,10 @@
             <section>
                 <div class="weui-msg">
                     <div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
-                        <div class="weui-msg__text-area">
-    <h2 class="weui-msg__title">操作成功</h2>
-    <p class="weui-msg__desc">恭喜您,您已注册成功</p>
-  </div>
+                    <div class="weui-msg__text-area">
+                        <h2 class="weui-msg__title">操作成功</h2>
+                        <p class="weui-msg__desc">恭喜您,您已注册成功</p>
+                    </div>
                 </div>
             </section>
         </div>
@@ -257,37 +261,37 @@
                         $('#name').val($('#name1').val());
                         $('#phone').val($('#phone1').val());
                     } else {
-                    $.toast("请输入用户名和手机号!","forbidden");
+                        $.toast("请输入用户名和手机号!", "forbidden");
                         result = false;
                     }
                 }
                 if (newIndex == 2) {//第二步操作
-        var name=document.getElementById("name").value;
-		var phone=document.getElementById("phone").value;
-		var regtlx=document.getElementById("regtlx").value;
-		if(campusId!=null&&typeof(campusId)!="undefined"){
-		
-		    var xhm = new XMLHttpRequest();
-            xhm.open("GET", "/ycglj/mobile/assetRegister/insert.do?phone=" + phone + "&name=" + name+ "&regtlx=" + regtlx, false);
-            xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhm.send();
-            var data = xhm.responseText;
-	
-              if(data==1){
-              result = true;
-              }else if(data==2){
-              result = false;
-              $.toast("验证码错误!","forbidden");
-              }else if(data==3){
-              result = false;
-              $.toast("验证码已过期!","forbidden");
-              }else{
-              result = false;
-              $.toast("操作失败!","forbidden");
-              }	
-	
-		  }
- 
+                    var name = document.getElementById("name").value;
+                    var phone = document.getElementById("phone").value;
+                    var regtlx = document.getElementById("regtlx").value;
+                    if (campusId != null && typeof (campusId) != "undefined") {
+
+                        var xhm = new XMLHttpRequest();
+                        xhm.open("GET", "/ycglj/mobile/assetRegister/insert.do?phone=" + phone + "&name=" + name + "&regtlx=" + regtlx, false);
+                        xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhm.send();
+                        var data = xhm.responseText;
+
+                        if (data == 1) {
+                            result = true;
+                        } else if (data == 2) {
+                            result = false;
+                            $.toast("验证码错误!", "forbidden");
+                        } else if (data == 3) {
+                            result = false;
+                            $.toast("验证码已过期!", "forbidden");
+                        } else {
+                            result = false;
+                            $.toast("操作失败!", "forbidden");
+                        }
+
+                    }
+
 
                 }
                 return result;
@@ -301,18 +305,18 @@
             },
             //完成后的监听
             onFinished: function (event, currentIndex) {
-            	location.href="/ycglj/mobile/asset";
+                location.href = "/ycglj/mobile/asset";
             }
         });
     });
 </script>
 <script type="text/javascript">
 
-    $(function() {
+    $(function () {
         FastClick.attach(document.body);
     });
 
-    $(".primary").on("click", function() {
+    $(".primary").on("click", function () {
         $("#dialog2").attr("style", "display:none");
     });
 
