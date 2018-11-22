@@ -72,26 +72,16 @@
           { type: 'checkbox' },
           { field: 'id', title: 'ID', sort: true }
           , { field: 'name', edit: 'text', title: '用户名' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-          , { field: 'id_number', edit: 'text', title: '证件号', sort: true }
+          , { field: 'id_number', edit: 'text', title: '身份证号', sort: true }
           , { field: 'phone', edit: 'text', title: '电话' }
-          , { field: 'sex', title: '性别' }
-          , { field: 'date', title: '日期', align: 'center', templet: function (d) { return createTime(d.date); } }
+          , { field: 'license', title: '许可证号' }
+          , { field: 'address', title: '地址' }
+          , { field: 'region', title: '所属中队' }
+          , { field: 'date', title: '注册日期', align: 'center', templet: function (d) { return createTime(d.date); } }
+          , { field: 'license_start_date', title: '许可证起始日期', align: 'center', templet: function (d) { return createTime(d.license_start_date); } }
           , { field: 'status', title: '审核状态', align: 'center', templet: function (d) { return setStatus(d.authentication); } }
           , { title: '操作', toolbar: '#barDemo' }
           , { field: 'pass', title: '是否通过', templet: '#checkboxTpl', unresize: true }
-          // , {
-          //   field: 'pass',
-          //   title: '是否通过',
-          //   templet: '#checkboxTpl',
-          // templet: function (d) {
-          //   // openId = d.open_id;
-          //   if (d.authentication == 1) {
-          //     return '<input type="checkbox" name="lock" data-json="" value="{{d.open_id}}" title="通过" lay-filter="pass" checked>'
-          //   } else {
-          //     return '<input type="checkbox" name="lock" data-json="" value="{{d.open_id}}" title="通过" lay-filter="pass">'
-          //   }
-          // }
-          // }
         ]]
 
       });
@@ -270,13 +260,13 @@
     function setStatus(status) {
       switch (status) {
         case 1:
-        return "<span style='color:#5FB878;'>通过审核</span>";
+          return "<span style='color:#5FB878;'>通过审核</span>";
           break;
         case 2:
-        return "<span style='color:#FF5722;'>拒绝通过</span>";
+          return "<span style='color:#FF5722;'>拒绝通过</span>";
           break;
         case 3:
-        return "<span style='color:#d2d2d2;'>待审核</span>";
+          return "<span style='color:#d2d2d2;'>待审核</span>";
           break;
       }
       return "<span style='color:#d2d2d2;'>待审核</span>";

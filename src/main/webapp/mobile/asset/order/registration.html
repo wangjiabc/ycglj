@@ -201,15 +201,8 @@
 	      }
 	 });
 
-    
-    $.post('/ycglj/mobile/register/userinfoByopenId.do', {
-    	campusId : 1
-     }, function(data) {
-    	var obj = $.parseJSON(data);
-    	if (obj.name == null){
-    		location.href = "../register/regist.html";
-    	}else{
-    		  $.post('/ycglj/mobile/user/getUserAuthen.do', {
+
+    $.post('/ycglj/mobile/user/getUserAuthen.do', {
 
     		     }, function(data) {
     		    	 if(data==3){
@@ -231,10 +224,9 @@
     	                   	 }
     	                  });
     		    	 }
-    		     });
+    });
     		     
-    	}
-     });
+ 
     
     $(document).ready(function () {
 

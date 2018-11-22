@@ -211,43 +211,43 @@
             <div class="weui-cell__bd">
               <p>用户姓名</p>
             </div>
-            <div id="user_name" class="weui-cell__ft"></div>
+            <div id="user_name" class="weui-cell__ft">null</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>手机号</p>
             </div>
-            <div id="uesr_num" class="weui-cell__ft">133333333</div>
+            <div id="uesr_num" class="weui-cell__ft">null</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>身份证号</p>
             </div>
-            <div id="user_idnum" class="weui-cell__ft">5105555555555</div>
+            <div id="user_idnum" class="weui-cell__ft">null</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>许可证号</p>
             </div>
-            <div id="user_liscence" class="weui-cell__ft">32134555555</div>
+            <div id="user_liscence" class="weui-cell__ft">null</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>经营地址</p>
             </div>
-            <div id="user_address" class="weui-cell__ft">合江县少岷路</div>
+            <div id="user_address" class="weui-cell__ft">null</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>我的预约</p>
             </div>
-            <div id="order_time" class="weui-cell__ft">预约成功2018年11月19日</div>
+            <div id="order_time" class="weui-cell__ft">null</div>
           </div>
           <div class="weui-cell">
             <div class="weui-cell__bd">
               <p>我的办理</p>
             </div>
-            <div id="guide_time" class="weui-cell__ft">我的办理2018年11月19日</div>
+            <div id="guide_time" class="weui-cell__ft">null</div>
           </div>
         </div>
       </div>
@@ -312,15 +312,30 @@
         $.toast('请勾选协议', "forbidden");
       }
     })
+    setUserValue();
     //设置用户界面值
-    function setUserValue(data) {
-      $('#user_name').text('aaaa');
-      $('#uesr_num').text('aaaa');
-      $('#user_idnum').text('aaaa');
-      $('#user_liscence').text('aaaa');
-      $('#user_address').text('aaaa');
-      $('#order_time').text('预约成功aaaa');
-      $('#guide_time').text('办理时间aaaa');
+    function setUserValue() {
+      $.ajax({
+        type: "get",
+        url: "../user/getUserData.do",
+        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+        data: {},
+        dataType: "json",
+        success: function (data) {
+          console.log(data.data[0].name);
+          $('#user_name').text(data.data[0].name);
+          $('#uesr_num').text(data.data[0].phone);
+          $('#user_idnum').text(data.data[0].id_number);
+          $('#user_liscence').text(data.data[0].liscence);
+          $('#user_address').text(data.data[0].address);
+          $('#order_time').text(data.data[0].up_date);
+          $('#guide_time').text();
+        },
+        error: function (e) {
+          console.log(e);
+        }
+      });
+
     }
 
   </script>

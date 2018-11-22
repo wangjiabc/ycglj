@@ -32,29 +32,8 @@ public class Users implements Serializable{
     @SQLString(name="phone")
 	private String phone;
 
-    @SQLString(name="license")
-	private String license;
-
-    @SQLString(name="address")
-	private String address;
-
-    @SQLInteger(name="authentication")
-	private Integer authentication;
-
-    @SQLDateTime(name="license_start_date")
-	private Date license_start_date;
-
-    @SQLDateTime(name="license_end_date")
-	private Date license_end_date;
-
-    @SQLString(name="region")
-	private String region;
-
     @SQLString(name="causa")
 	private String causa;
-
-    @SQLDateTime(name="authen_date")
-	private Date authen_date;
 
     @SQLDateTime(name="date")
 	private Date date;
@@ -118,68 +97,12 @@ public class Users implements Serializable{
 		return phone;
 	}
 
-	public void setLicense(String license){
-		this.license = license;
-	}
-
-	public String getLicense(){
-		return license;
-	}
-
-	public void setAddress(String address){
-		this.address = address;
-	}
-
-	public String getAddress(){
-		return address;
-	}
-
-	public void setAuthentication(Integer authentication){
-		this.authentication = authentication;
-	}
-
-	public Integer getAuthentication(){
-		return authentication;
-	}
-
-	public void setLicense_start_date(Date license_start_date){
-		this.license_start_date = license_start_date;
-	}
-
-	public Date getLicense_start_date(){
-		return license_start_date;
-	}
-
-	public void setLicense_end_date(Date license_end_date){
-		this.license_end_date = license_end_date;
-	}
-
-	public Date getLicense_end_date(){
-		return license_end_date;
-	}
-
-	public void setRegion(String region){
-		this.region = region;
-	}
-
-	public String getRegion(){
-		return region;
-	}
-
 	public void setCausa(String causa){
 		this.causa = causa;
 	}
 
 	public String getCausa(){
 		return causa;
-	}
-
-	public void setAuthen_date(Date authen_date){
-		this.authen_date = authen_date;
-	}
-
-	public Date getAuthen_date(){
-		return authen_date;
 	}
 
 	public void setDate(Date date){

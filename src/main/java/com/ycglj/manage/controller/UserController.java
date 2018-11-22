@@ -24,6 +24,7 @@ import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.User_Data;
+import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.singleton.Singleton;
@@ -62,8 +63,6 @@ public class UserController {
 				searchMap.put("name like ", search);
 			}		
 			
-			System.out.print("authentication="+authentication);
-			
 			if(authentication!=null&&!authentication.equals("")&&!authentication.equals("undefined")){
 				searchMap.put("authentication = ", authentication);
 			}	
@@ -74,7 +73,7 @@ public class UserController {
 			
 			int offset=(page-1)*limit;
 			
-			return userDao.getAllUser(limit, offset, sort,order, searchMap);
+			return userDao.getAllUserJoin(limit, offset, sort,order, searchMap);
 				
 	}
 	
@@ -130,18 +129,17 @@ public class UserController {
 	
 	@RequestMapping("updateUserAuth")
 	public @ResponseBody Integer updateUserAuth(@RequestParam String openId,Integer authentication,
-			HttpServletRequest request) {
+			@RequestParam String license,HttpServletRequest request) {
 		// TODO Auto-generated method stub
 
-		Users users = new Users();
+		User_License user_License=new User_License();
+		
+		String[] where={"open_id = ", openId,"license = ",license};
+		
+		user_License.setWhere(where);
+		user_License.setAuthentication(authentication);
 
-		String[] where = { "open_id = ", openId };
-
-		users.setWhere(where);
-		users.setAuthentication(authentication);
-		users.setUp_date(new Date());
-
-		return userDao.updateUser(users);
+		return userDao.updateUserLicense(user_License);
 		
 	}
 	
@@ -162,19 +160,17 @@ public class UserController {
 	
 	@RequestMapping("setAuthentication")
 	public @ResponseBody Integer setAuthentication(@RequestParam String openId,
-			@RequestParam  Integer authentication,HttpServletRequest request) {
+			@RequestParam String license,@RequestParam  Integer authentication,HttpServletRequest request) {
 					
-		Users users=new Users();
+		User_License user_License=new User_License();
 		
-		users.setAuthentication(authentication);
-        users.setAuthen_date(new Date());
+		String[] where={"open_id = ", openId,"license = ",license};
 		
-		String[] where={"open_id = ", openId};
+		user_License.setWhere(where);
+		user_License.setAuthentication(authentication);
+
+		return userDao.updateUserLicense(user_License);
 		
-		users.setWhere(where);
-		
-		return userDao.updateUser(users);
-	
 	}
 	
 	

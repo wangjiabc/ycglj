@@ -15,14 +15,18 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.PreMessage;
 import com.ycglj.manage.daoModel.User_Data;
+import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoSQL.InsertExe;
 import com.ycglj.manage.daoSQL.SelectExe;
+import com.ycglj.manage.daoSQL.SelectJoinExe;
 import com.ycglj.manage.daoSQL.UpdateExe;
 import com.ycglj.manage.tools.TransMapToString;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModelJoin.User_Order_Join;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 
 
 public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
@@ -130,6 +134,67 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	}
 
 	@Override
+	public Map<String, Object> getAllUserJoin(Integer limit, Integer offset, String sort, String order,
+			Map<String, String> search) {
+		// TODO Auto-generated method stub
+		Map<String,Object> map=new HashMap<>();
+		
+		Users users=new Users();
+		
+		users.setLimit(limit);
+		users.setOffset(offset);
+		users.setNotIn("id");
+
+		User_License user_License=new User_License();
+		
+		user_License.setLimit(limit);
+		user_License.setOffset(offset);
+		user_License.setNotIn("id");
+		
+		if(sort!=null&&!sort.equals("")){
+
+		}else{
+			sort="id";
+		}
+		
+		if(order!=null&&order.equals("desc")){
+			order="desc";
+		}else{
+			order="asc";
+		}
+		
+		users.setOrder(order);
+		users.setSort(sort);
+		
+		user_License.setOrder(order);
+		user_License.setSort(sort);
+		
+		if(!search.equals("")&&!search.isEmpty()){
+			String[] where=TransMapToString.get(search);
+			users.setWhere(where);
+			user_License.setWhere(where);
+		}
+		
+		Object[] objects={users,user_License};
+		
+		String[] join={"open_id"};
+		
+		Users_License_Join user_Order_Join=new Users_License_Join();
+		
+		List list=SelectJoinExe.get(this.getJdbcTemplate(), objects, user_Order_Join,join);
+		
+		int total=(int) SelectJoinExe.getCount(this.getJdbcTemplate(), objects, join).get("");
+		
+		map.put("code", "0");
+		
+		map.put("data", list);
+		
+		map.put("count", total);
+		
+		return map;
+	}
+	
+	@Override
 	public Integer insertUserData(User_Data user_Data) {
 		// TODO Auto-generated method stub
 		
@@ -152,6 +217,12 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		return UpdateExe.get(this.getJdbcTemplate(), user_Data);
 	}
 
+	@Override
+	public Integer updateUserLicense(User_License user_License) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), user_License);
+	}
+	
 	@Override
 	public Map<String,Object> getAllUserData(HttpServletRequest request,Integer limit, Integer offset, String sort, String order,Map<String, String> search) {
 		// TODO Auto-generated method stub
@@ -283,6 +354,16 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 				return 0;
 			}
+			User_License user_License=new User_License();			
+			user_License.setWhere(where);
+			
+			i=UpdateExe.get(this.getJdbcTemplate(), user_License);
+			
+			if(i<1){
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				return 0;
+			}
+			
 			i=i+j;
 		}
 		
@@ -292,7 +373,6 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		}else{
 			
 			Users users=new Users();
-			users.setAuthentication(3);
 			
 			String[] where={"open_id = ",openId};
 			users.setWhere(where);
@@ -303,10 +383,35 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 				return 0;
 			}
-			
+	
 		}
 		
 		return i;
+	}
+
+	@Override
+	public User_License getUserLicense(User_License user_License) {
+		// TODO Auto-generated method stub
+		User_License user_License2=new User_License();
+		
+		try{
+			user_License2=(User_License) SelectExe.get(this.getJdbcTemplate(), user_License).get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if(user_License2!=null){
+			return user_License2;
+		}else{
+			return null;
+		}
+	}
+
+	@Override
+	public List getUserLicenseById(User_License user_License) {
+		// TODO Auto-generated method stub
+		return SelectExe.get(this.getJdbcTemplate(), user_License);
 	}
 
     

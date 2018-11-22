@@ -60,6 +60,7 @@ public class Users implements Serializable{
     private String IDNo;
     
     private String hirePhone;
+
     
     public Integer getCampusId() {
 		return campusId;

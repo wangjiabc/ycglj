@@ -18,6 +18,7 @@ import com.ycglj.manage.daoSQL.DeleteExe;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.daoModel.Order_Date;
 import com.ycglj.manage.daoModel.Order_User;
+import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoSQL.InsertExe;
 import com.ycglj.manage.daoSQL.SelectExe;
@@ -505,6 +506,12 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		users.setOffset(offset);
 		users.setNotIn("id");
 		
+		User_License user_License=new User_License();
+		
+		user_License.setLimit(limit);
+		user_License.setOffset(offset);
+		user_License.setNotIn("id");
+		
 		Order_User order_User=new Order_User();
 		
 		order_User.setLimit(limit);
@@ -514,18 +521,19 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		if(search!=null&&!search.isEmpty()&&!search.equals("")){
 			String[] where=TransMapToString.get(search);
 			users.setWhere(where);
+			user_License.setWhere(where);
 			order_User.setWhere(where);
 		}
 		
-		Object[] objects={users,order_User};
+		Object[] objects={users,user_License,order_User};
 		
-		String[] join={"open_id"};
+		String[] join={"open_id","open_id"};
 		
 		User_Order_Join user_Order_Join=new User_Order_Join();
 		
 		List list=SelectJoinExe.get(this.getJdbcTemplate(), objects, user_Order_Join, join);
 		
-		int total=(int) SelectExe.getCount(this.getJdbcTemplate(), order_User).get("");
+		int total=(int) SelectJoinExe.getCount(this.getJdbcTemplate(), objects,join).get("");
 		
 		map.put("code", "0");
 		

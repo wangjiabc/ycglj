@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
@@ -53,24 +54,43 @@ public class MoblieUserController {
 		
 		String openId=session.getAttribute("openId").toString();
 	
-		Users users=new Users();
-		users.setLimit(1);
-		users.setOffset(0);
-		users.setNotIn("id");
+		User_License user_License=new User_License();
+		user_License.setLimit(1);
+		user_License.setOffset(0);
+		user_License.setNotIn("open_id");
+		user_License.setOrder("authentication");
+		user_License.setSort("desc");
 		
 		String[] where={"open_id = ",openId};
-		users.setWhere(where);
+		user_License.setWhere(where);
 		
-		users=userDao.getUser(users);
+		user_License=userDao.getUserLicense(user_License);
 		
-		if(users!=null){
-			return users.getAuthentication();
+		if(user_License!=null){
+			return user_License.getAuthentication();
 		}else{
 			return 0;
 		}
 		
 	}
 	
+	@RequestMapping("getUserLicense")
+	public @ResponseBody List getUserLicense(HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+	
+		User_License user_License=new User_License();
+		user_License.setLimit(1);
+		user_License.setOffset(0);
+		user_License.setNotIn("open_id");
+		
+		String[] where={"open_id = ",openId};
+		user_License.setWhere(where);
+		
+		return userDao.getUserLicenseById(user_License);
+	}
 	
 	@RequestMapping("getUserData")
 	public @ResponseBody Map<String, Object> getUserData(HttpServletRequest request){

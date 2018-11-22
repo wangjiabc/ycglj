@@ -20,6 +20,9 @@ public class User_Data implements Serializable{
     @SQLString(name="data_type")
 	private String data_type;
 
+    @SQLString(name="license")
+	private String license;
+
     @SQLString(name="uri")
 	private String uri;
 
@@ -60,6 +63,14 @@ public class User_Data implements Serializable{
 
 	public String getData_type(){
 		return data_type;
+	}
+
+	public void setLicense(String license){
+		this.license = license;
+	}
+
+	public String getLicense(){
+		return license;
 	}
 
 	public void setUri(String uri){

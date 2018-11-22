@@ -75,7 +75,7 @@ public class FileUploadController {
     public @ResponseBody Map<String, Object> fildUpload(HttpServletRequest request,ServletResponse response, 
     		@RequestParam String dataType,@RequestParam String serverId,  
     		@RequestParam Integer campusId,
-    		@RequestParam String classType)throws Exception{  
+    		@RequestParam String classType,String license)throws Exception{  
     	HttpServletRequest hrequest = (HttpServletRequest)request;
     	String accessToken;
     	
@@ -158,7 +158,7 @@ public class FileUploadController {
         	objectClass=User_Data.class;
         }
         
-        Map map2=new ImageFileFactory().upload(objectClass,openId,dataType, names, files);
+        Map map2=new ImageFileFactory().upload(objectClass,openId,dataType,license,names, files);
         
         String imageUrl="/ycglj/mobile/photo/"+uname+"."+mimeType;
 
@@ -357,7 +357,7 @@ public class FileUploadController {
     
     public static Integer fildUpload2(HttpServletRequest request,ServletResponse response, 
     		String dataType,String serverId,Integer campusId,String id,
-    		String classType,WeiXinService weixinService,
+    		String classType,WeiXinService weixinService,String license,
     		PhotoService photoService)throws Exception{  
     	HttpServletRequest hrequest = (HttpServletRequest)request;
     	String accessToken;
@@ -442,7 +442,7 @@ public class FileUploadController {
         	objectClass=FileSelfBelong.class;
         }
         */
-        new ImageFileFactory().upload(objectClass,id,dataType, names, files);
+        new ImageFileFactory().upload(objectClass,id,dataType,license,names, files);
         
         String imageUrl="/ycglj/mobile/photo/"+uname+"."+mimeType;
         String openId=( String ) hrequest.getSession().getAttribute("openId");
