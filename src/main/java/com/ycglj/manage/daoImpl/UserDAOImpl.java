@@ -23,6 +23,7 @@ import com.ycglj.manage.daoSQL.UpdateExe;
 import com.ycglj.manage.tools.TransMapToString;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
+import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
@@ -206,11 +207,18 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		
 		String openId=user_Data.getOpen_id();
 		String dataType=user_Data.getData_type();
-		String[] where={"open_id=",openId,"data_type=",dataType};
 		
 		User_Data user_Data2=new User_Data();
 		user_Data2.setCurrently(0);
-		user_Data2.setWhere(where);
+		
+		if(user_Data.getLicense()==null||user_Data.getLicense().equals("")){
+			String[] where={"open_id=",openId,"data_type=",dataType};
+			user_Data2.setWhere(where);
+		}else{
+			String[] where={"open_id=",openId,"data_type=",dataType,"license=",user_Data.getLicense()};
+			user_Data2.setWhere(where);
+		}
+
 		
 		UpdateExe.get(this.getJdbcTemplate(), user_Data2);
 		
@@ -376,6 +384,10 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 				user_License.setAuthentication(3);
 				user_License.setWhere(where2);
 
+				System.out.println("user_data2");
+				
+				MyTestUtil.print(user_Data2);
+				
 				if (user_Data2 != null)
 					UpdateExe.get(this.getJdbcTemplate(), user_License);
 

@@ -124,7 +124,8 @@
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
-		<a class="weui-cell weui-cell_access" href="javascript:;">
+		<span name='more'>
+			<a class="weui-cell weui-cell_access" href="javascript:;">
 			<div id="img3" name="0" class="weui-panel__bd">
 			</div>
 			<div class="weui-cell__bd">
@@ -134,6 +135,17 @@
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
+		</span>
+		<!-- <a class="weui-cell weui-cell_access" href="javascript:;">
+			<div id="other" name="0" class="weui-panel__bd">
+			</div>
+			<div class="weui-cell__bd">
+				<p>其它材料照片</p>
+			</div>
+			<div id="otherImg" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+					<use xlink:href="#icon-paizhao"></use>
+				</svg></div>
+		</a> -->
 	</div>
 
 	<div class="weui-cells__title">申请人手写签名</div>
@@ -200,24 +212,16 @@
 
 			}
 		});
-
+		var license=0;
 		$.ajax({
 			url: "/ycglj/mobile/user/getUserLicense.do",
 			data: {
 			},
 			type: "GET",
 			success: function (data) {
-			// 	for (i = 0; i < data.length; i++) {
-            //     $("#cellImg").append('<a class="weui-cell weui-cell_access" href="javascript:;">' +
-            //         '<div class="weui-cell__bd">' +
-            //         '<p>' + data[i] + '</p>' +
-            //         '</div>' +
-            //         '<div id="front" class="weui-cell__ft"><svg class="icon" aria-hidden="true">' +
-            //         '<use xlink: href="#icon-paizhao"></use>' +
-            //         '</svg></div>' +
-            //         '</a >'
-            //     );
-            // }
+				data = JSON.parse(data)
+				license=data[1].license;
+
 			}
 		});
 
@@ -256,92 +260,114 @@
 						// $("#signature").jSignature("reset");
 
 					})
-					//身份证正面
-					$("#identity").click(function () {
-						setActionSheet("identity");
-					})
-					//身份证反面
-					$("#conIdentity").click(function () {
-						setActionSheet("conIdentity");
-					})
-					//营业执照
-					$("#license").click(function () {
-						setActionSheet("license");
-					})
+					// $('a').click(function () {
+					// 	console.log($(this).context.className);
+					// 	//选中第几个license 再得到license得值
+					// 	var index =$(this)[0].children[0].name;
+					// 	var license=data[index].license;
+					// 	var type = $(this).text();
+					// 	switch (type) {
+					// 		case "身份证正面照照片":
+					// 			setActionSheet("identity");
+					// 			break;
+					// 		case "身份证反面照照片":
+					// 			setActionSheet("conIdentity");
+					// 			break;
+					// 		case "工商营业执照照片"+(index+1):
+					// 			setActionSheet("license",license);
+					// 			break;
+					// 		case "其它资料照片":
+					// 			setActionSheet("other");
+					// 			break;
+					// 		default:
+					// 			break;
+					// 	}
+					// })
+					
+									//身份证正面
+				$("#identity").click(function () {
+					setActionSheet("identity","");
+				})
+				//身份证反面
+				$("#conIdentity").click(function () {
+					setActionSheet("conIdentity","");
+				})
+				//营业执照
+				$("#license").click(function () {
+					setActionSheet("license",license);
+				})
+					
 					//提交
-					$("#submit")
-						.click(
-							function () {
+					$("#submit").click(
+						function () {
+							var error = "";
+							var img1 = $("#img1").attr(
+								"name");
+							if (img1 == 0) {
+								error = "身份证正面照照片不能空!";
+							}
+							var img2 = $("#img2").attr(
+								"name");
+							if (img2 == 0) {
+								error = "身份证反面照照片不能空!";
+							}
+							var img3 = $("#img3").attr(
+								"name");
+							if (img3 == 0) {
+								error = "工商营业执照照片不能空!";
+							}
 
-								var error = "";
+							var img4 = $("#displayarea")
+								.attr("name");
+							if (img4 == 0) {
+								error = "签名不能空!";
+							}
 
-								var img1 = $("#img1").attr(
-									"name");
-								if (img1 == 0) {
-									error = "身份证正面照照片不能空!";
-								}
-								var img2 = $("#img2").attr(
-									"name");
-								if (img2 == 0) {
-									error = "身份证反面照照片不能空!";
-								}
-								var img3 = $("#img3").attr(
-									"name");
-								if (img3 == 0) {
-									error = "工商营业执照照片不能空!";
-								}
+							if (error != "") {
 
-								var img4 = $("#displayarea")
-									.attr("name");
-								if (img4 == 0) {
-									error = "签名不能空!";
-								}
+								$.alert({
+									title: "",
+									text: error,
+									onOK: function () {
+										//点击确认
+									}
+								});
 
-								if (error != "") {
+							} else {
+								var arrays = new Array(
+									img1, img2, img3,
+									img4);
 
-									$.alert({
-										title: "",
-										text: error,
-										onOK: function () {
-											//点击确认
+								$.post(
+									"/ycglj/mobile/user/updateAffire.do",
+									{
+										arrays: JSON
+											.stringify(arrays)
+									},
+									function (
+										text) {
+
+										if (text == 1) {
+
+											$
+												.alert({
+													title: "",
+													text: "成功",
+													onOK: function () {
+														//点击确认
+														location.href = "/ycglj/mobile/asset";
+													}
+												});
+
+										} else {
+
 										}
+
 									});
 
-								} else {
-									var arrays = new Array(
-										img1, img2, img3,
-										img4);
+							}
 
-									$.post(
-										"/ycglj/mobile/user/updateAffire.do",
-										{
-											arrays: JSON
-												.stringify(arrays)
-										},
-										function (
-											text) {
-
-											if (text == 1) {
-
-												$
-													.alert({
-														title: "",
-														text: "成功",
-														onOK: function () {
-															//点击确认
-															location.href = "/ycglj/mobile/asset";
-														}
-													});
-
-											} else {
-
-											}
-
-										});
-
-								}
-
-							})
+						})
 
 					// $("#b3").click(function () {
 					//     if($(".signature").jSignature('getData', 'native').length>0){
@@ -350,7 +376,7 @@
 					//     alert("未签名");
 					// })
 
-					function setActionSheet(dataType) {
+					function setActionSheet(dataType,license) {
 
 						var images = {
 							localId: [],
@@ -383,7 +409,9 @@
 											//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
 											wxImgCallback(
 												dataType,
-												res.serverId);
+												res.serverId,
+												license
+												);
 											//   images.serverId.push(res.serverId);
 											if (i < length) {
 												upload();
@@ -402,120 +430,121 @@
 
 					}
 
-					function wxImgCallback(dataType, serverId) {
+					function wxImgCallback(dataType, serverId,license) {
 						console.log("serverId=" + serverId);
+						console.log("license="+license);
 						//将serverId传给wx_upload.php的upload方法
 						var url = "../../file/upload.do";
-						$
-							.get(
-								url,
-								{
-									campusId: 1,
-									serverId: serverId,
-									dataType: dataType,
-									classType: "user"
-								},
-								function (text) {
-									console.log(text);
-									var result = JSON.parse(text);
+						$.get(
+							url,
+							{
+								campusId: 1,
+								serverId: serverId,
+								dataType: dataType,
+								classType: "user",
+								license:license
+							},
+							function (text) {
+								console.log(text);
+								var result = JSON.parse(text);
 
-									var data = result.state;
+								var data = result.state;
 
-									var img = result.url;
+								var img = result.url;
 
-									var uuid = result.uuid;
+								var uuid = result.uuid;
 
-									if (data == 0) {
-										alert("上传图片失败!");
-										console.log(data.msg);
-									} else if (data == 1) {
-										//存储到服务器成功后的处理
-										// location.reload();
+								if (data == 0) {
+									alert("上传图片失败!");
+									console.log(data.msg);
+								} else if (data == 1) {
+									//存储到服务器成功后的处理
+									// location.reload();
 
-										var panel = document
-											.createElement("div");
-										panel
-											.setAttribute(
-												"class",
-												"weui-panel__bd");
-										var a = document
-											.createElement("a");
-										a.setAttribute("class",
-											"weui_grid");
-										var a = document
-											.createElement("a");
-										a
-											.setAttribute(
-												"href",
-												"javascript:void(0);");
-										a
-											.setAttribute(
-												"class",
-												"weui-media-box weui-media-box_appmsg");
-										var div = document
-											.createElement("div");
-										div
-											.setAttribute(
-												"class",
-												"weui-media-box__hd");
+									var panel = document
+										.createElement("div");
+									panel
+										.setAttribute(
+											"class",
+											"weui-panel__bd");
+									var a = document
+										.createElement("a");
+									a.setAttribute("class",
+										"weui_grid");
+									var a = document
+										.createElement("a");
+									a
+										.setAttribute(
+											"href",
+											"javascript:void(0);");
+									a
+										.setAttribute(
+											"class",
+											"weui-media-box weui-media-box_appmsg");
+									var div = document
+										.createElement("div");
+									div
+										.setAttribute(
+											"class",
+											"weui-media-box__hd");
 
-										src = img;
-										var img = document
-											.createElement("img");
-										img
-											.setAttribute(
-												"class",
-												"weui-media-box__thumb");
-										img.setAttribute("src",
-											src);
+									src = img;
+									var img = document
+										.createElement("img");
+									img
+										.setAttribute(
+											"class",
+											"weui-media-box__thumb");
+									img.setAttribute("src",
+										src);
 
-										div.appendChild(img);
+									div.appendChild(img);
 
-										div2 = document
-											.createElement("div");
-										div2
-											.setAttribute(
-												"class",
-												"weui-media-box__bd");
-										p = document
-											.createElement("p");
-										p
-											.setAttribute(
-												"class",
-												"weui-media-box__desc");
-										div2.appendChild(p);
-										a.appendChild(div);
-										a.appendChild(div2);
-										panel.appendChild(a);
+									div2 = document
+										.createElement("div");
+									div2
+										.setAttribute(
+											"class",
+											"weui-media-box__bd");
+									p = document
+										.createElement("p");
+									p
+										.setAttribute(
+											"class",
+											"weui-media-box__desc");
+									div2.appendChild(p);
+									a.appendChild(div);
+									a.appendChild(div2);
+									panel.appendChild(a);
 
-										if (dataType == "identity") {
-											document
-												.getElementById("img1").innerHTML = "";
-											$("#img1").attr(
-												"name",
-												uuid);
-											$("#img1").append(
-												panel);
-										} else if (dataType == "conIdentity") {
-											document
-												.getElementById("img2").innerHTML = "";
-											$("#img2").attr(
-												"name",
-												uuid);
-											$("#img2").append(
-												panel);
-										} else if (dataType == "license") {
-											document
-												.getElementById("img3").innerHTML = "";
-											$("#img3").attr(
-												"name",
-												uuid);
-											$("#img3").append(
-												panel);
-										}
-
+									if (dataType == "identity") {
+										document
+											.getElementById("img1").innerHTML = "";
+										$("#img1").attr(
+											"name",
+											uuid);
+										$("#img1").append(
+											panel);
+									} else if (dataType == "conIdentity") {
+										document
+											.getElementById("img2").innerHTML = "";
+										$("#img2").attr(
+											"name",
+											uuid);
+										$("#img2").append(
+											panel);
+									} else if (dataType == "license") {
+										document
+											.getElementById("img3").innerHTML = "";
+										$("#img3").attr(
+											"name",
+											uuid);
+										$("#img3").append(
+											panel);
 									}
-								});
+
+								}
+							});
 					}
 
 					$("#sign").click(function () {
