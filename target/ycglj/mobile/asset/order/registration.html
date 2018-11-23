@@ -104,7 +104,7 @@
 	</div>
 	<div class="weui-cells__title">需要拍照的证件</div>
 	<div class="weui-cells">
-		<a class="weui-cell weui-cell_access" href="javascript:;">
+		<a class="weui-cell weui-cell_access" onclick="setActionSheet('identity')" href="javascript:;">
 			<div id="img1" name="0" class="weui-panel__bd">
 			</div>
 			<div class="weui-cell__bd">
@@ -114,7 +114,7 @@
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
-		<a class="weui-cell weui-cell_access" href="javascript:;">
+		<a class="weui-cell weui-cell_access" onclick="setActionSheet('conIdentity')" href="javascript:;">
 			<div id="img2" name="0" class="weui-panel__bd">
 			</div>
 			<div class="weui-cell__bd">
@@ -124,13 +124,15 @@
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
-		<a class="weui-cell weui-cell_access" href="javascript:;">
-			<div id="img3" name="0" class="weui-panel__bd">
+		<span name='more'>
+		</span>
+		<a class="weui-cell weui-cell_access" onclick="setActionSheet('other')" href="javascript:;">
+			<div id="other" name="0" class="weui-panel__bd">
 			</div>
 			<div class="weui-cell__bd">
-				<p>工商营业执照照片</p>
+				<p>其它材料照片</p>
 			</div>
-			<div id="license" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+			<div id="otherImg" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
@@ -162,9 +164,7 @@
 	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
 
 	<script>
-
 		url = document.location.toString();
-
 		$.ajax({
 			url: "../../../wechat/sign.do",
 			data: {
@@ -201,26 +201,9 @@
 			}
 		});
 
-		$.ajax({
-			url: "/ycglj/mobile/user/getUserLicense.do",
-			data: {
-			},
-			type: "GET",
-			success: function (data) {
-			// 	for (i = 0; i < data.length; i++) {
-            //     $("#cellImg").append('<a class="weui-cell weui-cell_access" href="javascript:;">' +
-            //         '<div class="weui-cell__bd">' +
-            //         '<p>' + data[i] + '</p>' +
-            //         '</div>' +
-            //         '<div id="front" class="weui-cell__ft"><svg class="icon" aria-hidden="true">' +
-            //         '<use xlink: href="#icon-paizhao"></use>' +
-            //         '</svg></div>' +
-            //         '</a >'
-            //     );
-            // }
-			}
-		});
 
+		var licenseImg=[];
+		
 		$.post('/ycglj/mobile/user/getUserAuthen.do', {
 
 		}, function (data) {
@@ -244,360 +227,389 @@
 				});
 			}
 		});
+		function getLicense(license) {
+			setActionSheet("license", license);
+			licenseImg.push("img"+license);
+		}
 
-		$(document)
-			.ready(
-				function () {
+		function setActionSheet(dataType, license) {
 
-					$("#reset").click(function () {
-						//显示区域置空
-						$("#displayarea").empty();
-						$("#displayarea").attr("name", 0);
-						// $("#signature").jSignature("reset");
+			var images = {
+				localId: [],
+				serverId: []
+			};
 
-					})
-					//身份证正面
-					$("#identity").click(function () {
-						setActionSheet("identity");
-					})
-					//身份证反面
-					$("#conIdentity").click(function () {
-						setActionSheet("conIdentity");
-					})
-					//营业执照
-					$("#license").click(function () {
-						setActionSheet("license");
-					})
-					//提交
-					$("#submit")
-						.click(
-							function () {
+			wx.chooseImage({
+				success: function (res) {
+					images.localId = res.localIds;
+					console.log('已选择 '
+						+ res.localIds.length
+						+ ' 张图片');
 
-								var error = "";
-
-								var img1 = $("#img1").attr(
-									"name");
-								if (img1 == 0) {
-									error = "身份证正面照照片不能空!";
+					var i = 0, length = images.localId.length;
+					images.serverId = [];
+					function upload() {
+						wx.uploadImage({
+							localId: images.localId[i]
+								.toString(),
+							isShowProgressTips: images.localId[i]
+								.toString(),
+							success: function (
+								res) {
+								i++;
+								console
+									.log('已上传：'
+										+ i
+										+ '/'
+										+ length);
+								//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
+								wxImgCallback(
+									dataType,
+									res.serverId,
+									license
+								);
+								//   images.serverId.push(res.serverId);
+								if (i < length) {
+									upload();
 								}
-								var img2 = $("#img2").attr(
-									"name");
-								if (img2 == 0) {
-									error = "身份证反面照照片不能空!";
-								}
-								var img3 = $("#img3").attr(
-									"name");
-								if (img3 == 0) {
-									error = "工商营业执照照片不能空!";
-								}
-
-								var img4 = $("#displayarea")
-									.attr("name");
-								if (img4 == 0) {
-									error = "签名不能空!";
-								}
-
-								if (error != "") {
-
-									$.alert({
-										title: "",
-										text: error,
-										onOK: function () {
-											//点击确认
-										}
-									});
-
-								} else {
-									var arrays = new Array(
-										img1, img2, img3,
-										img4);
-
-									$.post(
-										"/ycglj/mobile/user/updateAffire.do",
-										{
-											arrays: JSON
-												.stringify(arrays)
-										},
-										function (
-											text) {
-
-											if (text == 1) {
-
-												$
-													.alert({
-														title: "",
-														text: "成功",
-														onOK: function () {
-															//点击确认
-															location.href = "/ycglj/mobile/asset";
-														}
-													});
-
-											} else {
-
-											}
-
-										});
-
-								}
-
-							})
-
-					// $("#b3").click(function () {
-					//     if($(".signature").jSignature('getData', 'native').length>0){
-					//         alert("已签名");
-					//     }else
-					//     alert("未签名");
-					// })
-
-					function setActionSheet(dataType) {
-
-						var images = {
-							localId: [],
-							serverId: []
-						};
-
-						wx.chooseImage({
-							success: function (res) {
-								images.localId = res.localIds;
-								console.log('已选择 '
-									+ res.localIds.length
-									+ ' 张图片');
-
-								var i = 0, length = images.localId.length;
-								images.serverId = [];
-								function upload() {
-									wx.uploadImage({
-										localId: images.localId[i]
-											.toString(),
-										isShowProgressTips: images.localId[i]
-											.toString(),
-										success: function (
-											res) {
-											i++;
-											console
-												.log('已上传：'
-													+ i
-													+ '/'
-													+ length);
-											//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
-											wxImgCallback(
-												dataType,
-												res.serverId);
-											//   images.serverId.push(res.serverId);
-											if (i < length) {
-												upload();
-											}
-										},
-										fail: function (
-											res) {
-											console
-												.log(res);
-										}
-									});
-								}
-								upload();
+							},
+							fail: function (
+								res) {
+								console
+									.log(res);
 							}
 						});
-
 					}
+					upload();
+				}
+			});
 
-					function wxImgCallback(dataType, serverId) {
-						console.log("serverId=" + serverId);
-						//将serverId传给wx_upload.php的upload方法
-						var url = "../../file/upload.do";
-						$
-							.get(
-								url,
-								{
-									campusId: 1,
-									serverId: serverId,
-									dataType: dataType,
-									classType: "user"
-								},
-								function (text) {
-									console.log(text);
-									var result = JSON.parse(text);
+		}
 
-									var data = result.state;
+		function wxImgCallback(dataType, serverId, license) {
+			console.log("serverId=" + serverId);
+			console.log("license=" + license);
+			//将serverId传给wx_upload.php的upload方法
+			var url = "../../file/upload.do";
+			$.get(
+				url,
+				{
+					campusId: 1,
+					serverId: serverId,
+					dataType: dataType,
+					classType: "user",
+					license: license
+				},
+				function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
 
-									var img = result.url;
+					var data = result.state;
 
-									var uuid = result.uuid;
+					var img = result.url;
 
-									if (data == 0) {
-										alert("上传图片失败!");
-										console.log(data.msg);
-									} else if (data == 1) {
-										//存储到服务器成功后的处理
-										// location.reload();
+					var uuid = result.uuid;
 
-										var panel = document
-											.createElement("div");
-										panel
-											.setAttribute(
-												"class",
-												"weui-panel__bd");
-										var a = document
-											.createElement("a");
-										a.setAttribute("class",
-											"weui_grid");
-										var a = document
-											.createElement("a");
-										a
-											.setAttribute(
-												"href",
-												"javascript:void(0);");
-										a
-											.setAttribute(
-												"class",
-												"weui-media-box weui-media-box_appmsg");
-										var div = document
-											.createElement("div");
-										div
-											.setAttribute(
-												"class",
-												"weui-media-box__hd");
+					if (data == 0) {
+						alert("上传图片失败!");
+						console.log(data.msg);
+					} else if (data == 1) {
+						//存储到服务器成功后的处理
+						// location.reload();
 
-										src = img;
-										var img = document
-											.createElement("img");
-										img
-											.setAttribute(
-												"class",
-												"weui-media-box__thumb");
-										img.setAttribute("src",
-											src);
+						var panel = document
+							.createElement("div");
+						panel
+							.setAttribute(
+								"class",
+								"weui-panel__bd");
+						var a = document
+							.createElement("a");
+						a.setAttribute("class",
+							"weui_grid");
+						var a = document
+							.createElement("a");
+						a
+							.setAttribute(
+								"href",
+								"javascript:void(0);");
+						a
+							.setAttribute(
+								"class",
+								"weui-media-box weui-media-box_appmsg");
+						var div = document
+							.createElement("div");
+						div
+							.setAttribute(
+								"class",
+								"weui-media-box__hd");
 
-										div.appendChild(img);
+						src = img;
+						var img = document
+							.createElement("img");
+						img
+							.setAttribute(
+								"class",
+								"weui-media-box__thumb");
+						img.setAttribute("src",
+							src);
 
-										div2 = document
-											.createElement("div");
-										div2
-											.setAttribute(
-												"class",
-												"weui-media-box__bd");
-										p = document
-											.createElement("p");
-										p
-											.setAttribute(
-												"class",
-												"weui-media-box__desc");
-										div2.appendChild(p);
-										a.appendChild(div);
-										a.appendChild(div2);
-										panel.appendChild(a);
+						div.appendChild(img);
 
-										if (dataType == "identity") {
-											document
-												.getElementById("img1").innerHTML = "";
-											$("#img1").attr(
-												"name",
-												uuid);
-											$("#img1").append(
-												panel);
-										} else if (dataType == "conIdentity") {
-											document
-												.getElementById("img2").innerHTML = "";
-											$("#img2").attr(
-												"name",
-												uuid);
-											$("#img2").append(
-												panel);
-										} else if (dataType == "license") {
-											document
-												.getElementById("img3").innerHTML = "";
-											$("#img3").attr(
-												"name",
-												uuid);
-											$("#img3").append(
-												panel);
-										}
+						div2 = document
+							.createElement("div");
+						div2
+							.setAttribute(
+								"class",
+								"weui-media-box__bd");
+						p = document
+							.createElement("p");
+						p
+							.setAttribute(
+								"class",
+								"weui-media-box__desc");
+						div2.appendChild(p);
+						a.appendChild(div);
+						a.appendChild(div2);
+						panel.appendChild(a);
 
-									}
-								});
-					}
-
-					$("#sign").click(function () {
-						$.modal({
-							title: "签名",
-							text: "<div id=\"signature\"></div>",
-							buttons: [{
-								text: "确定",
-								onClick: saveImg
-							}, {
-								text: "重置",
-								className: "primary",
-								onClick: function () {
-									$("#signature").jSignature("reset")
-								}
-							}, {
-								text: "取消",
-								className: "default",
-								onClick: function () {
-									$.closeModal()
-								}
-							},],
-							autoClose: false
-						});
-						$("#signature").jSignature('init', {
-							height: '200px',
-							width: '100%'
-						});
-
-					});
-
-					function saveImg() {
-						//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
-						var datapair = $("#signature").jSignature(
-							"getData", "image");
-						var i = new Image();
-						i.src = "data:" + datapair[0] + ","
-							+ datapair[1];
-						$(i).appendTo($("#displayarea"));
-						if ($("#signature").jSignature('getData',
-							'native').length > 0) {
-
-							$.post("../../file/inputImage.do", {
-								file: "data:" + datapair[0] + ","
-									+ datapair[1]
-							}, function (text) {
-								console.log(text);
-								var result = JSON.parse(text);
-
-								var data = result.state;
-
-								var img = result.url;
-
-								var uuid = result.uuid;
-
-								$("#displayarea").attr("name", uuid);
-							});
-
-							$.closeModal();
-						} else {
-							$.closeModal();
-
-							$.post("../../file/inputImage.do", {
-								file: "data:" + datapair[0] + ","
-									+ datapair[1]
-							}, function (text) {
-								console.log(text);
-								var result = JSON.parse(text);
-
-								var data = result.state;
-
-								var img = result.url;
-
-								var uuid = result.uuid;
-
-								$("#displayarea").attr("name", uuid);
-							});
-
+						if (dataType == "identity") {
+							document
+								.getElementById("img1").innerHTML = "";
+							$("#img1").attr(
+								"name",
+								uuid);
+							$("#img1").append(
+								panel);
+						} else if (dataType == "conIdentity") {
+							document.getElementById("img2").innerHTML = "";
+							$("#img2").attr("name", uuid);
+							$("#img2").append(panel);
+						} else if (dataType == "license") {
+							document.getElementById("img" + license).innerHTML = "";
+							$("#img" + license).attr("name", uuid);
+							$("#img" + license).append(panel);
+						} else if (dataType == "other") {
+							document.getElementById("other").innerHTML = "";
+							$("#other").attr("name", uuid);
+							$("#other").append(panel);
 						}
+
 					}
+				});
+		}
+
+		$(document).ready(
+			function () {
+				$("#reset").click(function () {
+					//显示区域置空
+					$("#displayarea").empty();
+					$("#displayarea").attr("name", 0);
+					// $("#signature").jSignature("reset");
 
 				})
+
+				var license = [];				
+				$.ajax({
+					url: "/ycglj/mobile/user/getUserLicense.do",
+					data: {
+					},
+					type: "GET",
+					success: function (data) {
+						licenseData = JSON.parse(data);
+						// console.log(data);
+						// license = data[1].license;
+						console.log(data.length);
+
+						for (i = 0; i < licenseData.length; i++) {
+							license.push(licenseData[i].license);
+							$("[name='more']").append('<a class="weui-cell weui-cell_access" onclick="getLicense(' + licenseData[i].license + ')" href="javascript:;">' +
+								'<div  id="img' + licenseData[i].license + '" name="0" class="weui-panel__bd">' +
+								'</div>' +
+								'<div class="weui-cell__bd">' +
+								'<p>' + licenseData[i].license + '执照照片' + (i + 1) + '</p>' +
+								'</div>' +
+								'<div id="front" class="weui-cell__ft"><svg class="icon" aria-hidden="true">' +
+								'<use xlink: href="#icon-paizhao"></use>' +
+								'</svg></div>' +
+								'</a >'
+							);
+						}
+
+					}
+				});
+				//提交
+				$("#submit").click(						
+					function () {
+						console.log("数组 " + license);
+						var error = "";
+						var img1 = $("#img1").attr(
+							"name");
+						if (img1 == 0) {
+							error = "身份证正面照照片不能空!";
+						}
+						var img2 = $("#img2").attr(
+							"name");
+						if (img2 == 0) {
+							error = "身份证反面照照片不能空!";
+						}
+						console.log("img地址不为空" + $('img [src!=""]'));
+
+						for (let index = 0; index < license.length; index++) {
+							if ($('img' + license[index]).attr("name") == 0) {
+								error = "证件号不为空!";
+							}
+						}
+						var img3 = $("#other").attr(
+							"name");
+						var img4 = $("#displayarea")
+							.attr("name");
+						if (img4 == 0) {
+							error = "签名不能空!";
+						}
+
+						if (error != "") {
+
+							$.alert({
+								title: "",
+								text: error,
+								onOK: function () {
+									//点击确认
+								}
+							});
+
+						} else {
+							var arrays = new Array(
+								img1, img2, img4);
+			
+							var i;
+							for(i in licenseImg){
+								arrays.push($("#"+licenseImg[i]+"").attr("name"));
+							}
+							if(img3!=null&&img3!=0&&img3!=""){
+								arrays.push(img3);
+							}
+							console.log('保存图片数组的id' + arrays);
+
+
+						$.post(
+							"/ycglj/mobile/user/updateAffire.do",
+							{
+								arrays: JSON
+									.stringify(arrays)
+							},
+							function (
+								text) {
+
+								if (text == 1) {
+
+									$
+										.alert({
+											title: "",
+											text: "成功",
+											onOK: function () {
+												//点击确认
+												location.href = "/ycglj/mobile/asset";
+											}
+										});
+
+								} else {
+
+								}
+
+							});
+
+					}
+
+					})
+
+		// $("#b3").click(function () {
+		//     if($(".signature").jSignature('getData', 'native').length>0){
+		//         alert("已签名");
+		//     }else
+		//     alert("未签名");
+		// })
+
+		$("#sign").click(function () {
+			$.modal({
+				title: "签名",
+				text: "<div id=\"signature\"></div>",
+				buttons: [{
+					text: "确定",
+					onClick: saveImg
+				}, {
+					text: "重置",
+					className: "primary",
+					onClick: function () {
+						$("#signature").jSignature("reset")
+					}
+				}, {
+					text: "取消",
+					className: "default",
+					onClick: function () {
+						$.closeModal()
+					}
+				},],
+				autoClose: false
+			});
+			$("#signature").jSignature('init', {
+				height: '200px',
+				width: '100%'
+			});
+
+		});
+
+		function saveImg() {
+			//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
+			var datapair = $("#signature").jSignature(
+				"getData", "image");
+			var i = new Image();
+			i.src = "data:" + datapair[0] + ","
+				+ datapair[1];
+			$(i).appendTo($("#displayarea"));
+			if ($("#signature").jSignature('getData',
+				'native').length > 0) {
+
+				$.post("../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+						+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					$("#displayarea").attr("name", uuid);
+				});
+
+				$.closeModal();
+			} else {
+				$.closeModal();
+
+				$.post("../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+						+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					$("#displayarea").attr("name", uuid);
+				});
+
+			}
+		}
+
+			})
 	</script>
 	<script type="text/jscript" src="js/jSignature.min.noconflict.js"></script>
 </body>

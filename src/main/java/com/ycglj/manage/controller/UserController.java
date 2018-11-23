@@ -264,6 +264,8 @@ public class UserController {
      */
     public  String uploadImage(HttpServletRequest request,String path_deposit,MultipartFile file,String openId,String data_type,String license,boolean isRandomName) {
         
+    	System.out.println("license="+license);
+    	
     	//获得物理路径webapp所在路径  
         String pathRoot = System.getProperty("user.home");
        //存放图片文件的路径

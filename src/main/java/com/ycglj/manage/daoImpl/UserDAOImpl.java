@@ -362,6 +362,8 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		
 		while (iterator.hasNext()) {
 			String[] where={"uuid=",iterator.next()};
+			System.out.println("uuid=");
+			MyTestUtil.print(where);
 			user_Data.setWhere(where);
 			int j=UpdateExe.get(this.getJdbcTemplate(), user_Data);
 			if(j<1){
@@ -377,8 +379,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 				
 				User_Data user_Data2 = (User_Data) SelectExe.get(this.getJdbcTemplate(), user_Data).get(0);
 
-				String[] where2 = { "open_id=", user_Data2.getOpen_id(),"authentication !=","1",
-						"license=", user_Data2.getLicense()};
+				String[] where2 = { "open_id=", user_Data2.getOpen_id(),"license=", user_Data2.getLicense()};
 
 				User_License user_License = new User_License();
 				user_License.setAuthentication(3);

@@ -162,7 +162,7 @@
           layer.confirm('确认拒绝该零售户申请吗?', { icon: 3, title: '提示' }, function (index) {
             $.ajax({
               type: "get",
-              url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=2",
+              url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=2&license="+data.license,
               contentType: 'application/x-www-form-urlencoded;charset=utf-8',
               data: {},
               dataType: "json",
@@ -193,14 +193,15 @@
       var authentication;
       //监听checkbox
       layui.form.on('checkbox(pass)', function (obj) {
-        var openId = this.value;
+        var openId = this.value;   
+        console.log(obj);
         var status = 3;
         if (obj.elem.checked == true) {
           status = 1;
         }
         $.ajax({
           type: "get",
-          url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=" + status,
+          url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=" + status+"&license="+data.license,
           contentType: 'application/x-www-form-urlencoded;charset=utf-8',
           data: {},
           dataType: "json",

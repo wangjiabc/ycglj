@@ -301,10 +301,6 @@ public class AssetUserRegisterController {
 			users.setUpTime(upTime);			
 			weiXin_User.setUp_time(upTime);
 
-			int type;
-
-
-			type = userService.insertUsersInfo(users);
 			users2.setDate(upTime);
 
 			com.ycglj.manage.daoModel.Users users3 = new com.ycglj.manage.daoModel.Users();
@@ -344,7 +340,7 @@ public class AssetUserRegisterController {
 			}
 			
 			
-			return type;
+			return 1;
 
 		} catch (Exception e) {
 			e.printStackTrace();
