@@ -305,6 +305,7 @@ public class AssetUserRegisterController {
 
 			com.ycglj.manage.daoModel.Users users3 = new com.ycglj.manage.daoModel.Users();
 			String[] where = { "phone = ", phone };
+			users3.setPhone(phone);
 			users3.setWhere(where);
 			users3.setLimit(1);
 			users3.setOffset(0);

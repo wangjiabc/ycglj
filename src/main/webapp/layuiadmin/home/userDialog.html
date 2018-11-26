@@ -66,6 +66,7 @@
             </div>
         </blockquote>
         <div class="mark_button">
+                <button type="button" class="layui-btn layui-btn-normal" id="up_imgs"><i class="layui-icon">&#xe67c;</i>上传图片</button>
             <button type="button" class="layui-btn layui-btn-normal" id="sele_imgs"><i class="layui-icon">&#xe67c;</i>替换图片</button>
             <!-- <button type="button" class="layui-btn" id="upload_imgs" disabled>开始上传</button> -->
             <!-- <button type="button" class="layui-btn layui-btn-danger" id="dele_imgs">删除选中图片</button> -->
@@ -136,6 +137,35 @@
             var fileObj;
             uploader.render({
                 elem: '#sele_imgs' //绑定元素
+                , url: '/ycglj/user/inputImage.do' //上传接口
+                , before: function (obj) {
+                    layer.load(); //上传loading
+                    console.log(d_type);
+                    obj.preview(function (index, file, result) {
+                        fileObj = file;
+                    });
+                }
+                ,
+                data: {
+                    openId: openId,
+                    file: fileObj,
+                    data_type: function () {
+                        return d_type
+                    }
+                }
+                , done: function (res) {
+                    //上传完毕回调
+                    layer.closeAll('loading'); //关闭loading
+                    layer.msg('上传图片成功', { icon: 1 });
+                    location.reload();
+                }
+                , error: function () {
+                    layer.closeAll('loading'); //关闭loading
+                    //请求异常回调
+                }
+            });
+            uploader.render({
+                elem: '#up_imgs' //绑定元素
                 , url: '/ycglj/user/inputImage.do' //上传接口
                 , before: function (obj) {
                     layer.load(); //上传loading

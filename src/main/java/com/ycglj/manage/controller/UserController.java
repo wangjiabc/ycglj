@@ -154,7 +154,7 @@ public class UserController {
 	}
 	
 	@RequestMapping("getUserDateById")
-	public @ResponseBody Map<String, Object> getUserDateById(@RequestParam String openId,HttpServletRequest request) {
+	public @ResponseBody Map<String, Object> getUserDateById(@RequestParam String openId,String license,HttpServletRequest request) {
 						
 		Order_User order_User=new Order_User();
 
@@ -162,6 +162,10 @@ public class UserController {
 		
 		searchMap.put("open_id = ", openId);
 		searchMap.put("currently = ", "1");
+		
+		if(license!=null&&!license.equals("")){
+			searchMap.put("license=", license);
+		}
 		
 		MyTestUtil.print(searchMap);
 		

@@ -78,7 +78,33 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		}
 		
 		if(repeat==0){
-			return InsertExe.get(this.getJdbcTemplate(), users);
+			int i;
+			
+			i=InsertExe.get(this.getJdbcTemplate(), users);
+			
+			String openId=users.getOpen_id();
+		    String phone=users.getPhone();
+			
+		    User_License user_License=new User_License();
+
+		    user_License.setOpen_id(openId);
+		    
+		    String[] where2 = { "open_id = ", phone };
+			
+		    user_License.setWhere(where2);
+		    
+		    UpdateExe.get(this.getJdbcTemplate(), user_License);
+
+		    User_Data user_Data=new User_Data();
+
+		    user_Data.setOpen_id(openId);
+		    
+		    user_Data.setWhere(where2);
+		    
+		    UpdateExe.get(this.getJdbcTemplate(), user_Data);
+			
+		    return i;
+		    
 		}else{
 			return -1;
 		}
@@ -93,7 +119,41 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	@Override
 	public Integer updateUser(Users users) {
 		// TODO Auto-generated method stub
-		return UpdateExe.get(this.getJdbcTemplate(), users);
+		int i;
+		
+		i=UpdateExe.get(this.getJdbcTemplate(), users);
+		
+		if(i<1){
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+		}
+		
+		String openId=users.getOpen_id();
+	    String phone=users.getPhone();
+		
+	    System.out.println("openId="+openId+"     phone="+phone);
+	    
+	    User_License user_License=new User_License();
+
+	    user_License.setOpen_id(openId);
+	    
+	    String[] where = { "open_id = ", phone };
+		
+	    user_License.setWhere(where);
+	    
+	    UpdateExe.get(this.getJdbcTemplate(), user_License);
+
+	    User_Data user_Data=new User_Data();
+
+	    user_Data.setOpen_id(openId);
+	    
+	    user_Data.setWhere(where);
+	    
+	    UpdateExe.get(this.getJdbcTemplate(), user_Data);
+	    
+	    return i;
+
 	}
 
 	@Override
