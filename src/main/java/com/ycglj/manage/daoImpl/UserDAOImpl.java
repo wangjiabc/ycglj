@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -265,26 +266,35 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	public Integer insertUserData(User_Data user_Data) {
 		// TODO Auto-generated method stub
 		
+		return InsertExe.get(this.getJdbcTemplate(), user_Data);
+
+	}
+
+	@Override
+	public Integer insertUserData2(User_Data user_Data) {
+		// TODO Auto-generated method stub
+		
 		String openId=user_Data.getOpen_id();
 		String dataType=user_Data.getData_type();
 		
 		User_Data user_Data2=new User_Data();
 		user_Data2.setCurrently(0);
+		user_Data2.setAffirm(0);
 		
-		if(user_Data.getLicense()==null||user_Data.getLicense().equals("")){
-			String[] where={"open_id=",openId,"data_type=",dataType};
-			user_Data2.setWhere(where);
-		}else{
+		if(user_Data.getData_type().equals("license")&&user_Data.getLicense()!=null&&!user_Data.getLicense().equals("")){
 			String[] where={"open_id=",openId,"data_type=",dataType,"license=",user_Data.getLicense()};
 			user_Data2.setWhere(where);
+		}else{			
+			String[] where={"open_id=",openId,"data_type=",dataType};
+			user_Data2.setWhere(where);
 		}
-
 		
 		UpdateExe.get(this.getJdbcTemplate(), user_Data2);
 		
 		return InsertExe.get(this.getJdbcTemplate(), user_Data);
-	}
 
+	}
+	
 	@Override
 	public Integer updateUserData(User_Data user_Data) {
 		// TODO Auto-generated method stub
@@ -316,13 +326,84 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		user_Data.setNotIn("open_id");
 		
 		if(!search.equals("")&&!search.isEmpty()){
-			String[] where=TransMapToString.get(search);
+			Set set=search.entrySet();   
+			int size=search.size();
+			String[] where=new String[size*2+2];
+			Iterator iterator=set.iterator();     
+			int i=0;
+			while (iterator.hasNext()){ 
+			    Map.Entry  mapentry = (Map.Entry) iterator.next();
+			    System.out.println("key="+i+" "+mapentry.getKey());
+			    //去掉license条件
+				if (!mapentry.getKey().equals("license=")) {
+					where[i] = (String) mapentry.getKey();
+					// System.out.println(i+" "+mapentry.getKey());
+					where[i + 1] = (String) mapentry.getValue();
+					// System.out.println(i+" "+mapentry.getValue());
+					i = i + 2;
+					MyTestUtil.print(where);
+				}
+			}   
+			
+			where[i]="data_type != ";
+			where[i+1]="license";
+			where[i+2]="data_type != ";
+			where[i+3]="business";
+			
+			System.out.println("where1=");
+			
+			MyTestUtil.print(where);
+			
 			user_Data.setWhere(where);
 		}
 		
 		List<User_Data> list=SelectExe.get(this.getJdbcTemplate(), user_Data);
 		
 		int total=(int) SelectExe.getCount(this.getJdbcTemplate(), user_Data).get("");
+		
+		
+		
+		if(!search.equals("")&&!search.isEmpty()){
+			Set set=search.entrySet();   
+			int size=search.size();
+			String[] where=new String[size*2+2];
+			Iterator iterator=set.iterator();     
+			int i=0;
+			while (iterator.hasNext()){ 
+			    Map.Entry  mapentry = (Map.Entry) iterator.next();
+			    System.out.println("key="+i+" "+mapentry.getKey());
+					where[i] = (String) mapentry.getKey();
+					// System.out.println(i+" "+mapentry.getKey());
+					where[i + 1] = (String) mapentry.getValue();
+					// System.out.println(i+" "+mapentry.getValue());
+					i = i + 2;
+					MyTestUtil.print(where);
+			}   
+			
+			where[i]="data_type = ";
+			where[i+1]="license";
+			
+			System.out.println("where2=");
+			
+			MyTestUtil.print(where);
+			
+			user_Data.setWhere(where);
+		}
+		
+		try {
+			
+			List<User_Data> list2 = SelectExe.get(this.getJdbcTemplate(), user_Data);
+
+			list.addAll(list2);
+		
+			total=total+(int) SelectExe.getCount(this.getJdbcTemplate(), user_Data).get("");
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+
 		
 		List fileBytes=new ArrayList<>();
 		
@@ -444,14 +525,25 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 				User_License user_License = new User_License();
 				user_License.setAuthentication(3);
 				user_License.setWhere(where2);
-
+				user_License.setDate(new Date());
+				
 				System.out.println("user_data2");
 				
 				MyTestUtil.print(user_Data2);
 				
-				if (user_Data2 != null)
+				if (user_Data2 != null){
 					UpdateExe.get(this.getJdbcTemplate(), user_License);
-
+					
+					Users users=new Users();
+					
+					users.setDate(new Date());
+					
+					String[] where3= {"open_id = ",openId};
+					
+					users.setWhere(where3);
+					
+					UpdateExe.get(this.getJdbcTemplate(), users);
+				}
 			}catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();

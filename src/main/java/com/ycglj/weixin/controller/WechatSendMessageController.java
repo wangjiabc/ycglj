@@ -82,11 +82,12 @@ public class WechatSendMessageController {
 		this.userService = userService;
 	}
 	
-	public void sendMessage(@RequestParam String openId,@RequestParam String Template_Id,
+	public Integer sendMessage(@RequestParam String openId,@RequestParam String Template_Id,
 			@RequestParam String Send_Type,@RequestParam String url,
 			@RequestParam String first_data,@RequestParam String keyword1_data,
 			@RequestParam String keyword2_data,@RequestParam String keyword3_data,
-			@RequestParam String keyword4_data,@RequestParam String remark_data){
+			@RequestParam String keyword4_data,@RequestParam String keyword5_data,
+			@RequestParam String remark_data){
 
 		Integer campusId=1;
 		
@@ -129,11 +130,14 @@ public class WechatSendMessageController {
 			keyword2.setColor("#328392");
 			keyword2.setValue(keyword2_data);
 			m.put("keyword2", keyword2);
-			TemplateData keyword3 = new TemplateData();
-			keyword3.setColor("#328392");
-			keyword3.setValue(keyword3_data);
-			m.put("keyword3", keyword3);
-
+			
+			if (keyword3_data != null && !keyword3_data.equals("")) {
+				TemplateData keyword3 = new TemplateData();
+				keyword3.setColor("#328392");
+				keyword3.setValue(keyword3_data);
+				m.put("keyword3", keyword3);
+			}
+			
 			if (keyword4_data != null && !keyword4_data.equals("")) {
 				TemplateData keyword4 = new TemplateData();
 				keyword4.setColor("#328392");
@@ -141,6 +145,13 @@ public class WechatSendMessageController {
 				m.put("keyword4", keyword4);
 			}
 
+			if (keyword5_data != null && !keyword5_data.equals("")) {
+				TemplateData keyword5 = new TemplateData();
+				keyword5.setColor("#328392");
+				keyword5.setValue(keyword5_data);
+				m.put("keyword5", keyword5);
+			}
+			
 			if (remark_data != null && remark_data.equals("")) {
 				TemplateData remark = new TemplateData();
 				remark.setColor("#929232");
@@ -157,20 +168,30 @@ public class WechatSendMessageController {
 
 			messageList.setCampusId(campusId);
 			messageList.setOpenId(openId);
-			messageList.setContext(keyword1_data + "," + keyword2_data + "," + keyword3_data + "," + keyword4_data);
+			messageList.setContext(keyword1_data + "," + keyword2_data + "," + keyword3_data + "," + keyword4_data+ "," + keyword5_data);
 			messageList.setType(Send_Type);
 			messageList.setSendTime(new Date());
+			
+			int i;
+			
 			if (s.equals("消息发送成功")) {
 				messageList.setState(1);
+				i=1;
 			} else {
 				messageList.setState(0);
+				i=0;
 			}
 
 			messageListMapper.insertMessageList(messageList);
 
+			return i;
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			
+			return 0;
+		
 		}
 	}
 		

@@ -148,13 +148,15 @@
       table.on('tool(test)', function (obj) {
         var data = obj.data;
         var openId = data.open_id;
+        var license = data.license;
+        var result = [openId, license];
         if (obj.event === 'detail') {
           layer.open({
             title: '零售户资料信息'
             , type: 2
             , shadeClose: true
             , area: ['960px', '420px']
-            , content: '/ycglj/layuiadmin/home/userDialog.html?' + openId,
+            , content: '/ycglj/layuiadmin/home/userDialog.html?' + result,
           });
           // });
         }
@@ -162,13 +164,18 @@
           layer.confirm('确认拒绝该零售户申请吗?', { icon: 3, title: '提示' }, function (index) {
             $.ajax({
               type: "get",
-              url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=2&license="+data.license,
+              url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=2&license=" + data.license,
               contentType: 'application/x-www-form-urlencoded;charset=utf-8',
               data: {},
               dataType: "json",
               success: function (data) {
-                layer.close(index);
-                table.reload('test');
+                layer.open({
+                  title: '发送信息通知'
+                  , type: 2
+                  , shadeClose: true
+                  , area: ['960px', '420px']
+                  , content: '/ycglj/layuiadmin/home/sendMessageDialog.html',
+                });
               },
               error: function (e) {
                 console.log(e);
@@ -193,7 +200,7 @@
       var authentication;
       //监听checkbox
       layui.form.on('checkbox(pass)', function (obj) {
-        var openId = this.value;   
+        var openId = this.value;
         var license = this.name;
         console.log(obj);
         var status = 3;
@@ -202,7 +209,7 @@
         }
         $.ajax({
           type: "get",
-          url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=" + status+"&license="+license,
+          url: "/ycglj/user/setAuthentication.do?openId=" + openId + "&authentication=" + status + "&license=" + license,
           contentType: 'application/x-www-form-urlencoded;charset=utf-8',
           data: {},
           dataType: "json",

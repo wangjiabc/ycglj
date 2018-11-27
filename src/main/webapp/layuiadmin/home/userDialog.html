@@ -66,7 +66,7 @@
             </div>
         </blockquote>
         <div class="mark_button">
-                <button type="button" class="layui-btn layui-btn-normal" id="up_imgs"><i class="layui-icon">&#xe67c;</i>上传图片</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="up_imgs" onclick="upImg()"><i class="layui-icon">&#xe67c;</i>上传图片</button>
             <button type="button" class="layui-btn layui-btn-normal" id="sele_imgs"><i class="layui-icon">&#xe67c;</i>替换图片</button>
             <!-- <button type="button" class="layui-btn" id="upload_imgs" disabled>开始上传</button> -->
             <!-- <button type="button" class="layui-btn layui-btn-danger" id="dele_imgs">删除选中图片</button> -->
@@ -95,11 +95,17 @@
                     case 'conIdentity':
                     return '身份证反面照';
                     break;
+                    case 'business':
+                    return '工商营业执照';
+                    break;
                     case 'license':
-                    return '营业执照';
+                    return '营业许可证';
                     break;
                     case 'sing':
                     return '签名照';
+                    break;
+                    case 'other':
+                    return '其它';
                     break;
                 }
             }
@@ -108,7 +114,9 @@
     </script>
 
     <script>
-        var openId = window.location.href.split('?')[1];
+        var content = window.location.href.split('?')[1];
+        var openId = content.split(',')[0];
+        var license = content.split(',')[1];
         var d_type;
         var uploader;
         var choose_index;
@@ -149,6 +157,7 @@
                 data: {
                     openId: openId,
                     file: fileObj,
+                    license: license,
                     data_type: function () {
                         return d_type
                     }
@@ -164,6 +173,9 @@
                     //请求异常回调
                 }
             });
+        }
+        function upImg() {
+            var fileObj;
             uploader.render({
                 elem: '#up_imgs' //绑定元素
                 , url: '/ycglj/user/inputImage.do' //上传接口
@@ -178,6 +190,7 @@
                 data: {
                     openId: openId,
                     file: fileObj,
+                    license: license,
                     data_type: function () {
                         return d_type
                     }
@@ -208,7 +221,10 @@
                 type: "post",
                 url: "/ycglj/user/getUserDateById.do",
                 contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                data: { openId: openId },
+                data: {
+                    openId: openId
+                    , license: license
+                },
                 dataType: "json",
                 success: function (text) {
                     console.log(text);

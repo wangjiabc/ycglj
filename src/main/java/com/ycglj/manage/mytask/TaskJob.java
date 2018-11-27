@@ -23,6 +23,7 @@ import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.sqlserver.context.Connect;
+import com.ycglj.weixin.controller.WechatSendMessageController;
 
 import common.HttpClient;
 
@@ -47,6 +48,8 @@ private SellerService sellerService;
 	
 	OrderDAO orderDao=(OrderDAO) applicationContext.getBean("orderdao");
 	
+	WechatSendMessageController wechatSendMessageController=new WechatSendMessageController();
+	
     public void job1() {  
     	
     	System.out.println("taskjob!");
@@ -70,6 +73,9 @@ private SellerService sellerService;
 		List list=(List) map.get("data");
 		
 		Iterator iterator=list.iterator();
+		
+		SimpleDateFormat sdf2  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+		String time = sdf2.format(date);
 		
 		if(iterator.hasNext()){
 			
@@ -100,9 +106,49 @@ private SellerService sellerService;
 			
 			}
 			
+			wechatSendMessageController.sendMessage(user_Order_Join.getOpen_id(), "wduMyer_B2W7_b4blROCZXJ7YZU1wl232Hx27HvkQQU", "预约过期通知",
+					"http://lzgfgs.com/ycglj/mobile/asset/authentic/transact.html",
+					"尊敬的零售户"+user_Order_Join.getName()+"您的预约已过期未办理", "审核通过", "审核许可证",
+					date.toString(),time, "合江县烟草专卖局", "");
+			
 		}
     	    
     }  
     
+    public void job2() {  
+    	
+    	System.out.println("taskjob2!");
+    	
+    	Map searchMap=new HashMap<>();
+		
+    	Date date=new Date();
+			
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+		String d = sdf.format(date);
+
+		searchMap.put("convert(varchar(11),sub_date,120 ) =", d);
+		
+		Map map=orderDao.getAllUser_Order_Join(10, 0, "", "", searchMap);
+		
+		List list=(List) map.get("data");
+		
+		Iterator iterator=list.iterator();
+		
+		SimpleDateFormat sdf2  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+		String time = sdf2.format(date);
+		
+		if(iterator.hasNext()){
+			
+			User_Order_Join user_Order_Join=(User_Order_Join) iterator.next();
+		
+			wechatSendMessageController.sendMessage(user_Order_Join.getOpen_id(), "3TpSUaoNs4Ejm2oMP8b0TrfR7HJgk4JFzN-n8raDU4Y", "预约到期提醒",
+					"http://lzgfgs.com/ycglj/mobile/asset/authentic/transact.html",
+					"尊敬的零售户"+user_Order_Join.getName()+"您的预约即将开始", user_Order_Join.getName(), "审核许可证",
+					date.toString(),time, "", "请准时到合江县烟草专卖局办理，不要错过时间哦");
+			
+		}
+    	    
+    }
     
 }  

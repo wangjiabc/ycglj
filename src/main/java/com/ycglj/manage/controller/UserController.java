@@ -1,9 +1,11 @@
 package com.ycglj.manage.controller;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,6 +34,7 @@ import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
+import com.ycglj.weixin.controller.WechatSendMessageController;
 
 @Controller
 @RequestMapping("/user")
@@ -154,10 +157,10 @@ public class UserController {
 	}
 	
 	@RequestMapping("getUserDateById")
-	public @ResponseBody Map<String, Object> getUserDateById(@RequestParam String openId,String license,HttpServletRequest request) {
-						
-		Order_User order_User=new Order_User();
-
+	public @ResponseBody Map<String, Object> getUserDateById(@RequestParam String openId,@RequestParam String license,HttpServletRequest request) {
+		
+		List<User_Data> list;
+		
 		Map searchMap=new HashMap<>();
 		
 		searchMap.put("open_id = ", openId);
@@ -166,8 +169,6 @@ public class UserController {
 		if(license!=null&&!license.equals("")){
 			searchMap.put("license=", license);
 		}
-		
-		MyTestUtil.print(searchMap);
 		
 		return userDao.getAllUserData(request,1000, 0, "","", searchMap);
 				
@@ -189,6 +190,55 @@ public class UserController {
 		
 	}
 	
+	@RequestMapping("sendMessage")
+	public @ResponseBody Integer sendMessage(@RequestParam String openId,
+			@RequestParam String license,@RequestParam String content,
+			@RequestParam  Integer result,HttpServletRequest request) {
+
+		WechatSendMessageController wechatSendMessageController=new WechatSendMessageController();
+		
+		Map search=new HashMap<>();
+		
+		search.put("openId = ",openId);
+		
+		Map map=userDao.getAllUserJoin(10, 0 , "", "", search);
+		
+		List list=(List) map.get("data");
+		
+		String userName = "";
+		
+		try {
+			
+			Users_License_Join users_License_Join = (Users_License_Join) list.get(0);
+
+			userName = users_License_Join.getName();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		Date date=new Date();		
+		SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+		String time = sdf.format(date);
+		
+		int i;
+		
+		if(result==1){
+			i=wechatSendMessageController.sendMessage(openId, "xlsrkoB9NfVmOQevONVag_FPaZqEi69WmK6m9LLt9-Q", "审核通知",
+					"http://lzgfgs.com/ycglj/mobile/asset/",
+					"尊敬的零售户"+userName+"您的许可证"+license+"审核信息如下:", "审核通过", time, "",
+					"", "", "");
+		}else{
+			i=wechatSendMessageController.sendMessage(openId, "zDianErT1_ZyhcfbhelGcwCr2fZ1KOMLXPxf2GqL0do", "申请驳回通知",
+					"http://lzgfgs.com/ycglj/mobile/asset/",
+					"许可证审核通知:", userName, time, "未通过",
+					content, "", "请修改后，重新提交");
+		}
+
+		return i;
+		
+	}
 	
 	@RequestMapping(value="inputImage")
 	public @ResponseBody Integer uploadFilesSpecifyPath(@RequestParam("file") MultipartFile[] file,@RequestParam String openId,@RequestParam String data_type,String license,HttpServletRequest request,HttpServletResponse response) throws Exception {  
@@ -316,16 +366,7 @@ public class UserController {
                         //上传
                         try{
                         	file.transferTo(targetFile);
-                        	
-                        	User_Data user_Data2=new User_Data();
-                        	
-                        	String[] where={"open_id=",openId,"data_type=",data_type};
-                        	user_Data2.setWhere(where);
-                        	user_Data2.setCurrently(0);
-                        	user_Data2.setAffirm(0);
-                        	
-                        	userDao.updateUserData(user_Data2);
-                        	
+
                              User_Data user_Data=new User_Data();
                              user_Data.setOpen_id(openId);
                              user_Data.setUuid(uuid.toString());
@@ -337,7 +378,7 @@ public class UserController {
                              user_Data.setUri(origName);
                              if(license!=null&&!license.equals(""))
                             	 user_Data.setLicense(license);
-                             userDao.insertUserData(user_Data);
+                             userDao.insertUserData2(user_Data);
 
                         }catch (Exception e) {
 							// TODO: handle exception

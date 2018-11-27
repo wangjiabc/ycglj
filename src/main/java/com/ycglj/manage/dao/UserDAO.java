@@ -29,6 +29,9 @@ public interface UserDAO {
     
 	public Integer insertUserData(User_Data user_Data);
 	
+	//桌面后台调用
+	public Integer insertUserData2(User_Data user_Data);
+	
     public Integer updateUserData(User_Data user_Data);
     
     public Integer updateUserDataAffirm(String openId,List list);
