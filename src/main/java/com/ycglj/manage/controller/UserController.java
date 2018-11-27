@@ -30,6 +30,7 @@ import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.service.SellerService;
+import com.ycglj.manage.service.WeiXinService;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
 import com.ycglj.manage.tools.MyTestUtil;
@@ -49,6 +50,13 @@ public class UserController {
 	@Autowired
 	public void setSellerService(SellerService sellerService) {
 		this.sellerService = sellerService;
+	}
+	
+	private WeiXinService weiXinService;
+	
+	@Autowired
+	public void setWeiXinService(WeiXinService weiXinService) {
+		this.weiXinService = weiXinService;
 	}
 	
 	ApplicationContext applicationContext=new Connect().get();
@@ -199,13 +207,15 @@ public class UserController {
 		
 		Map search=new HashMap<>();
 		
-		search.put("openId = ",openId);
+		search.put("[Users].open_id = ",openId);
 		
 		Map map=userDao.getAllUserJoin(10, 0 , "", "", search);
 		
 		List list=(List) map.get("data");
 		
 		String userName = "";
+		
+		System.out.println("content="+content);
 		
 		try {
 			
@@ -230,14 +240,53 @@ public class UserController {
 					"尊敬的零售户"+userName+"您的许可证"+license+"审核信息如下:", "审核通过", time, "",
 					"", "", "");
 		}else{
-			i=wechatSendMessageController.sendMessage(openId, "zDianErT1_ZyhcfbhelGcwCr2fZ1KOMLXPxf2GqL0do", "申请驳回通知",
+			i=wechatSendMessageController.sendMessage(openId, //"zDianErT1_ZyhcfbhelGcwCr2fZ1KOMLXPxf2GqL0do", 
+					"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg","申请驳回通知",
 					"http://lzgfgs.com/ycglj/mobile/asset/",
 					"许可证审核通知:", userName, time, "未通过",
 					content, "", "请修改后，重新提交");
+		//	wechatSendMessageController.sendMessage(openId, Template_Id, Send_Type, url,
+			//		first_data, keyword1_data, keyword2_data, keyword3_data, keyword4_data, keyword5_data, remark_data)
 		}
 
 		return i;
 		
+	}
+	
+	@RequestMapping("/getAllMessageList")
+	public @ResponseBody Map<String, Object> getAllMessageList(Integer limit,Integer offset,String sort,String order,
+			String search,HttpServletRequest request){
+		
+		Integer campusId=1;
+		
+		if(sort!=null&&sort.equals("sendTime")){
+			sort="send_time";
+		}else{
+			sort="send_time";
+		}
+		
+		if(order!=null&&order.equals("asc")){
+			order="asc";
+		}
+		
+		if(order!=null&&order.equals("desc")){
+			order="desc";
+		}
+		
+		if(search!=null&&!search.equals("")){
+			search="%"+search+"%";
+		}
+		
+		List list=weiXinService.getAllMessageList(campusId, limit, offset, sort, order, search);
+		
+		int count=weiXinService.getAllMessageCount(campusId, search);
+		
+		Map map=new HashMap<>();
+		
+		map.put("rows", list);
+		map.put("total", count);
+		
+		return map;
 	}
 	
 	@RequestMapping(value="inputImage")

@@ -10,14 +10,19 @@
     <link rel="stylesheet" type="text/css" href="../layui/css/layui.css" />
     <link rel="stylesheet" href="../style/admin.css" media="all">
 </head>
+<style>
+    .choose_solid{
+        border:solid 1px #1E9FFF;
+    }
+</style>
 
 <body>
     <div class="layui-collapse" id="view">
         <div class="layui-colla-item" style="padding: 20px; background-color: #F2F2F2;">
             <div class="layui-row layui-col-space15">
-                <div class="layui-card layui-collapse layui-show">
+                <div class="layui-card layui-collapse">
                     <div class="layui-colla-title">消息列表1</div>
-                    <div class="layui-card-body layui-colla-content layui-show">
+                    <div class="layui-card-body layui-colla-content">
                         经审查，您提交的工商营业执照主体姓名与烟草专卖零售许可证主体姓名不一致，请前往合江县烟草专卖局行政服务大厅咨询办理。
                     </div>
                 </div>
@@ -25,30 +30,30 @@
         </div>
         <div class="layui-colla-item" style="padding: 20px; background-color: #F2F2F2;">
             <div class="layui-row layui-col-space15">
-                <div class="layui-card layui-collapse">
-                    <div class="layui-card-header">消息列表2</div>
-                    <div class="layui-card-body">
-                            经审查，您提交的工商营业执照上的地址与烟草专卖零售许可证经营地址不是同一地址，请您先前往工商局变更工商营业执照地址。再重新进行网上申请或直接前往合江县烟草专卖局行政服务大厅咨询办理。
-
+                <div class="layui-card layui-collapse layui-show">
+                    <div class="layui-colla-title">消息列表2</div>
+                    <div class="layui-card-body layui-colla-content">
+                        经审查，您提交的工商营业执照上的地址与烟草专卖零售许可证经营地址不是同一地址，请您先前往工商局变更工商营业执照地址。再重新进行网上申请或直接前往合江县烟草专卖局行政服务大厅咨询办理。
                     </div>
                 </div>
             </div>
         </div>
         <div class="layui-colla-item" style="padding: 20px; background-color: #F2F2F2;">
             <div class="layui-row layui-col-space15">
-                <div class="layui-card layui-collapse">
-                    <div class="layui-card-header">消息列表1</div>
-                    <div class="layui-card-body">
-                            经审查，因政府街道、门牌变更等情况，导致您提交的工商营业执照上的地址与烟草专卖零售许可证经营地址不一致。您需前往街道社区或乡政府出具两证地址为同一地址的证明材料。在上传提交申请材料时，在其他证明材料选项栏，上传盖有公章的（地址证明材料）。
-
+                <div class="layui-card layui-collapse layui-show">
+                    <div class="layui-colla-title">消息列表3</div>
+                    <div class="layui-card-body layui-colla-content">
+                        经审查，因政府街道、门牌变更等情况，导致您提交的工商营业执照上的地址与烟草专卖零售许可证经营地址不一致。您需前往街道社区或乡政府出具两证地址为同一地址的证明材料。在上传提交申请材料时，在其他证明材料选项栏，上传盖有公章的（地址证明材料）。
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <button class="layui-btn">微信推送</button>
-    <button class="layui-btn layui-btn-normal">短信推送</button>
-    <button class="layui-btn layui-btn-warm">取消</button>
+    <div style="float:right;padding: 10px;">
+        <button class="layui-btn" id="wechat">微信推送</button>
+        <button class="layui-btn layui-btn-normal" onclick="sms()">短信推送</button>
+        <button class="layui-btn layui-btn-warm" onclick="parent.layui.layer.closeAll();">取消</button>
+    </div>
 
 
     <script id="message" type="text/html">
@@ -66,14 +71,43 @@
     <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <script src="../layui/layui.js"></script>
     <script>
-        layui.use(['layer', 'form','element'], function () {
+        var content;
+        var dataresult = window.location.href.split('?')[1];
+        $(document).ready(function () {
+            $('#wechat').click(function () {
+                var license = dataresult.split('=')[2];
+                var openId = dataresult.split('=')[1].split('&')[0];
+                content = $.trim($('.choose_solid').find(".layui-card-body").text());
+                console.log($.trim(content))
+                $.ajax({
+                    type: "get",
+                    url: "/ycglj/user/sendMessage.do?openId=" + openId + "&license=" + license + "&content=" + content + "&result=0",
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        parent.layui.layer.closeAll();
+                    },
+                    error: function (e) {
+                        parent.layui.layer.closeAll('iframe');
+                        console.log(e);
+                    }
+                })
+            })
+        });
+
+
+        $('.layui-row').click(function () {
+            $(this).toggleClass('choose_solid');
+        });
+
+        function sms() {
+            parent.layui.layer.closeAll();
+        }
+        layui.use(['layer', 'form', 'element'], function () {
             var layer = layui.layer,
                 form = layer.form,
-                element =layer.element;
-            layui.form.on('submit(save)', function (data) {
-                console.log(data.field);
-            })
-            return false;
+                element = layer.element;
         })
 
     </script>

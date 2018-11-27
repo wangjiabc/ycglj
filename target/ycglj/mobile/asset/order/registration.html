@@ -433,7 +433,7 @@
 						console.log(data.length);
 						console.log(licenseData);
 
-						for (i = 0; i < data.length; i++) {
+						for (i = 0; i < licenseData.length; i++) {
 							license.push(licenseData[i].license);
 							$("[name='more']").append('<a class="weui-cell weui-cell_access" onclick="getBusiness(' + licenseData[i].license + ')" href="javascript:;">' +
 								'<div  id="zz' + licenseData[i].license + '" name="0" class="weui-panel__bd">' +
@@ -516,7 +516,7 @@
 							}
 							console.log('保存图片数组的id' + arrays);
 
-
+							console.log("arrays="+arrays);
 						$.post(
 							"/ycglj/mobile/user/updateAffire.do",
 							{
@@ -525,7 +525,7 @@
 							},
 							function (
 								text) {
-
+								console.log(text);
 								if (text == 1) {
 
 									$

@@ -66,7 +66,24 @@
             </div>
         </blockquote>
         <div class="mark_button">
-                <button type="button" class="layui-btn layui-btn-normal" id="up_imgs"><i class="layui-icon">&#xe67c;</i>上传图片</button>
+            <div style="float:left">
+                <form class="layui-form" action="">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">选择上传图片类型</label>
+                        <div class="layui-input-block">
+                            <select id="up_type" lay-filter="up_type">
+                                <option value=""></option>
+                                <option value="0">身份证正面照片</option>
+                                <option value="1">身份证反面照片</option>
+                                <option value="2">工商营业执照</option>
+                                <option value="3">营业许可证</option>
+                                <option value="4">其它照片</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <button type="button" class="layui-btn layui-btn-normal" onclick="upImg()" id="up_imgs"><i class="layui-icon">&#xe67c;</i>上传图片</button>
             <button type="button" class="layui-btn layui-btn-normal" id="sele_imgs"><i class="layui-icon">&#xe67c;</i>替换图片</button>
             <!-- <button type="button" class="layui-btn" id="upload_imgs" disabled>开始上传</button> -->
             <!-- <button type="button" class="layui-btn layui-btn-danger" id="dele_imgs">删除选中图片</button> -->
@@ -95,11 +112,17 @@
                     case 'conIdentity':
                     return '身份证反面照';
                     break;
+                    case 'business':
+                    return '工商营业执照';
+                    break;
                     case 'license':
-                    return '营业执照';
+                    return '营业许可证';
                     break;
                     case 'sing':
                     return '签名照';
+                    break;
+                    case 'other':
+                    return '其它';
                     break;
                 }
             }
@@ -108,7 +131,9 @@
     </script>
 
     <script>
-        var openId = window.location.href.split('?')[1];
+        var content = window.location.href.split('?')[1];
+        var openId = content.split(',')[0];
+        var license = content.split(',')[1];
         var d_type;
         var uploader;
         var choose_index;
@@ -149,6 +174,7 @@
                 data: {
                     openId: openId,
                     file: fileObj,
+                    license: license,
                     data_type: function () {
                         return d_type
                     }
@@ -164,12 +190,33 @@
                     //请求异常回调
                 }
             });
+        }
+        function upImg() {
+            var fileObj;
+            switch ($("#up_type option:selected").val()) {
+                case 0:
+                    d_type = "identity";
+                    break;
+                case 1:
+                    d_type = "conIdentity";
+                    break;
+                case 2:
+                    d_type = "business";
+                    break;
+                case 3:
+                    d_type = "license";
+                    break;
+                case 4:
+                    d_type = "other";
+                    break;
+                default:
+                    break;
+            }
             uploader.render({
                 elem: '#up_imgs' //绑定元素
                 , url: '/ycglj/user/inputImage.do' //上传接口
                 , before: function (obj) {
                     layer.load(); //上传loading
-                    console.log(d_type);
                     obj.preview(function (index, file, result) {
                         fileObj = file;
                     });
@@ -178,6 +225,7 @@
                 data: {
                     openId: openId,
                     file: fileObj,
+                    license: license,
                     data_type: function () {
                         return d_type
                     }
@@ -204,11 +252,22 @@
             uploader = layui.upload;
             var text;
             var fileObj;
+            //下拉框监听
+            layui.form.on('select(up_type)', function (data) {
+                if (data.value == "") {
+                    layer.msg("请选择上传的类型");
+                } else {
+
+                }
+            })
             $.ajax({
                 type: "post",
                 url: "/ycglj/user/getUserDateById.do",
                 contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                data: { openId: openId },
+                data: {
+                    openId: openId
+                    , license: license
+                },
                 dataType: "json",
                 success: function (text) {
                     console.log(text);

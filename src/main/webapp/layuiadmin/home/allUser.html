@@ -174,7 +174,7 @@
                   , type: 2
                   , shadeClose: true
                   , area: ['960px', '420px']
-                  , content: '/ycglj/layuiadmin/home/sendMessageDialog.html',
+                  , content: '/ycglj/layuiadmin/home/sendMessageDialog.html?openId=' + openId + "&license=" + license,
                 });
               },
               error: function (e) {
@@ -215,7 +215,7 @@
           dataType: "json",
           success: function (data) {
             console.log("成功" + data);
-            if (data == 1) {
+            if (data >= 1) {
               layer.alert('设置成功', { icon: 1 });
               table.reload('test');
             } else {
