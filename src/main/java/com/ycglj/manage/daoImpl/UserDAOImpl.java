@@ -403,7 +403,45 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 			e.printStackTrace();
 		}
 		
+		if(!search.equals("")&&!search.isEmpty()){
+			Set set=search.entrySet();   
+			int size=search.size();
+			String[] where=new String[size*2+2];
+			Iterator iterator=set.iterator();     
+			int i=0;
+			while (iterator.hasNext()){ 
+			    Map.Entry  mapentry = (Map.Entry) iterator.next();
+			    System.out.println("key="+i+" "+mapentry.getKey());
+					where[i] = (String) mapentry.getKey();
+					// System.out.println(i+" "+mapentry.getKey());
+					where[i + 1] = (String) mapentry.getValue();
+					// System.out.println(i+" "+mapentry.getValue());
+					i = i + 2;
+					MyTestUtil.print(where);
+			}   
+			
+			where[i]="data_type = ";
+			where[i+1]="business";
+			
+			System.out.println("where3=");
+			
+			MyTestUtil.print(where);
+			
+			user_Data.setWhere(where);
+		}
+		
+		try {
+			
+			List<User_Data> list3 = SelectExe.get(this.getJdbcTemplate(), user_Data);
 
+			list.addAll(list3);
+		
+			total=total+(int) SelectExe.getCount(this.getJdbcTemplate(), user_Data).get("");
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 		
 		List fileBytes=new ArrayList<>();
 		

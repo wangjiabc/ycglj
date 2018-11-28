@@ -46,7 +46,7 @@
 </script>
 
   <script type="text/html" id="barDemo">
-  <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+  <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">审查</a>
   <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="refuse">拒绝申请</a>
 </script>
   <script type="text/html" id="checkboxTpl">
@@ -155,7 +155,7 @@
             title: '零售户资料信息'
             , type: 2
             , shadeClose: true
-            , area: ['960px', '420px']
+            // , area: ['1080px', '420px']
             , content: '/ycglj/layuiadmin/home/userDialog.html?' + result,
           });
           // });
@@ -181,27 +181,15 @@
                 console.log(e);
               }
             })
-
           });
-
         }
-        // else if (obj.event === 'edit') {
-        //   layer.prompt({
-        //     formType: 2
-        //     , value: data.email
-        //   }, function (value, index) {
-        //     obj.update({
-        //       email: value
-        //     });
-        //     layer.close(index);
-        //   });
-        // }
       });
       var authentication;
       //监听checkbox
       layui.form.on('checkbox(pass)', function (obj) {
         var openId = this.value;
         var license = this.name;
+        var content = "您的预约已通过！";
         console.log(obj);
         var status = 3;
         if (obj.elem.checked == true) {
@@ -214,12 +202,31 @@
           data: {},
           dataType: "json",
           success: function (data) {
-            console.log("成功" + data);
             if (data >= 1) {
-              layer.alert('设置成功', { icon: 1 });
+              layer.confirm('是否发送预约成功的微信推送?', { icon: 3, title: '提示' }, function (index) {
+                //发送成功推送的接口
+                $.ajax({
+                  type: "get",
+                  url: "/ycglj/user/sendMessage.do?openId=" + openId + "&license=" + license + "&content=" + content + "&result=1",
+                  contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                  data: {},
+                  dataType: "json",
+                  success: function (data) {
+                    table.reload('test');
+                    layer.alert('设置成功', { icon: 1 });
+                    parent.layui.layer.closeAll();
+                  },
+                  error: function (e) {
+                    parent.layui.layer.closeAll('iframe');
+                    console.log(e);
+                  }
+                })
+                // layer.close(index);
+              });
               table.reload('test');
             } else {
               layer.alert('error', { icon: 2 });
+              table.reload('test');
               layui.form.render();
             }
           },

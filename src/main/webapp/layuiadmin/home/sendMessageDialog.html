@@ -74,6 +74,7 @@
         var content;
         var dataresult = window.location.href.split('?')[1];
         $(document).ready(function () {
+            //微信推送
             $('#wechat').click(function () {
                 var license = dataresult.split('=')[2];
                 var openId = dataresult.split('=')[1].split('&')[0];

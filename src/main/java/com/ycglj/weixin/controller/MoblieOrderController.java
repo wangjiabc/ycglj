@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.bouncycastle.jce.provider.asymmetric.ec.Signature.ecCVCDSA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -26,9 +25,9 @@ import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Order_Date;
 import com.ycglj.manage.daoModel.Order_User;
+import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
-import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 
 @Controller
@@ -133,7 +132,7 @@ public class MoblieOrderController {
 				orderMap.put("datetime", subDate);
 				orderMap.put("order_number", order_Date.getOrder_number());
 				order.add(orderMap);
-				if(order_Date.getOrder_number()>=30){
+				if(order_Date.getOrder_number()>=70){
 					full.add(subDate);
 				}
 			}
@@ -230,7 +229,7 @@ public class MoblieOrderController {
 		search.put("[Order_User].open_id = ", openId);
 		
 		List list=(List) orderDao.getAllOrderUser(1, 0, "","", search).get("data");
-		
+
 		try {
 			User_Order_Join user_Order_Join=(User_Order_Join) list.get(0);
 			order_User.setOpen_id(user_Order_Join.getOpen_id());
@@ -304,6 +303,47 @@ public class MoblieOrderController {
 			order_User.setDate(new Date());
 			
 			i=orderDao.insertOrderUser(order_User);
+		}
+		
+		try {
+
+			if (i > 0) {
+
+				WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+				Map searchMap = new HashMap<>();
+
+				searchMap.put("open_id = ", openId);
+
+				List list2 = (List) userDao.getAllUser(1, 0, "", "", searchMap).get("data");
+
+				Users users = (Users) list2.get(0);
+
+				Runnable r = new Runnable() {
+
+					@Override
+					public void run() {
+
+						WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+						wechatSendMessageController.sendMessage(openId, "ItBoMXLCbRehTb-su4Z8LNEnq00wxFLN68URlkvTM_4",
+								//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
+								"预约成功提醒",
+								"http://lzgfgs.com/ycglj/mobile/asset/authentic/transact.html",
+								"尊敬的零售户" + users.getName() + "，您有一条新预约消息。", "已预约", "成功", "", "", "",
+								"请在约定的时间带上本人身份证原件、工商营业执照原件、烟草专卖零售许可证原件，前往合江县烟草专卖局（泸州市合江县合江镇少岷南路245号）办理业务。联系电话：0830---5260053");
+
+					}
+				};
+
+				Thread t = new Thread(r);
+				t.start();
+
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		return i;

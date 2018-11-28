@@ -152,7 +152,7 @@ public class WechatSendMessageController {
 				m.put("keyword5", keyword5);
 			}
 			
-			if (remark_data != null && remark_data.equals("")) {
+			if (remark_data != null && !remark_data.equals("")) {
 				TemplateData remark = new TemplateData();
 				remark.setColor("#929232");
 				remark.setValue(remark_data);
@@ -168,7 +168,7 @@ public class WechatSendMessageController {
 
 			messageList.setCampusId(campusId);
 			messageList.setOpenId(openId);
-			messageList.setContext(keyword1_data + "," + keyword2_data + "," + keyword3_data + "," + keyword4_data+ "," + keyword5_data);
+			messageList.setContext(keyword1_data + "," + keyword2_data + "," + keyword3_data + "," + keyword4_data+ "," + keyword5_data+","+remark_data);
 			messageList.setType(Send_Type);
 			messageList.setSendTime(new Date());
 			
@@ -265,7 +265,7 @@ public class WechatSendMessageController {
 				m.put("keyword4", keyword4);
 			}
 			
-			if(remark_data!=null&&remark_data.equals("")){
+			if(remark_data!=null&&!remark_data.equals("")){
 				TemplateData remark = new TemplateData();
 				remark.setColor("#929232");
 				remark.setValue(remark_data);

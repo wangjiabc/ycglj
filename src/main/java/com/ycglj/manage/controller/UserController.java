@@ -3,6 +3,7 @@ package com.ycglj.manage.controller;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -217,21 +218,23 @@ public class UserController {
 		
 		System.out.println("content="+content);
 		
+		Date date=new Date();		
+		SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+		String time = sdf.format(date);
+		
 		try {
 			
 			Users_License_Join users_License_Join = (Users_License_Join) list.get(0);
 
 			userName = users_License_Join.getName();
 			
+			time=sdf.format(users_License_Join.getDate());
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
-		Date date=new Date();		
-		SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
-		String time = sdf.format(date);
-		
+
 		int i;
 		
 		if(result==1){
@@ -240,21 +243,83 @@ public class UserController {
 					"尊敬的零售户"+userName+"您的许可证"+license+"审核信息如下:", "审核通过", time, "",
 					"", "", "");
 		}else{
-			i=wechatSendMessageController.sendMessage(openId, //"zDianErT1_ZyhcfbhelGcwCr2fZ1KOMLXPxf2GqL0do", 
-					"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg","申请驳回通知",
+			i=wechatSendMessageController.sendMessage(openId, "zDianErT1_ZyhcfbhelGcwCr2fZ1KOMLXPxf2GqL0do", 
+					//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+					"申请驳回通知",
 					"http://lzgfgs.com/ycglj/mobile/asset/",
 					"许可证审核通知:", userName, time, "未通过",
 					content, "", "请修改后，重新提交");
-		//	wechatSendMessageController.sendMessage(openId, Template_Id, Send_Type, url,
-			//		first_data, keyword1_data, keyword2_data, keyword3_data, keyword4_data, keyword5_data, remark_data)
 		}
 
 		return i;
 		
 	}
 	
+	
+	@RequestMapping("sendPhoneMessage")
+	public @ResponseBody Integer sendPhoneMessage(@RequestParam String openId,
+			@RequestParam String license,@RequestParam String content,
+			@RequestParam  Integer result,HttpServletRequest request) {
+
+		WechatSendMessageController wechatSendMessageController=new WechatSendMessageController();
+		
+		Map search=new HashMap<>();
+		
+		search.put("[Users].open_id = ",openId);
+		
+		Map map=userDao.getAllUserJoin(10, 0 , "", "", search);
+		
+		List list=(List) map.get("data");
+		
+		String userName = "";
+		
+		String phone="";
+
+		System.out.println("content="+content);
+		
+		Date date=new Date();		
+		SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+		String time = sdf.format(date);
+		
+		try {
+			
+			Users_License_Join users_License_Join = (Users_License_Join) list.get(0);
+
+			userName = users_License_Join.getName();
+			
+			phone=users_License_Join.getPhone();
+			
+			time=sdf.format(users_License_Join.getDate());
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		int i=0;
+		
+		
+		if (phone != null && !phone.equals("")) {
+
+			if (result == 1) {
+
+				i = wechatSendMessageController.sendPhoneMessage(phone,
+						"尊敬的零售户" + userName + ",您的许可证" + license + "审核通过", userName, openId);
+
+			} else {
+
+				i = wechatSendMessageController.sendPhoneMessage(phone,
+						"尊敬的零售户" + userName + ",您的许可证" + license + "审核信息如下:"+content, userName, openId);
+			}
+			
+		}
+		
+		return i;
+		
+	}
+	
 	@RequestMapping("/getAllMessageList")
-	public @ResponseBody Map<String, Object> getAllMessageList(Integer limit,Integer offset,String sort,String order,
+	public @ResponseBody Map<String, Object> getAllMessageList(Integer limit,Integer page,String sort,String order,
 			String search,HttpServletRequest request){
 		
 		Integer campusId=1;
@@ -277,6 +342,11 @@ public class UserController {
 			search="%"+search+"%";
 		}
 		
+		int offset=0;
+		
+		if(page!=null)
+			offset=(page-1)*limit;
+		
 		List list=weiXinService.getAllMessageList(campusId, limit, offset, sort, order, search);
 		
 		int count=weiXinService.getAllMessageCount(campusId, search);
@@ -288,6 +358,74 @@ public class UserController {
 		
 		return map;
 	}
+	
+	@RequestMapping("/getPreMessage")
+	public @ResponseBody Map getPreMessage(@RequestParam Integer limit,@RequestParam Integer page,
+			@RequestParam Integer time,String sort,String order,
+			String search){
+		
+		if(sort!=null&&!sort.equals("")){
+		}else{
+			sort="OptDate";
+		}
+		
+		System.out.println("order="+order);
+		
+		if(order!=null&&order.equals("asc")){
+			order="asc";
+		}else if(order!=null&&order.equals("desc")){
+			order="desc";
+		}else{
+			order="desc";
+		}
+		
+		Calendar cal = Calendar.getInstance();  
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);  
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+		
+        if(time==2){
+        	cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        }
+        
+        String startTime = null;
+		
+		startTime=sdf.format(cal.getTime());
+        
+		cal = Calendar.getInstance();  
+
+        String endTime = null;
+		
+		endTime=sdf.format(cal.getTime());
+		
+		System.out.println("startTime="+startTime+"   endTime="+endTime);
+		
+		Map where=new HashMap<>();
+		
+		if(time==1){
+			where.put("convert(varchar(11),"+Singleton.ROOMDATABASE+
+					".[dbo].[PreMessage].OptDate ,120 ) = ", endTime);
+		}else if(time>1){
+			where.put("convert(varchar(11),"+Singleton.ROOMDATABASE+
+					".[dbo].[PreMessage].OptDate ,120 ) >= ", startTime);
+			where.put("convert(varchar(11),"+Singleton.ROOMDATABASE+
+					".[dbo].[PreMessage].OptDate ,120 ) <= ", endTime);
+		}
+		
+		if(search!=null&&!search.equals("")){
+			where.put(Singleton.ROOMDATABASE+
+					".[dbo].[PreMessage].PhoneWho like ","%"+search+"%");
+		}
+		
+		int offset=0;
+		
+		if(page!=null)
+			offset=(page-1)*limit;
+		
+		return userDao.findAllPreMessage(limit, offset, sort, order, where);
+	}
+	
+	
 	
 	@RequestMapping(value="inputImage")
 	public @ResponseBody Integer uploadFilesSpecifyPath(@RequestParam("file") MultipartFile[] file,@RequestParam String openId,@RequestParam String data_type,String license,HttpServletRequest request,HttpServletResponse response) throws Exception {  
