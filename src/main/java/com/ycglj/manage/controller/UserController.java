@@ -124,8 +124,16 @@ public class UserController {
 			String phone,HttpServletRequest request) {
 		// TODO Auto-generated method stub
 
+		System.out.println("openId="+openId);
+		
 		Users users = new Users();
 
+		users.setOpen_id(openId);
+		
+		String[] where = { "open_id = ", openId };
+		
+		users.setWhere(where);
+		
 		if(name!=null&&!name.equals("")){
 			users.setName(name);
 		}
@@ -137,14 +145,10 @@ public class UserController {
 		if(phone!=null&&!phone.equals("")){
 			users.setPhone(phone);
 		}
-		
-		String[] where = { "open_id = ", openId };
 
-		users.setWhere(where);
-		
 		users.setUp_date(new Date());
-
-		return userDao.updateUser(users);
+		
+		return userDao.updateUserPhone(users);
 		
 	}
 	
@@ -332,9 +336,9 @@ public class UserController {
 		
 		if(order!=null&&order.equals("asc")){
 			order="asc";
-		}
-		
-		if(order!=null&&order.equals("desc")){
+		}else if(order!=null&&order.equals("desc")){
+			order="desc";
+		}else{
 			order="desc";
 		}
 		
@@ -353,8 +357,11 @@ public class UserController {
 		
 		Map map=new HashMap<>();
 		
-		map.put("rows", list);
-		map.put("total", count);
+		map.put("code", "0");
+		
+		map.put("data", list);
+		
+		map.put("count", count);
 		
 		return map;
 	}

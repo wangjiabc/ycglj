@@ -157,6 +157,77 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 
 	}
 
+	//后台修改电话号码
+	@Override
+	public Integer updateUserPhone(Users users) {
+		// TODO Auto-generated method stub
+		int i;
+		
+		String openId=users.getOpen_id();
+	    String phone=users.getPhone();
+		
+	    System.out.println("openId="+openId+"     phone="+phone);
+	    
+	    User_License user_License=new User_License();
+
+	    user_License.setLimit(1);
+	    user_License.setOffset(0);
+	    user_License.setNotIn("open_id");
+	    user_License.setOpen_id(openId);
+	    
+	    String[] where = { "open_id = ", openId };
+		
+	    user_License.setWhere(where);
+	    
+	    List list=SelectExe.get(this.getJdbcTemplate(), user_License);
+	    
+	    if(users.getPhone()!=null&&!users.getPhone().equals("")){
+	    	
+	    	try{
+	    		
+	    		User_License user_License2=(User_License) list.get(0);
+	    		
+	    		if(!user_License2.getPhone().equals(phone)){
+	    			
+	    			User_License user_License3=new User_License();
+	    			
+	    			user_License3.setOpen_id(phone);
+	    			user_License3.setPhone(phone);
+	    			
+	    			user_License3.setWhere(where);
+	    			
+	    			i=UpdateExe.get(this.getJdbcTemplate(), user_License3);
+	    			
+	    			if(i<1){
+	    				
+	    				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+	    				
+	    			}else{
+	    				
+	    				users.setOpen_id(phone);
+	    				
+	    			}
+	    			
+	    		}
+	    		
+	    	}catch (Exception e) {
+				// TODO: handle exception
+	    		e.printStackTrace();
+			}
+	    	
+	    }
+	    
+		i=UpdateExe.get(this.getJdbcTemplate(), users);
+		
+		if(i<1){
+			
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			
+		}
+
+	    return i;
+	}
+	
 	@Override
 	public Map<String,Object> getAllUser(Integer limit, Integer offset, String sort,String order, Map<String, String> search) {
 		// TODO Auto-generated method stub
@@ -304,7 +375,48 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	@Override
 	public Integer updateUserLicense(User_License user_License) {
 		// TODO Auto-generated method stub
-		return UpdateExe.get(this.getJdbcTemplate(), user_License);
+		
+		int i;
+		
+		i=UpdateExe.get(this.getJdbcTemplate(), user_License);
+		
+		if(i<1){
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			return 0;
+		}else{
+						
+			try{
+				
+				Order_User order_User=new Order_User();
+				
+				order_User.setLimit(1);
+				order_User.setOffset(0);
+				order_User.setNotIn("id");
+				
+				String[] where={user_License.getWhere()[0],user_License.getWhere()[1]};
+				
+				order_User.setWhere(where);
+				
+				List list=SelectExe.get(this.getJdbcTemplate(), order_User);
+				
+				Order_User order_User2=(Order_User) list.get(0);
+				
+				if(order_User2!=null&&order_User2.getCancel()==0){
+					
+					order_User.setCancel(1);
+					
+					UpdateExe.get(this.getJdbcTemplate(), order_User);
+					
+				}
+				
+			}catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
+		}
+		
+		return i;
 	}
 	
 	@Override
@@ -502,6 +614,8 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		int total=(int) SelectExe.getCount(this.getJdbcTemplate(), preMessage).get("");
 		
 		Map map=new HashMap<>();
+		
+		map.put("code", "0");
 		
 		map.put("data", list);
 		

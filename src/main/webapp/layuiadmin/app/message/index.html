@@ -1,8 +1,6 @@
-
-
-
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>消息中心</title>
@@ -12,59 +10,109 @@
     <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../../../layuiadmin/style/admin.css" media="all">
 </head>
+
 <body>
 
-<div class="layui-fluid" id="LAY-app-message">
-    <div class="layui-card">
-        <div class="layui-tab layui-tab-brief">
-            <ul class="layui-tab-title">
-                <li class="layui-this">全部消息</li>
-                <li>通知<span class="layui-badge">6</span></li>
-                <li>私信</li>
-            </ul>
-            <div class="layui-tab-content">
+    <div class="layui-fluid" id="LAY-app-message">
+        <div class="layui-card">
+            <div class="layui-tab layui-tab-brief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">微信消息</li>
+                    <li>短信消息</li>
+                    <li>通知<span class="layui-badge">6</span></li>
+                </ul>
+                <div class="layui-tab-content">
 
-                <div class="layui-tab-item layui-show">
-                    <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="all" data-events="del">删除</button>
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="all" data-events="ready">标记已读</button>
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="all" data-events="readyAll">全部已读</button>
+                    <div class="layui-tab-item layui-show">
+                        <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                            <!-- <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="all" data-events="del">删除</button>
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="all" data-events="ready">标记已读</button>
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="all" data-events="readyAll">全部已读</button> -->
+                        </div>
+
+                        <table id="wechat-message" lay-filter="wechat-message"></table>
                     </div>
+                    <div class="layui-tab-item">
 
-                    <table id="LAY-app-message-all" lay-filter="LAY-app-message-all"></table>
-                </div>
-                <div class="layui-tab-item">
+                        <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                            <!-- <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="direct" data-events="del">删除</button>
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="direct" data-events="ready">标记已读</button>
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="direct" data-events="readyAll">全部已读</button> -->
+                        </div>
 
-                    <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="notice" data-events="del">删除</button>
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="notice" data-events="ready">标记已读</button>
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="notice" data-events="readyAll">全部已读</button>
+                        <table id="sms-message" lay-filter="sms-message"></table>
                     </div>
+                    <div class="layui-tab-item">
 
-                    <table id="LAY-app-message-notice" lay-filter="LAY-app-message-notice"></table>
-                </div>
-                <div class="layui-tab-item">
+                        <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
+                            <!-- <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="notice" data-events="del">删除</button>
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="notice" data-events="ready">标记已读</button>
+                            <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="notice" data-events="readyAll">全部已读</button> -->
+                        </div>
 
-                    <div class="LAY-app-message-btns" style="margin-bottom: 10px;">
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="direct" data-events="del">删除</button>
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="direct" data-events="ready">标记已读</button>
-                        <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="direct" data-events="readyAll">全部已读</button>
+                        <!-- <table id="LAY-app-message-notice" lay-filter="LAY-app-message-notice"></table> -->
                     </div>
-
-                    <table id="LAY-app-message-direct" lay-filter="LAY-app-message-direct"></table>
                 </div>
             </div>
         </div>
     </div>
-</div>
+    <script type="text/html" id="wechatHead">
+        <img style="height:30px;width:28px" src="{{d.headImgUrl}}">
+      </script>
+    <script src="../../../layuiadmin/layui/layui.js"></script>
+    <script>
+        layui.config({
+            base: '../../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'message']);
+    </script>
+    <script>
+        layui.use(['table', 'laytpl', 'layer', 'util'], function () {
+            var table = layui.table,
+                layer = layui.layer,
+                laytpl = layui.laytpl,
+                util = layui.util;
+            table.render({
+                elem: '#wechat-message'
+                , url: '/ycglj/user/getAllMessageList.do?'
+                , title: '微信数据列表'
+                , page: true
+                , cols: [[
+                    { type: 'checkbox' },
+                    { field: 'id', title: 'ID', sort: true }
+                    , { field: 'headImgUrl', title: '微信头像', templet: '#wechatHead' }
+                    , { field: 'name', edit: 'text', title: '用户名' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    , { field: 'nickname', edit: 'text', title: '微信昵称' }
+                    , { field: 'phone', edit: 'text', title: '电话' }
+                    , { field: 'context', edit: 'text', title: '内容' }
+                    , { field: 'type', edit: 'text', title: '消息类型' }
+                    , { field: 'openId', title: 'openId' }
+                    , { field: 'sendTime', title: '发送时间', align: 'center', templet: function (d) { return util.toDateString(d.sendTime, 'yyyy-MM-dd HH:mm') } }
+                ]]
 
-<script src="../../../layuiadmin/layui/layui.js"></script>
-<script>
-    layui.config({
-        base: '../../../layuiadmin/' //静态资源所在路径
-    }).extend({
-        index: 'lib/index' //主入口模块
-    }).use(['index', 'message']);
-</script>
+            });
+            table.render({
+                elem: '#sms-message'
+                , url: ''
+                , title: '微信数据列表'
+                , page: true
+                , cols: [[
+                    { type: 'checkbox' },
+                    { field: 'id', title: 'ID', sort: true }
+                    , { field: 'name', edit: 'text', title: '用户名' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    , { field: 'nickname', edit: 'text', title: '微信昵称' }
+                    , { field: 'phone', edit: 'text', title: '电话' }
+                    , { field: 'context', edit: 'text', title: '内容' }
+                    , { field: 'type', edit: 'text', title: '消息类型' }
+                    , { field: 'openId', title: 'openId' }
+                    , { field: 'headImgUrl', title: '头像地址' }
+                    , { field: 'sendTime', title: '发送时间', align: 'center', templet: function (d) { return util.toDateString(d.sendTime, 'yyyy-MM-dd HH:mm') } }
+                ]]
+
+            });
+        })
+    </script>
 </body>
+
 </html>

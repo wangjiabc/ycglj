@@ -19,6 +19,8 @@ public interface UserDAO {
 	
     public Integer updateUser(Users users);
    
+    public Integer updateUserPhone(Users users);
+    
     public Map<String,Object> getAllUser(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
 
     public Map<String,Object> getAllUserJoin(Integer limit, Integer offset, String sort,String order,Map<String, String> search);

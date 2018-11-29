@@ -48,10 +48,21 @@
                 </div>
             </div>
         </div>
+        <div class="layui-colla-item" style="padding: 20px; background-color: #F2F2F2;">
+            <div class="layui-col-space15">
+                <div class="layui-card layui-collapse">
+                    <label class="layui-form-label">消息内容</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" required lay-verify="required" placeholder="请输入自定义推送内容"
+                            autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div style="float:right;padding: 10px;">
         <button class="layui-btn" id="wechat">微信推送</button>
-        <button class="layui-btn layui-btn-normal" onclick="sms()">短信推送</button>
+        <button class="layui-btn layui-btn-normal" id="sms">短信推送</button>
         <button class="layui-btn layui-btn-warm" onclick="parent.layui.layer.closeAll();">取消</button>
     </div>
 
@@ -78,11 +89,40 @@
             $('#wechat').click(function () {
                 var license = dataresult.split('=')[2];
                 var openId = dataresult.split('=')[1].split('&')[0];
-                content = $.trim($('.choose_solid').find(".layui-card-body").text());
-                console.log($.trim(content))
+                //点击了选中的消息
+                if ($('.layui-row').hasClass('choose_solid')) {
+                    content = $.trim($('.choose_solid').find(".layui-card-body").text());
+                } else {
+                    content = $('input').val();
+                }
                 $.ajax({
                     type: "get",
                     url: "/ycglj/user/sendMessage.do?openId=" + openId + "&license=" + license + "&content=" + content + "&result=0",
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        parent.layui.layer.closeAll();
+                    },
+                    error: function (e) {
+                        parent.layui.layer.closeAll('iframe');
+                        console.log(e);
+                    }
+                })
+            })
+            $('#sms').click(function () {
+                //短信推送
+                var license = dataresult.split('=')[2];
+                var openId = dataresult.split('=')[1].split('&')[0];
+                if ($('.layui-row').hasClass('choose_solid')) {
+                    content = $.trim($('.choose_solid').find(".layui-card-body").text());
+                } else {
+                    content = $('input').val();
+                }
+                console.log($.trim(content))
+                $.ajax({
+                    type: "get",
+                    url: "/ycglj/user/sendPhoneMessage.do?openId=" + openId + "&license=" + license + "&content=" + content + "&result=0",
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     dataType: "json",
@@ -101,10 +141,6 @@
         $('.layui-row').click(function () {
             $(this).toggleClass('choose_solid');
         });
-
-        function sms() {
-            parent.layui.layer.closeAll();
-        }
         layui.use(['layer', 'form', 'element'], function () {
             var layer = layui.layer,
                 form = layer.form,

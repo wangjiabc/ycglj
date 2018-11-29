@@ -26,6 +26,18 @@
         </div>
       </div>
       <div class="layui-inline">
+        <label class="layui-form-label">所属中队</label>
+        <div class="layui-input-block">
+          <select lay-filter="region" name="status">
+            <option value="">请选择所属中队</option>
+            <option value="白沙中队">白沙中队</option>
+            <option value="城区中队">城区中队</option>
+            <option value="九支中队">九支中队</option>
+            <option value="榕山中队">榕山中队</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline">
         <input type="text" id="search" lay-verify="search" autocomplete="off" placeholder="请输入搜索内容" class="layui-input">
       </div>
       <div class="layui-inline">
@@ -77,7 +89,8 @@
           , { field: 'license', title: '许可证号' }
           , { field: 'address', title: '地址' }
           , { field: 'region', title: '所属中队' }
-          , { field: 'date', title: '注册日期', align: 'center', templet: function (d) { return createTime(d.date); } }
+          , { field: 'up_date', title: '办理时间', align: 'center', templet: function (d) { return createTime(d.up_date); } }
+          , { field: 'date', title: '注册时间', align: 'center', templet: function (d) { return createTime(d.date); } }
           , { field: 'license_start_date', title: '许可证起始日期', align: 'center', templet: function (d) { return createTime(d.license_start_date); } }
           , { field: 'status', title: '审核状态', align: 'center', templet: function (d) { return setStatus(d.authentication); } }
           , { title: '操作', toolbar: '#barDemo' }
@@ -98,7 +111,7 @@
 
         $.ajax({
           type: "get",
-          url: "/ycglj/user/updateUser.do?openId=" + data.open_id + "&" + field + "=" + value,
+          url: "/ycglj/user/updateUser.do?openId=" + data.open_id + "&" + field + "=" + value + "&license=" + data.license,
           contentType: 'application/x-www-form-urlencoded;charset=utf-8',
           data: {},
           dataType: "json",
@@ -155,7 +168,7 @@
             title: '零售户资料信息'
             , type: 2
             , shadeClose: true
-            // , area: ['1080px', '420px']
+            , area: ['1280px', '420px']
             , content: '/ycglj/layuiadmin/home/userDialog.html?' + result,
           });
           // });
@@ -235,11 +248,19 @@
           }
         })
       });
+      var region;
       //监听下拉框
       layui.form.on('select(status)', function (data) {
         authentication = data.value;
         table.reload('test', {
           url: '/ycglj/user/getAllUser.do?authentication=' + authentication
+        });
+      })
+      layui.form.on('select(region)', function (data) {
+        region = data.value;
+        console.log(region);
+        table.reload('test', {
+          url: '/ycglj/user/getAllUser.do?region=' + region
         });
       })
       //监听搜索
@@ -251,7 +272,7 @@
         //执行重载
         table.reload('test', {
           where: field,
-          url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication,
+          url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication+ "&region=" + region,
         });
       });
 
