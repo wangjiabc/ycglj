@@ -118,7 +118,9 @@
           success: function (data) {
             if (data == 1) {
               layer.msg('修改成功', { icon: 1 });
-            } else {
+            } else  if (data == 2) {
+              layer.msg('电话号码已存在', { icon: 2 });
+            }else{
               layer.msg('error', { icon: 2 });
               layui.form.render();
             }
@@ -248,7 +250,8 @@
           }
         })
       });
-      var region;
+      var region='';
+      var search='';
       //监听下拉框
       layui.form.on('select(status)', function (data) {
         authentication = data.value;

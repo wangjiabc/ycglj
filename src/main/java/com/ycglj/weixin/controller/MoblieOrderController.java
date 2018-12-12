@@ -326,12 +326,12 @@ public class MoblieOrderController {
 
 						WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 
-						wechatSendMessageController.sendMessage(openId, "ItBoMXLCbRehTb-su4Z8LNEnq00wxFLN68URlkvTM_4",
+						wechatSendMessageController.sendMessage(openId, "afQEaRZ3UOjx5Fm_OOcd0fakbe6yXTDuUP2WuKlty1w",
 								//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 								"预约成功提醒",
 								"http://lzgfgs.com/ycglj/mobile/asset/authentic/transact.html",
 								"尊敬的零售户" + users.getName() + "，您有一条新预约消息。", "已预约", "成功", "", "", "",
-								"请在约定的时间带上本人身份证原件、工商营业执照原件、烟草专卖零售许可证原件，前往合江县烟草专卖局（泸州市合江县合江镇少岷南路245号）办理业务。联系电话：0830---5260053");
+								"您的预约已成功，请在约定的时间带上本人身份证原件、工商营业执照原件、烟草专卖零售许可证原件，前往合江县烟草专卖局（泸州市合江县合江镇少岷南路245号）办理业务。联系电话：0830---5260053");
 
 					}
 				};

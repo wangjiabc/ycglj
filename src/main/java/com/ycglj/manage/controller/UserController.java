@@ -242,12 +242,12 @@ public class UserController {
 		int i;
 		
 		if(result==1){
-			i=wechatSendMessageController.sendMessage(openId, "xlsrkoB9NfVmOQevONVag_FPaZqEi69WmK6m9LLt9-Q", "审核通知",
+			i=wechatSendMessageController.sendMessage(openId, "94bHvwYcW9ITl-FbQnY1BnFFrqorue-RkGdd5hND0bU", "审核通知",
 					"http://lzgfgs.com/ycglj/mobile/asset/",
 					"尊敬的零售户"+userName+"您的许可证"+license+"审核信息如下:", "审核通过", time, "",
 					"", "", "");
 		}else{
-			i=wechatSendMessageController.sendMessage(openId, "zDianErT1_ZyhcfbhelGcwCr2fZ1KOMLXPxf2GqL0do", 
+			i=wechatSendMessageController.sendMessage(openId, "b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw", 
 					//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
 					"申请驳回通知",
 					"http://lzgfgs.com/ycglj/mobile/asset/",

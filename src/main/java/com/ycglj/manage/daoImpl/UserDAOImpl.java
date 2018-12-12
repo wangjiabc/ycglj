@@ -139,7 +139,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 
 	    user_License.setOpen_id(openId);
 	    
-	    String[] where = { "open_id = ", phone };
+	    String[] where = { "phone = ", phone };
 		
 	    user_License.setWhere(where);
 	    
@@ -147,9 +147,11 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 
 	    User_Data user_Data=new User_Data();
 
+	    String[] where2 = { "open_id = ", phone };
+	    
 	    user_Data.setOpen_id(openId);
 	    
-	    user_Data.setWhere(where);
+	    user_Data.setWhere(where2);
 	    
 	    UpdateExe.get(this.getJdbcTemplate(), user_Data);
 	    
@@ -184,6 +186,24 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	    if(users.getPhone()!=null&&!users.getPhone().equals("")){
 	    	
 	    	try{
+	    		
+	    		Users users2=new Users();
+	    		
+	    		String[] where2={" phone = ", phone };
+	    		
+	    		users2.setWhere(where2);
+	    		
+	    		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), users2).get("");
+	    		
+	    		System.out.println("phonecount="+count);
+	    		
+	    		if(count>0){
+	    			
+	    			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+	    			
+	    			return 2;
+	    			
+	    		}
 	    		
 	    		User_License user_License2=(User_License) list.get(0);
 	    		
@@ -353,6 +373,9 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		user_Data2.setAffirm(0);
 		
 		if(user_Data.getData_type().equals("license")&&user_Data.getLicense()!=null&&!user_Data.getLicense().equals("")){
+			String[] where={"open_id=",openId,"data_type=",dataType,"license=",user_Data.getLicense()};
+			user_Data2.setWhere(where);
+		}else if(user_Data.getData_type().equals("business")&&user_Data.getLicense()!=null&&!user_Data.getLicense().equals("")){
 			String[] where={"open_id=",openId,"data_type=",dataType,"license=",user_Data.getLicense()};
 			user_Data2.setWhere(where);
 		}else{			
