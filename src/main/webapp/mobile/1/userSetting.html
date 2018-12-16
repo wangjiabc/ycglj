@@ -7,7 +7,7 @@
 <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 
-<script type="text/javascript" src="/voucher/mobile/singleton.js"></script>
+<script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
 
 <script type="text/javascript">
   var campusId=1;
@@ -88,7 +88,7 @@
                 <input class="weui_input" id="regtlx" type="text" placeholder="请输入验证码">
             </div>
             <div class="weui_cell_ft">
-                <img id="re_img1" width="130px" src="/voucher/mobile/register/getYzm.do">
+                <img id="re_img1" width="130px" src="/ycglj/mobile/register/getYzm.do">
             </div>
         </div>
     </div>
@@ -100,7 +100,7 @@
 <script type="text/javascript">
  function refreshValidatecode(){
 	 var img=document.getElementById('re_img1');
-	 img.src="/voucher/mobile/register/getYzm.do?t="+Math.random();
+	 img.src="/ycglj/mobile/register/getYzm.do?t="+Math.random();
     } 
  $(".primary").on("click",function(){
      $("#dialog2").attr("style","display:none"); 

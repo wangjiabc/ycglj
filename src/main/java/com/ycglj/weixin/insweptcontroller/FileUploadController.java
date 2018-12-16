@@ -32,7 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.druid.sql.ast.statement.SQLIfStatement.Else;
 import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.User_Data;
+import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.file.ImageFileFactory;
 import com.ycglj.manage.model.Photo;
 import com.ycglj.manage.service.PhotoService;
@@ -156,6 +158,8 @@ public class FileUploadController {
         
         if(classType.equals("user")){
         	objectClass=User_Data.class;
+        }else if(classType.equals("User_License")){
+        	objectClass=FileSelfBelong.class;
         }
         
         Map map2=new ImageFileFactory().upload(objectClass,openId,dataType,license,names, files);
@@ -442,6 +446,11 @@ public class FileUploadController {
         	objectClass=FileSelfBelong.class;
         }
         */
+        
+        if(classType.equals("User_License")){
+        	objectClass=FileSelfBelong.class;
+        }
+        
         new ImageFileFactory().upload(objectClass,id,dataType,license,names, files);
         
         String imageUrl="/ycglj/mobile/photo/"+uname+"."+mimeType;

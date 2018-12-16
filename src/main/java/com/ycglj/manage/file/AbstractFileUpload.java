@@ -12,7 +12,9 @@ import java.util.UUID;
 
 import org.springframework.context.ApplicationContext;
 
+import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
@@ -25,6 +27,8 @@ public abstract class AbstractFileUpload {
 	ApplicationContext applicationContext=new Connect().get();
 	
 	UserDAO userDao=(UserDAO) applicationContext.getBean("userdao");
+	
+	LicenseDAO licenseDAO=(LicenseDAO) applicationContext.getBean("licensedao");
 	
 	public AbstractFileUpload() {
 		// TODO Auto-generated constructor stub
@@ -97,6 +101,8 @@ public abstract class AbstractFileUpload {
             System.out.println(mimeType);
             System.out.println(uri);
             
+            System.out.println("object="+object);
+            
             if(object==User_Data.class){          	
              //cpoy到资产管理FTP目录
               User_Data user_Data=new User_Data();
@@ -113,6 +119,16 @@ public abstract class AbstractFileUpload {
               }
               userDao.insertUserData(user_Data);
               CopyFile.set(Singleton.ROOMINFOIMGPATH2, savePath+"\\"+fileName+"."+mimeType, fileName+"."+mimeType);
+            }else if(object==FileSelfBelong.class){
+            	
+            	FileSelfBelong fileSelfBelong=new FileSelfBelong();
+            	fileSelfBelong.setLicense(license);
+        		fileSelfBelong.setUpFileFullName(uri);
+        		fileSelfBelong.setFileType(mimeType);
+            	fileSelfBelong.setDate(new Date());
+            	
+            	licenseDAO.insertIntoFileSelfBelong(fileSelfBelong);
+                CopyFile.set(Singleton.ROOMINFOIMGPATH2, savePath+"\\"+fileName+"."+mimeType, fileName+"."+mimeType);
             }
             
             result.put("state", 1);

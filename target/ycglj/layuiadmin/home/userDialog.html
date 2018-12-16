@@ -138,6 +138,7 @@
         var d_type;
         var uploader;
         var choose_index;
+        //选择图片类型
         function clickImg(dataType, obj) {
             var checked = $(obj).children('input[type=checkbox]').prop('checked');
             console.log('xuanzhong', checked);
@@ -159,6 +160,7 @@
                 layer.msg('请选择上传类型', { icon: 2 });
             }
         }
+        //替换图片
         function init() {
             var fileObj;
             uploader.render({
@@ -192,6 +194,7 @@
                 }
             });
         }
+        //上传图片
         function upImg() {
             var fileObj;
             uploader.render({
@@ -246,6 +249,7 @@
             var text;
             var fileObj;
             upImg();
+            layer.load();
             $.ajax({
                 type: "post",
                 url: "/ycglj/user/getUserDateById.do",
@@ -256,6 +260,7 @@
                 },
                 dataType: "json",
                 success: function (text) {
+                    layer.closeAll('loading');
                     console.log(text);
                     //将预览html 追加
                     laytpl(img_template.innerHTML).render(text, function (html) {

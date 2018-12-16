@@ -362,7 +362,7 @@ $.get("/ycglj/oauth/test.do", {
                                    if(data==1){
                                 		$("#dialog2").attr("style","display:block"); 
                         	 			$(".weui_dialog_title").html("操作成功");
-                        	 			top.location.href="index.html";
+                        	 			top.location.href="../auditor";
                                    }else if(data==2){
                                 	   $("#dialog2").attr("style","display:block"); 
                        	 			  $(".weui_dialog_title").html("验证码错误");

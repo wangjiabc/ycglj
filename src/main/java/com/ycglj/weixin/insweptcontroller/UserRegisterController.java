@@ -279,6 +279,100 @@ public class UserRegisterController {
 		    }
    }
    
+   @RequestMapping("insertUser")
+   public @ResponseBody Integer
+   insertUser(HttpServletRequest request,@RequestParam String name,
+		   @RequestParam String headship,
+		   @RequestParam String phone,@RequestParam String email,
+		   @RequestParam String address,@RequestParam String regtlx){
+	   
+	   HttpSession session = request.getSession();
+       String openId=null;
+       System.out.println("name="+name+"  headship="+headship+"   phone="
+    		   +phone+"   email="+email+"    address="+address+"  regtlx="+regtlx);
+       try{
+         openId=session.getAttribute("openId").toString();
+         }catch (Exception e) {
+			// TODO: handle exception
+        	 e.printStackTrace();
+		  }
+	  
+	   if(regtlx.equals("")){
+		   return 2;
+	   }
+	   
+	   regtlx=regtlx.toLowerCase();
+	   
+	   String verifyCode=(String) session.getAttribute("verifyCode");
+	   
+	   if(!regtlx.equals(verifyCode)){
+		   verifyCode=null;
+		   return 2;
+	   }
+	
+	   Date upTime=new Date();
+	   
+	   try {		
+                Users users=new Users();
+                
+                WeiXin_User weiXin_User=new WeiXin_User();
+                
+                users.setOpenId(openId);
+                
+                weiXin_User.setOpen_id(openId);
+                weiXin_User.setCampusAdmin(openId);
+                
+                if(!phone.equals("")){
+                	users.setPhone(phone);
+                	weiXin_User.setPhone(phone);
+                }
+                if(!name.equals("")){
+                	users.setName(name);
+                	weiXin_User.setUser_name(name);
+                }
+                if(!headship.equals("")){
+                	users.setHeadship(headship);
+                	weiXin_User.setHeadship(headship);
+                }
+                if(!email.equals("")){
+                	users.setEmail(email);
+                	weiXin_User.setEmail(email);
+                }
+                if(!address.equals("")){
+                	users.setAddress(address);
+                	weiXin_User.setAddress(address);
+                }
+				users.setUpTime(upTime);
+				weiXin_User.setUp_time(upTime);
+				
+				int testRepeat=userService.selectRepeatUserByOpenId(openId);
+				
+				int type;
+				
+				if(testRepeat==0){
+					type=userService.insertUsersInfo(users);					
+				}else{
+					type=userService.updateUsersInfo(users);
+				}
+				
+				int count=orderDao.selectCountWeiXinUser(weiXin_User);
+
+				if(count==0){
+					orderDao.insertWeiXinUser(weiXin_User);
+				}else{
+					orderDao.updateWeiXinUser(weiXin_User);
+				}
+				
+				return type;
+			
+			}
+		    catch (Exception e) {
+		    	e.printStackTrace();
+
+	            return 3;
+		    }
+   }
+   
    @RequestMapping("/userinfoByopenId")
    public @ResponseBody Users 
    userinfoByopenId(HttpServletRequest request,@RequestParam Integer campusId){

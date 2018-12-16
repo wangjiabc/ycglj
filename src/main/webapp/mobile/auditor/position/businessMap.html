@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+	<!--jquery weui-->
+	<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+	<style type="text/css">
+		body,
+		html,
+		#allmap {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			margin: 0;
+			font-family: "微软雅黑";
+		}
+
+		#l-map {
+			height: 100%;
+			width: 78%;
+			float: left;
+			border-right: 2px solid #bcbcbc;
+		}
+
+		#r-result {
+			height: 100%;
+			width: 20%;
+			float: left;
+		}
+
+		.weui-cells {
+			margin-top: 0.1em;
+		}
+	</style>
+	<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=pQFgFpS0VnMXwCRN6cTc1jDOcBVi3XoD"></script>
+	<title>烟点分布地图</title>
+</head>
+
+<body>
+	<div id="pop" class="weui-popup__container popup-bottom">
+		<div class="weui-popup__overlay"></div>
+		<div class="weui-popup__modal">
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"><label class="weui-label">姓名</label></div>
+					<div class="weui-cell__bd">
+						<input class="weui-input" id="userName" type="text" placeholder="请输入名字">
+					</div>
+				</div>
+				<div class="weui-cell">
+					<div class="weui-cell__hd"><label for="date" class="weui-label">日期</label></div>
+					<div class="weui-cell__bd">
+						<input class="weui-input" id="date" type="text">
+					</div>
+					<div style="text-align: center" class="weui-cell__hd"><label for="date1" class="weui-label">至</label></div>
+					<div class="weui-cell__bd">
+						<input class="weui-input" id="date1" type="text">
+					</div>
+				</div>
+				<div class="weui-cells__title">业态</div>
+				<div id="yt" class="weui-cells__title">
+				</div>
+				<div class="weui-cells__title">案由</div>
+				<div id="ay" class="weui-cells__title">
+				</div>
+				<div class="weui-btn-area">
+					<a class="weui-btn weui-btn_primary close-popup" href="javascript:" id="search">搜 索</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="weui-cells">
+		<a class="weui-cell weui-cell_access open-popup" data-target="#pop" href="javascript:;">
+			<div class="weui-cell__bd">
+				<p>搜索条件</p>
+			</div>
+			<div class="weui-cell__ft">
+			</div>
+		</a>
+	</div>
+	<div id="allmap"></div>
+</body>
+
+</html>
+<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script type="text/javascript">
+	querySearch();
+	//百度地图API功能
+	var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT });// 左上角，添加比例尺
+	var top_left_navigation = new BMap.NavigationControl();  //左上角，添加默认缩放平移控件
+
+	// var map = new BMap.Map("allmap");
+	var map = new BMap.Map("allmap", { enableMapClick: false });//构造底图时，关闭底图可点功能
+
+	map.addControl(top_left_control);
+	map.addControl(top_left_navigation);
+	
+	var yit=new Array();
+	var any=new Array();
+	
+	var startTime;
+	var endTime;
+	
+	var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
+	var ay = ["非渠道", "售假", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+	
+	function querySearch() {
+		var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
+		var ay = ["非渠道", "售假", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+		for (var i = 0; i < yt.length; i++) {
+			$('#yt').append('<button href="javascript:;" style="margin-left:5px" onclick="toggleYt(' + i + ')" class="weui-btn weui-btn_mini weui-btn_default">' + yt[i] + '</button>');
+		}
+		for (var i = 0; i < ay.length; i++) {
+			console.log(ay[i]);
+			$('#ay').append('<button href="javascript:;" style="margin-left:5px" onclick="toggleAy(' + i + ')"  class="weui-btn weui-btn_mini weui-btn_default">' + ay[i] + '</button>');
+		}
+		$("#date").calendar({
+			onChange: function (p, values, displayValues) {
+				console.log(values, displayValues);
+				startTime=values;
+			}
+		});
+		$("#date1").calendar({
+			onChange: function (p, values, displayValues) {
+				console.log(values, displayValues);
+				endTime=values;
+			}
+		});
+
+		document.getElementById("search").onclick = clickHandler;
+		
+		function clickHandler(){
+			console.log(yit+"           "+any);
+			console.log(" starttime= "+startTime);
+			console.log(" endtime= "+endTime);
+			var userName = document.getElementById("userName").value;
+			console.log(userName);
+		}
+		
+	}
+
+	 sign_URL=document.location.toString();
+      
+      $.ajax({
+ 	     url : "../../../wechat/sign.do",
+ 	     data : {
+ 	    	 campusId:1,
+ 	    	 url:sign_URL
+ 	     },
+ 	     async: false,
+ 	     type : "GET",
+ 	     success : function(data) {
+ 	    	 var ticket=JSON.parse(data);
+        	     /*
+      	      * 此处需要两次执行相同的函数，否则返回ture时不能执行以下函数
+      	      */  
+        	          
+ 	    	 
+ 	    	 wx.config({
+ 	    		debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+ 	      		appId: ticket.appId,
+ 	      		timestamp: ticket.timestamp,
+ 	      		nonceStr: ticket.nonceStr,
+ 	      		signature: ticket.signature,
+ 	      		jsApiList : [ 'checkJsApi', 'onMenuShareTimeline',
+ 	                            'onMenuShareAppMessage', 'onMenuShareQQ',
+ 	                            'onMenuShareWeibo', 'hideMenuItems',
+ 	                            'showMenuItems', 'hideAllNonBaseMenuItem',
+ 	                            'showAllNonBaseMenuItem', 'translateVoice',
+ 	                            'startRecord', 'stopRecord', 'onRecordEnd',
+ 	                            'playVoice', 'pauseVoice', 'stopVoice',
+ 	                            'uploadVoice', 'downloadVoice', 'chooseImage',
+ 	                            'previewImage', 'uploadImage', 'downloadImage',
+ 	                            'getNetworkType', 'openLocation', 'getLocation',
+ 	                            'hideOptionMenu', 'showOptionMenu', 'closeWindow',
+ 	                            'scanQRCode', 'chooseWXPay',
+ 	                            'openProductSpecificView', 'addCard', 'chooseCard',
+ 	                            'openCard' ]
+ 	      	});     
+ 	      }
+ 	 });
+
+	var lng = getQueryString("longitude");
+	var lat = getQueryString("latitude");
+
+	var longitude = getQueryString("longitude");
+	var latitude = getQueryString("latitude");
+
+	var point = new BMap.Point(lng, lat);
+	map.centerAndZoom(point, 14);
+
+	var marker = new BMap.Marker(point); // 创建点
+	map.addOverlay(marker);    //增加点
+	var str = "我的位置";
+	var opts = {
+		position: point,    // 指定文本标注所在的地理位置
+		offset: new BMap.Size(-getByteLen(str) * 3, 5)    //设置文本偏移量
+	}
+	var label = new BMap.Label(str, opts);  // 创建文本标注对象
+	label.setStyle({
+		fontSize: "12px",
+		height: "20px",
+		lineHeight: "20px",
+		fontFamily: "微软雅黑"
+	});
+	// map.addOverlay(label);   
+
+	map.enableScrollWheelZoom(true);
+
+	//切换样式
+	function toggleYt(index) {
+		var c=$('#yt button:eq(' + index + ')').prop("className");
+		if(c=="weui-btn weui-btn_mini weui-btn_default weui-btn_primary"){
+			var arr=new Array();
+			for(i = 0; i < yit.length; i++) {
+				console.log("i="+yit[i]+"  index="+yt[index])
+				 if(yit[i]!=yt[index]){
+					 arr.push(yit[i]);
+				 }
+			} 
+			console.log("arr="+arr);
+			yit=arr;
+		}else{
+			yit.push(yt[index]);
+		}
+		$('#yt button:eq(' + index + ')').toggleClass('weui-btn_primary');
+		
+	}
+	
+	function toggleAy(index) {
+		var c=$('#ay button:eq(' + index + ')').prop("className");
+		if(c=="weui-btn weui-btn_mini weui-btn_default weui-btn_primary"){
+			var arr=new Array();
+			for(i = 0; i < any.length; i++) {
+				console.log("i="+any[i]+"  index="+ay[index])
+				 if(any[i]!=ay[index]){
+					 arr.push(any[i]);
+				 }
+			} 
+			console.log("arr="+arr);
+			any=arr;
+		}else{
+			any.push(ay[index]);
+		}
+		$('#ay button:eq(' + index + ')').toggleClass('weui-btn_primary');
+	}
+
+	function getQueryString(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null) return unescape(r[2]); return null;
+	}
+
+	var xhm = new XMLHttpRequest();
+	xhm.open("GET", "../../../baiduMap/getAllAssetPosition.do", false);
+	xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhm.send();
+	var data = JSON.parse(xhm.responseText);
+	var ticket = data.rows;
+
+	console.log(ticket);
+	var points = [];  // 添加海量点数据
+
+	for (var i = 0; i < ticket.length; i++) {
+		points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+	}
+	var options = {
+		size: BMAP_POINT_SIZE_SMALL,
+		shape: BMAP_POINT_SHAPE_STAR,
+		color: '#d340c3'
+	}
+	var pointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
+
+
+	pointCollection.addEventListener('click', function (e) {
+		// alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
+		var xhm = new XMLHttpRequest();
+		xhm.open("GET", "../../baiduMap/getAssetGUIDByPosition.do?lng=" + e.point.lng + "&lat=" + e.point.lat, false);
+		xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhm.send();
+		var data = JSON.parse(xhm.responseText);
+		var obj = data.roomInfo;
+		var url = "../../" + data.url;
+		total = data.total;
+		console.log(total);
+		if (total == 1) {
+			var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'> 资产名称 : " + obj.address + "</h4>" +
+				"<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='139' height='104'/>" +
+				"<p>" +
+				" 管理分区 : " + obj.manageRegion + " " +
+				" 资产性质 : " + obj.roomProperty + " " +
+				" 资产编号 : " + obj.num + " </br>" +
+				" 面积 : " + obj.buildArea + " m<sup>2</sup> " +
+				" 租金 :" + obj.hire + " " +
+				"</p>" + "</div>";
+			var infoWindow = new BMap.InfoWindow(content);  // 创建信息窗口对象
+			map.openInfoWindow(infoWindow, new BMap.Point(e.point.lng, e.point.lat)); //开启信息窗口
+		} else {
+			console.log(data.list);
+			rows = data.list;
+			div1 = document.getElementById('div1')
+			var tab = "<table border=1 width=700>";
+			for (var i = 0; i < rows.length; i++) {
+				var obj = rows[i];
+				tab += "<tr>";
+				tab += "<td> 资产名称 : " + obj.address + " </td>";
+				tab += "<td> 管理分区 : " + obj.manageRegion + " </td>";
+				tab += "<td> 资产性质 : " + obj.roomProperty + " </td>";
+				tab += "<td> 资产编号 : " + obj.num + " </td>";
+				tab += "<td> 面积 : " + obj.buildArea + " m<sup>2</sup> </td>";
+				tab += "<td> 租金 :" + obj.hire + " </td>";
+				tab += "<td>" + "<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='50' height='30'/>" + "</td>";
+				tab += "</tr>";
+			}
+			tab += "</table>";
+
+			var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>  资产数量 : " + data.total + "</h4>" +
+				"<p>" +
+				"  " + tab + " " +
+				"</p>" + "</div>";
+			var infoWindow = new BMap.InfoWindow(content);  // 创建信息窗口对象
+			map.openInfoWindow(infoWindow, new BMap.Point(e.point.lng, e.point.lat));
+		}
+	});
+	map.addOverlay(pointCollection);  // 添加Overlay
+
+    /*
+    var geoc = new BMap.Geocoder();  
+
+    //获取标注位置信息    
+    function getAttr(){
+		var p = marker.getPosition();       //获取marker的位置
+		alert("marker的位置是" + p.lng + "," + p.lat);   
+	}
+ 
+ 
+    var xhm=new XMLHttpRequest();
+    xhm.open("GET","../../baiduMap/getAssetsByPoint.do?limit=100&offset=0&lng="+lng+"&lat="+lat+"&distance=1500",false);
+    xhm.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhm.send();
+    var ticket=JSON.parse(xhm.responseText);
+    console.log(ticket);
+    addDeck(ticket.rows);
+ 
+function addDeck(ticket){	
+
+// console.log(ticket);
+var json_data = new Array();
+
+for(var i=0;i<ticket.length;i++){
+	json_data[i]=[ticket[i].lng,ticket[i].lat,
+	              ticket[i].address];
+}
+
+console.log(json_data);
+
+var pointArray = new Array();
+for(var i=0;i<json_data.length;i++){
+	var point=new BMap.Point(json_data[i][0], json_data[i][1]);
+	var myIcon = new BMap.Icon("../../img/blackPoint.jpg", new BMap.Size(30,38));
+	var marker = new BMap.Marker(point,{icon:myIcon}); // 创建点
+	map.addOverlay(marker);    //增加点
+
+	marker.addEventListener("click",attribute);
+}
+//让所有点在视野范围内
+map.setViewport(pointArray);
+
+}
+
+*/
+
+	//获取覆盖物位置
+	function attribute(e) {
+		var p = e.target;
+		var hidden_lng = p.getPosition().lng;
+		var hidden_lat = p.getPosition().lat;
+
+		$.get("../../baiduMap/getAssetGUIDByPosition.do", {
+			lng: hidden_lng,
+			lat: hidden_lat
+		}, function (data) {
+			var obj = $.parseJSON(data).roomInfo;
+			var assetGuid = encodeURI(obj.guid);
+			location.href = "assetDetail.html?guid=" + assetGuid + "&latitude=" + lat + "&longitude=" + lng;
+		});
+
+	}
+
+	function getDistance(lng, lat) {
+		var pointA = new BMap.Point(longitude, latitude);  // 创建点坐标A--大渡口区
+		var pointB = new BMap.Point(lng, lat);  // 创建点坐标B--江北区
+		var d = map.getDistance(pointA, pointB) / 1000;
+		return d.toFixed(2) + ' KM';  //获取两点距离,保留小数点后两位
+	}
+
+	function getByteLen(val) {    //传入一个字符串
+		var len = 0;
+		for (var i = 0; i < val.length; i++) {
+			if (val[i].match(/[^\x00-\xff]/ig) != null) //全角 
+				len += 2; //如果是全角，占用两个字节  如果mysql中某字段是text, 如果设置编码为utf-8,那么一个中文是占3个字节, gbk是两个字节
+			else
+				len += 1; //半角占用一个字节
+		}
+		return len;
+	}
+
+</script>

@@ -10,12 +10,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Order_Date;
@@ -23,6 +27,7 @@ import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
+import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 
 
@@ -45,6 +50,8 @@ public class TestController {
 	UserDAO userDao=(UserDAO) applicationContext.getBean("userdao");
 	
 	OrderDAO orderDao=(OrderDAO) applicationContext.getBean("orderdao");
+	
+	LicenseDAO licenseDAO=(LicenseDAO) applicationContext.getBean("licensedao");
 	
 	@RequestMapping("getAllUserOrder")
 	public @ResponseBody Map<String, Object> getAllUserOrder(String day){
@@ -125,5 +132,35 @@ public class TestController {
 		
 	}
 	
+	
+	@RequestMapping("/getAll")
+	public @ResponseBody Map<String, Object> getAll(String search,HttpServletRequest request) {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Map searchMap=new HashMap<>();
+		
+
+		if(search!=null&&!search.equals("")){
+			search="%"+search+"%";  
+			searchMap.put("[Users].name like ", search);
+			searchMap.put("[User_License].license like ", search);
+		}
+		
+		Map license_Positions=licenseDAO.getAllLicense_Position(10, 0, null, null, searchMap);
+		
+		List licenses=(List) license_Positions.get("rows");
+		int total=(int) license_Positions.get("total");
+		
+		map.put("rows", licenses);
+		map.put("total", total);
+		
+		Map fileBytes=licenseDAO.License_PositionImageQuery(request, licenses);
+		map.put("fileBytes", fileBytes);
+		
+		MyTestUtil.print(fileBytes);
+		
+		return map;
+	}
 	
 }

@@ -118,9 +118,9 @@
           success: function (data) {
             if (data == 1) {
               layer.msg('修改成功', { icon: 1 });
-            } else  if (data == 2) {
+            } else if (data == 2) {
               layer.msg('电话号码已存在', { icon: 2 });
-            }else{
+            } else {
               layer.msg('error', { icon: 2 });
               layui.form.render();
             }
@@ -184,13 +184,19 @@
               data: {},
               dataType: "json",
               success: function (data) {
-                layer.open({
-                  title: '发送信息通知'
-                  , type: 2
-                  , shadeClose: true
-                  , area: ['960px', '420px']
-                  , content: '/ycglj/layuiadmin/home/sendMessageDialog.html?openId=' + openId + "&license=" + license,
-                });
+            	  console.log("data="+data);
+                if (data == 1) {
+                  console.log("发送信息通知 ");
+                  layer.open({
+                    title: '发送信息通知'
+                    , type: 2
+                    , shadeClose: true
+                    , area: ['960px', '420px']
+                    , content: '/ycglj/layuiadmin/home/sendMessageDialog.html?openId=' + openId + "&license=" + license,
+                  });
+                } else {
+                  layer.msg("操作错误，请重试", { icon: 2 });
+                }
               },
               error: function (e) {
                 console.log(e);
@@ -250,20 +256,20 @@
           }
         })
       });
-      var region='';
-      var search='';
+      var region = '';
+      var search = '';
       //监听下拉框
       layui.form.on('select(status)', function (data) {
         authentication = data.value;
         table.reload('test', {
-          url: '/ycglj/user/getAllUser.do?authentication=' + authentication
+        	url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication + "&region=" + region
         });
       })
       layui.form.on('select(region)', function (data) {
         region = data.value;
         console.log(region);
         table.reload('test', {
-          url: '/ycglj/user/getAllUser.do?region=' + region
+        	url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication + "&region=" + region
         });
       })
       //监听搜索
@@ -275,7 +281,7 @@
         //执行重载
         table.reload('test', {
           where: field,
-          url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication+ "&region=" + region,
+          url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication + "&region=" + region,
         });
       });
 

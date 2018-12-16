@@ -360,6 +360,8 @@
     $(document).ready(function () {
       // $('ul').append($("li").clone());
       $("#firstpane .menu_body:eq(0)").show();
+      setUserValue();
+
       $("#firstpane div.weui-flex").click(function () {
         $("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
         if ($(this).hasClass('current')) {
@@ -371,6 +373,7 @@
           $(this).children('i').removeClass('icon-35').addClass('icon-74');
           $(this).siblings().find('i').removeClass('icon-74').addClass('icon-35');
         }
+
       });
     });
 
@@ -403,7 +406,7 @@
         $.toast('请勾选协议', "forbidden");
       }
     })
-    setUserValue();
+    
     //设置用户界面值
     function setUserValue() {
       $.ajax({

@@ -145,11 +145,11 @@
 		</init-param>
 		<init-param>
 			<param-name>redirectPath</param-name>
-			<param-value>/mobile/1/restrict.html</param-value>
+			<param-value>/mobile/auditor/restrict.html</param-value>
 		</init-param>
 		<init-param>
 			<param-name>mobileLoginPath</param-name>
-			<param-value>/mobile/1/</param-value>
+			<param-value>/mobile/auditor/</param-value>
 		</init-param>
 	</filter>
 	
@@ -157,6 +157,7 @@
 		<filter-name>MobileAdminSessionFilter</filter-name>
 		<url-pattern>/mobile/1/*</url-pattern>
 		<url-pattern>/mobile/assetAdmin/*</url-pattern>
+		<url-pattern>/mobile/auditor/*</url-pattern>
 	</filter-mapping>
 
 	<!-- 资产巡查的栏截 -->

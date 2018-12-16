@@ -102,7 +102,11 @@
                     data: {},
                     dataType: "json",
                     success: function (data) {
-                        parent.layui.layer.closeAll();
+                        if (data == "1") {
+                            parent.layui.layer.closeAll();
+                        } else {
+                            layer.msg('微信推送失败，请尝试发送短信', { icon: 2 });
+                        }
                     },
                     error: function (e) {
                         parent.layui.layer.closeAll('iframe');
@@ -127,7 +131,11 @@
                     data: {},
                     dataType: "json",
                     success: function (data) {
-                        parent.layui.layer.closeAll();
+                        if (data == "1") {
+                            parent.layui.layer.closeAll();
+                        } else {
+                            layer.msg('短信发送失败', { icon: 2 });
+                        }
                     },
                     error: function (e) {
                         parent.layui.layer.closeAll('iframe');

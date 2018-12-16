@@ -1,120 +1,499 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <title>案件列表</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,minimal-ui" />
-
-  <script src="/ycglj/js/jquery.min.js"></script>
-  <!--jquery weui-->
-  <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
-
-  <script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
-
-  <script type="text/javascript">
-    var redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=" + DOMAIN + "/ycglj/mobile/asset/index.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
-  </script>
-
-  <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <title>零售户列表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="css/weui.css" />
+    <link rel="stylesheet" href="css/example.css" />
+    <link rel="stylesheet" href="css/jquery-weui.css">
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=pQFgFpS0VnMXwCRN6cTc1jDOcBVi3XoD"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 </head>
-<style>
-  .record{
-    width:100%;
-    height:auto;
-}
-.weui-label{
-  width:55px;
-}
-.button_sp_area{
-  margin: 10px;
-  position: fixed;
-  bottom: 5px;
-  right:5px;
-}
-</style>
 
 <body>
-  <div class="weui-search-bar" id="searchBar">
-    <form class="weui-search-bar__form">
-      <div class="weui-search-bar__box">
-        <i class="weui-icon-search"></i>
-        <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
-        <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
-      </div>
-      <label class="weui-search-bar__label" id="searchText">
-        <i class="weui-icon-search"></i>
-        <span>搜索名字或距离</span>
-      </label>
-    </form>
-    <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
-  </div>
-  <div id='listwrap'>
-    <!-- body 顶部加上如下代码 -->
+
     <div class="weui-pull-to-refresh__layer">
-      <div class='weui-pull-to-refresh__arrow'></div>
-      <div class='weui-pull-to-refresh__preloader'></div>
-      <div class="down">下拉刷新</div>
-      <div class="up">释放刷新</div>
-      <div class="refresh">正在刷新</div>
+        <div class='weui-pull-to-refresh__arrow'></div>
+        <div class='weui-pull-to-refresh__preloader'></div>
+        <div class="down">下拉刷新</div>
+        <div class="up">释放刷新</div>
+        <div class="refresh">正在刷新</div>
     </div>
 
-    <div class="weui-panel weui-panel_access">
-      <div class="weui-panel__hd">零售商户</div>
-      <div class="weui-panel__bd">
-      </div>
-    </div>
-  </div>
-  <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-  <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
-  <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.js"></script>
-  <script>
-    $(function () {
-      FastClick.attach(document.body);
-    });
-  </script>
-  <script>
-    var html = '';
-    init();
-    $('#listwrap').pullToRefresh(function () {
-      init();
-    });
 
-    //加载列表数据
-    function caseDom(data) {
-      for (let index = 0; index < data.case_cells.length; index++) {
-        html += '<a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">' +
-          '<div class="weui-media-box__hd">' +
-          '<img class="weui-media-box__thumb" src="">' +
-          '</div>' +
-          '<div class="weui-media-box__bd">' +
-          '<h3 class="weui-media-box__title">姓名:' + data.case_cells[index].name + '</h3>' +
-          '<p class="weui-media-box__desc">许可证号:' + data.case_cells[index].license + '</p>' +
-          '<p class="weui-media-box__desc">距离' + data.case_cells[index].distance + '</p>' +
-          '<p class="weui-media-box__desc">地址' + data.case_cells[index].address + '</p>' +
-          '</div>' +
-          '</a>';
-      }
-    }
-    //初始化列表数据
-    function init() {
-      $.ajax({
-        type: "get",
-        url: 'http://doc.88hao.cn/mock/27/',
-        dataType: "json",
-        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-        success: function (data) {
-          caseDom(data);
-          $('.weui-panel__bd').append(html);
-          $('.weui-panel weui-panel_access').pullToRefreshDone();
-        },
-        error: function (error) {
-          console.log(error);
-        }
-      })
-    }
-  </script>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__bd weui_cell_primary name">
+                <input id="input" class="weui-input" type="text" placeholder="输入距离(米)名称或许可证号" />
+            </div class="weui-cell__bd weui_cell_primary name">
+            <a href="javascript:;" id="search" class="weui-btn weui-btn_mini weui-btn_primary">查询</a>
+        </div>
+    </div>
+
+
+    <div class="weui-cells">
+        <div class="weui-panel weui-panel_access">
+            <div id="count" class="weui-panel__hd"></div>
+        </div>
+        <div id="ul">
+
+        </div>
+    </div>
+
+    <div class="weui-loadmore" style="padding-bottom:30px;height:20px">
+        <i class="weui-loading"></i>
+        <span class="weui-loadmore__tips">正在加载</span>
+    </div>
+
+    <div id="article"></div>
+    <div id="gotop">
+        <div class="arrow"></div>
+        <div class="stick"></div>
+    </div>
+    <div class="weui-cells__title">已无更多数据</div>
+
+    <!--<input type="file" style="/* visibility: hidden */" capture="camera" accept="image/*,video/*" name="" value="" >-->
 </body>
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="../../../js/jquery-weui.js"></script>
+
+<script type="text/javascript" class="navbar js_show">
+    $(function () {
+        $('.weui-navbar__item').on('click', function () {
+            $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+        });
+    });
+</script>
+
+<script>
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
+    var longitude = getQueryString("longitude");
+    var latitude = getQueryString("latitude");
+    var map = new BMap.Map("allmap");
+
+    var url = "../../user/getAll.do";
+
+    var limit = 10;
+    var offset = 0;
+    var search = "";
+    var sort = "date";
+    var order = "desc";
+
+    $(".weui-loadmore").hide();
+    $(".weui-cells__title").hide();
+
+    var loading = false;  //状态标记
+
+    $("#search").on("click", function () {
+        search = $("#input").val();
+        limit = 10;
+        offset = 0;
+        $("#ul").children('li').remove();
+        loading = false;
+        loadlist();
+    });
+
+    loadlist();
+
+    $(document.body).pullToRefresh().on("pull-to-refresh", function () {
+        limit = 10;
+        offset = 0;
+        $("#ul").children('li').remove();
+        loading = false;
+        loadlist();
+        $(document.body).pullToRefreshDone();
+    });
+
+    $(document.body).infinite().on("infinite", function () {
+        if (loading)
+            return;
+
+        $(".weui-loadmore").show();
+        loading = true;
+        setTimeout(function () {
+            loadlist();
+            loading = false;
+        }, 1500);   //模拟延迟
+
+    });
+
+
+    sign_URL = document.location.toString();
+
+    $.ajax({
+        url: "../../../wechat/sign.do",
+        data: {
+            campusId: 1,
+            url: sign_URL
+        },
+        async: false,
+        type: "GET",
+        success: function (data) {
+            var ticket = JSON.parse(data);
+            /*
+             * 此处需要两次执行相同的函数，否则返回ture时不能执行以下函数
+             */
+
+
+            wx.config({
+                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: ticket.appId,
+                timestamp: ticket.timestamp,
+                nonceStr: ticket.nonceStr,
+                signature: ticket.signature,
+                jsApiList: ['checkJsApi', 'onMenuShareTimeline',
+                    'onMenuShareAppMessage', 'onMenuShareQQ',
+                    'onMenuShareWeibo', 'hideMenuItems',
+                    'showMenuItems', 'hideAllNonBaseMenuItem',
+                    'showAllNonBaseMenuItem', 'translateVoice',
+                    'startRecord', 'stopRecord', 'onRecordEnd',
+                    'playVoice', 'pauseVoice', 'stopVoice',
+                    'uploadVoice', 'downloadVoice', 'chooseImage',
+                    'previewImage', 'uploadImage', 'downloadImage',
+                    'getNetworkType', 'openLocation', 'getLocation',
+                    'hideOptionMenu', 'showOptionMenu', 'closeWindow',
+                    'scanQRCode', 'chooseWXPay',
+                    'openProductSpecificView', 'addCard', 'chooseCard',
+                    'openCard']
+            });
+
+
+
+
+        }
+    });
+
+
+    // =======加载数据loadlist();
+    function loadlist() {
+        var html = "";
+        $.ajax({
+            type: "get",
+            url: url,
+            data: {
+                "limit": limit,
+                "offset": offset,
+                "search": search,
+                "lng": longitude,
+                "lat": latitude
+            },
+            dataType: "json",
+            error: function (request) {
+                console.log(request);
+                $(".weui-loadmore").hide();
+                html += "网络连接故障";
+                $("#ul").append(html);
+            },
+            success: function (text) {
+                var data = text.rows;
+                var count = text.total;
+                var imgs = text.fileBytes;
+                console.log(data);
+                console.log(imgs);
+
+                var span = document.createElement("span");
+                span.innerHTML = " " + count + "条记录";
+                var count = document.getElementById('count');
+                $("#count").children().remove();
+                count.appendChild(span);
+
+                if (data.length > 0) {
+                    var i = 0;
+                    for (; i < data.length; i++) {
+                        var obj = data[i];
+                        var license = obj.license;
+
+                        var img = '/ycglj/img/notImg.jpg';
+                        if (imgs[license] != null) {
+                            img = "/ycglj/" + imgs[license];
+                        }
+                        var distance = null;
+                        console.log(obj.name + "   " + obj.detail + "  " + obj.lng + "   " + obj.lat);
+                        if (obj.lng != "" && obj.lat != "") {
+                            distance = getDistance(longitude, latitude, obj.lng, obj.lat);
+                        }
+
+                        var html1 = '<li class="weui-cell" license="' + obj.license + '" onclick="clickEvent(this);">' +
+                            '<div class="img-left">' +
+                            '<img src="' + img + '" class="img">' +
+                            ' </div>' +
+                            '<div class="weui-media-box__bd" style="margin-left:10px;">' +
+                            ' <h4 class="weui-media-box__title">' + obj.address + '</h4>' +
+                            ' <p class="weui-media-box__desc">姓 名:' + obj.name + '</p>' +
+                            ' <p class="weui-media-box__desc">许可证号:' + obj.license + '</p>' +
+                            ' <p class="weui-media-box__desc">距 离:' + distance + '</p>' +
+                            ' </div>' +
+                            '</li>'
+
+                        $("#ul").append(html1);
+                    }
+                    offset = offset + i;
+                    if (i < limit) {
+                        html += "<li><div class=\"weui-cells__title\" >已无更多数据</div></li>";
+                        $("#ul").append(html);
+                        loading = true;
+                    }
+                } else {
+                    html += "<li><div class=\"weui-cells__title\" >已无更多数据</div></li>";
+                    $("#ul").append(html);
+                    loading = true;
+                }
+                $(".weui-loadmore").hide();
+            }
+        });
+    }
+
+    function addDiv(src, title, content, time, interval, manageRegion) {
+        var li = document.createElement("li");
+        var div_1 = document.createElement("div");
+        div_1.setAttribute("class", "single-mode");
+        var div_1_1 = document.createElement("div");
+        div_1_1.setAttribute("class", "img-left");
+        var img = document.createElement("img");
+        if (src != null) {
+            img.setAttribute("src", src);
+            img.setAttribute("class", "img");
+            div_1_1.appendChild(img);
+        } else {
+            img.setAttribute("src", "/ycglj/img/notImg.jpg");
+            img.setAttribute("class", "img");
+            div_1_1.appendChild(img);
+        }
+        div_1.appendChild(div_1_1);
+        var div_2 = document.createElement("div");
+        div_2.setAttribute("class", "text-right");
+        var div_2_1 = document.createElement("div");
+        div_2_1.setAttribute("class", "single-inner");
+        var div_2_1_1 = document.createElement("div");
+        div_2_1_1.setAttribute("class", "title");
+        addSpan(div_2_1_1, title);
+        var div_2_1_2 = document.createElement("div");
+        div_2_1_2.setAttribute("class", "right_text");
+        addSpan(div_2_1_2, manageRegion);
+        var div_2_1_3 = document.createElement("div");
+        addSpan(div_2_1_3, time);
+        div_2_1_3.setAttribute("class", "weui-cells__title");
+        div_2_1_3.setAttribute("style", "margin:2px 0px 2px 0px");
+        var div_2_1_4 = document.createElement("div");
+        addSpan(div_2_1_4, content);
+        div_2_1_4.setAttribute("class", "weui-cells__title");
+        div_2_1_4.setAttribute("style", "margin:2px 0px 2px 0px");
+        var div_2_1_5 = document.createElement("div");
+        addSpan(div_2_1_5, interval);
+        div_2_1_5.setAttribute("class", "weui-cells__title");
+        div_2_1_5.setAttribute("style", "margin:2px 0px 2px 0px");
+
+        div_2_1.appendChild(div_2_1_1);
+        div_2_1.appendChild(div_2_1_2);
+        div_2_1.appendChild(div_2_1_3);
+        div_2_1.appendChild(div_2_1_4);
+        div_2_1.appendChild(div_2_1_5);
+        div_2.appendChild(div_2_1);
+
+
+        li.appendChild(div_1);
+        li.appendChild(div_2);
+
+        li.setAttribute("class", "weui-cell");
+
+        return li;
+    }
+
+    function clickEvent(that) {
+        var license = encodeURI($(that).attr("license"));
+        wx.getLocation({
+            success: function (res) {
+                // alert(JSON.stringify(res));
+                var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                // $("#latitude").val(latitude);
+                var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+
+                $.get("../../map/baiduSwitch.do", { //微信地理位置坐标转换成百度地图坐标
+                    longitude: longitude,
+                    latitude: latitude
+                }, function (text) {
+                    var obj = $.parseJSON(text);
+                    var result = obj.result;
+                    var lat = result[0].y;
+                    var lng = result[0].x;
+                    location.href = "caseDetail.html?license=" + license + "&latitude=" + lat + "&longitude=" + lng;
+                });
+
+            },
+            cancel: function (res) {
+                console.log('用户拒绝授权获取地理位置');
+            }
+        });
+    }
+
+    function addSpan(div, text) {
+        var span_1 = document.createElement("span");
+        span_1.innerHTML = text;
+        div.appendChild(span_1);
+    }
+
+
+    function actionTime(value) {
+        var date = new Date(value);
+        Y = date.getFullYear() + '-';
+        M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+        D = date.getDate() + ' ';
+        h = date.getHours() + ':';
+        m = date.getMinutes() + ':';
+        s = date.getSeconds();
+        return Y + M + D + h + m + s;
+    }
+
+    $(window).scroll(function () {  //只要窗口滚动,就触发下面代码
+
+        var scrollt = document.documentElement.scrollTop + document.body.scrollTop; //获取滚动后的高度
+
+        if (scrollt > 200) {  //判断滚动后高度超过200px,就显示
+
+            $("#gotop").fadeIn(400); //淡入
+
+        } else {
+
+            $("#gotop").stop().fadeOut(400); //如果返回或者没有超过,就淡出.必须加上stop()停止之前动画,否则会出现闪动
+
+        }
+
+    });
+
+
+    function getDistance(lat1, lng1, lat, lng) {
+        var s = Math.sqrt((lng1 - lng) * (lng1 - lng) + (lat1 - lat) * (lat1 - lat)) * 100;
+        //s=s.toFixed(4);
+        return s.toFixed(2) + ' KM';  //获取两点距离,保留小数点后两位;
+    }
+
+    $("#gotop").on("click", function () { //当点击标签的时候,使用animate在200毫秒的时间内,滚到顶部
+        $("html,body").animate({ scrollTop: "0px" }, 200);
+
+    });
+
+
+
+</script>
+<style>
+    ul {
+        list-style: none;
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+    li {
+        margin: 0px;
+        padding: 0px;
+        height: 123px;
+        padding: 0px;
+        border-bottom: 1px solid #ffffff;
+        background-color: white;
+        display: block;
+        zoom: 1;
+    }
+
+    .single-mode {
+        position: relative;
+        float: left;
+        background-color: #ffffff;
+    }
+
+    .img {
+        display: inline-block;
+        width: 130px;
+        height: 120px;
+        vertical-align: middle;
+        transition: all .5s ease-out .1s;
+    }
+
+    .img-left {
+        width: 130px;
+        height: auto;
+    }
+
+    .text-right {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .right_text {
+        padding: 2px 0px 2px 15px;
+    }
+
+    .single-inner {
+        display: inline-block;
+        width: 100%;
+        vertical-align: middle;
+    }
+
+    .title {
+        font-size: 20px;
+        line-height: 1.3;
+        font-weight: 700;
+        max-height: 52px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 2px 0px 2px 15px;
+    }
+
+    .arrow {
+        border: 9px solid transparent;
+        border-bottom-color: #3DA0DB;
+        width: 0px;
+        height: 0px;
+        top: 0px;
+    }
+
+    .stick {
+        width: 8px;
+        height: 14px;
+        border-radius: 1px;
+        background-color: #3DA0DB;
+        top: 15px;
+    }
+
+    #gotop div {
+        position: absolute;
+        margin: auto;
+        right: 0px;
+        left: 0px;
+    }
+
+    #gotop {
+        background-color: #dddddd;
+        height: 38px;
+        width: 38px;
+        border-radius: 3px;
+        display: block;
+        cursor: pointer;
+        position: fixed;
+        right: 30px;
+        bottom: 50px;
+        display: none;
+    }
+    .weui-media-box__title{
+        width:200px;
+        white-space:nowrap;
+        text-overflow:ellipsis;
+        font-size: 13px;
+    }
+    .weui-media-box__desc{
+        line-height: 2;
+    }
+</style>
 
 </html>

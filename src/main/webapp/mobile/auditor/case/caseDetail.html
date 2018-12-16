@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>添加位置照片信息</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta charset="utf-8" />
+	<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="css/weui.css" />
+	<link rel="stylesheet" href="css/example.css" />
+	<style type="text/css">
+		body,
+		html,
+		#allmap {
+			width: 100%;
+			height: 70%;
+			margin: 0;
+			font-family: "微软雅黑";
+		}
+	</style>
+	<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=cR98TwX2FnKTpANIOYhMYMot9a4ioxjc"></script>
+	<script type="text/javascript" src="https://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+</head>
+
+<body>
+	<form action="" novalidate>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">地址</label></div>
+				<div id="address" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">姓名</label></div>
+				<div id="name" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">手机号</label></div>
+				<div id="phone" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">许可证号</label></div>
+				<div id="license" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">日期</label></div>
+				<div id="datetime" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">业态</label></div>
+				<div id="business_status" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		
+		 <div class="weui-cells weui-cells_form">
+            <div id="crimal" class="weui-cell weui-cell_access">
+            </div>
+   		 </div>
+    
+		<div class="weui-cells weui-cells_form">
+            <div class="weui-cell weui-cell_access" onclick="clickEvent();">
+                <div class="weui-cell__hd"><label class="weui-label">案件录入</label></div>
+                <div id="ay" class="weui-cell__bd" >
+                </div>
+                <div class="weui-cell__ft"></div>
+            </div>
+    	</div> 
+    	
+	</form>
+
+	<div class="weui-cells weui-cells_form">
+	</div>
+
+	<div class="weui-cell weui-cell_access">
+		<div class="weui-cell__bd">零售户位置</div>
+		<div class="weui-cell__ft" style="font-size: 0">
+			<span id="navigation" class="weui-btn weui-btn_mini weui-btn_primary">导航路线</span>
+		</div>
+	</div>
+	<div id="allmap"></div>
+
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__hd">零售户图片</div>
+		<div id="img" class="weui-panel__bd">
+		</div>
+	</div>
+
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__hd">许可证图片</div>
+		<div id="img2" class="weui-panel__bd">
+		</div>
+	</div>
+
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-uploader__input-box" id="showPicker">
+		</div>
+	</div>
+
+</body>
+
+</html>
+<script type="text/javascript">
+	function getQueryString(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null) return unescape(r[2]); return null;
+	}
+
+	var license = getQueryString("license");
+
+	// 百度地图API功能
+	var map = new BMap.Map("allmap");    // 创建Map实例
+
+	var longitude = getQueryString("longitude");
+	var latitude = getQueryString("latitude");
+	var point = new BMap.Point(longitude, latitude);
+
+	var pointStart = point;
+
+	var str = "我的位置";
+	var opts = {
+		position: point,    // 指定文本标注所在的地理位置
+		offset: new BMap.Size(-getByteLen(str) * 3, 5)    //设置文本偏移量
+	}
+	var label = new BMap.Label(str, opts);  // 创建文本标注对象
+	label.setStyle({
+		fontSize: "12px",
+		height: "20px",
+		lineHeight: "20px",
+		fontFamily: "微软雅黑"
+	});
+	map.addOverlay(label);
+
+	function keyDown(e) {
+		var keycode = e.which;   //取得对应的键值（数字）  	  
+		var realkey = String.fromCharCode(e.which); //取得代表改键的真正字符  
+		var val = document.getElementById("input").value;
+		if (keycode == 13) {
+			local.search(val);
+		}
+	}
+
+	function keyDown(e) {
+		var keycode = e.which;   //取得对应的键值（数字）  	  
+		var realkey = String.fromCharCode(e.which); //取得代表改键的真正字符  
+		var val = document.getElementById("input").value;
+		if (keycode == 13) {
+			local.search(val);
+		}
+	}
+	function init(data) {
+		console.log(data);
+		$('#address').html(data.roomInfo.address);
+		$('#name').html(data.roomInfo.name);
+		if(data.crimal!=null&&data.crimal!=""){
+				var hidden1=document.createElement("div");
+				hidden1.setAttribute("class","weui-cell__bd");
+				var span1=document.createElement("span");
+				span1.setAttribute("style","vertical-align: middle");
+				span1.innerHTML="案由";
+				var span2=document.createElement("span");
+				span2.setAttribute("style","margin-left: 25px;");
+				span2.innerHTML="<font color='#FF0000'>"+data.crimal+"</font>";
+				hidden1.appendChild(span1);
+				hidden1.appendChild(span2);
+    			$("#crimal").append(hidden1); 
+    			var hidden2=document.createElement("div");
+    			$("#crimal").append(hidden2); 
+		}else{
+				var hidden=document.createElement("div");
+				hidden.setAttribute("class","weui-cell__bd");
+				var span1=document.createElement("span");
+				span1.setAttribute("style","vertical-align: middle");
+				span1.innerHTML="案由";
+				var span2=document.createElement("span");
+				span2.setAttribute("style","margin-left: 15px;");
+				span2.innerHTML="无";
+				hidden.appendChild(span1);
+				hidden.appendChild(span2);
+				$("#crimal").append(hidden);
+		}
+		if(data.roomInfo.phone!=null&&data.roomInfo.phone!=""){
+         	var phone=document.createElement("a");
+         	phone.setAttribute("href","tel:"+data.roomInfo.phone);
+         	phone.innerHTML=data.roomInfo.phone;
+         	$("#phone").append(phone);
+        }else{
+      	  $("#phone_div").hide();
+        }
+        
+		$('#license').html(data.roomInfo.license);
+		$('#datetime').html(actionTime(data.roomInfo.date));
+		$('#business_status').html(data.roomInfo.business_state);
+		if (data.fileBytes != null) {
+				var imgs=data.fileBytes;
+				var i = 0;
+				for (; i < imgs.length; i++) {
+					var text=imgs[i];
+                 	var name=text.fileBelong;
+                 	var uri=text.compressUri;
+					var panel = document.createElement("div");
+					panel.setAttribute("class", "weui-panel__bd");
+					var a = document.createElement("a");
+					a.setAttribute("class", "weui_grid");
+					var a = document.createElement("a");
+					a.setAttribute("href", "javascript:void(0);");
+					a.setAttribute("class", "weui-media-box weui-media-box_appmsg");
+					var div = document.createElement("div");
+					div.setAttribute("class", "weui-media-box__hd");
+
+					src = "/ycglj/" + uri;
+					var img = document.createElement("img");
+					img.setAttribute("class", "weui-media-box__thumb");
+					img.setAttribute("src", src);
+
+					div.appendChild(img);
+
+					div2 = document.createElement("div");
+					div2.setAttribute("class", "weui-media-box__bd");
+					h4 = document.createElement("h4");
+					h4.setAttribute("class", "weui-media-box__title");
+					p = document.createElement("p");
+					p.setAttribute("class", "weui-media-box__desc");
+					p.innerHTML = name;
+					div2.appendChild(h4);
+					div2.appendChild(p);
+					a.appendChild(div);
+					a.appendChild(div2);
+					panel.appendChild(a);
+					$("#img").append(panel);
+				}
+
+			}
+
+		if (data.fileBytes2 != null) {
+			var imgs=data.fileBytes2;
+			var i = 0;
+			for (; i < imgs.length; i++) {
+				var text=imgs[i];
+             	var name=showdataType(text.dataType);
+             	var uri=text.compressUri;
+				var panel = document.createElement("div");
+				panel.setAttribute("class", "weui-panel__bd");
+				var a = document.createElement("a");
+				a.setAttribute("class", "weui_grid");
+				var a = document.createElement("a");
+				a.setAttribute("href", "javascript:void(0);");
+				a.setAttribute("class", "weui-media-box weui-media-box_appmsg");
+				var div = document.createElement("div");
+				div.setAttribute("class", "weui-media-box__hd");
+
+				src = "/ycglj/" + uri;
+				var img = document.createElement("img");
+				img.setAttribute("class", "weui-media-box__thumb");
+				img.setAttribute("src", src);
+
+				div.appendChild(img);
+
+				div2 = document.createElement("div");
+				div2.setAttribute("class", "weui-media-box__bd");
+				h4 = document.createElement("h4");
+				h4.setAttribute("class", "weui-media-box__title");
+				p = document.createElement("p");
+				p.setAttribute("class", "weui-media-box__desc");
+				p.innerHTML = name;
+				div2.appendChild(h4);
+				div2.appendChild(p);
+				a.appendChild(div);
+				a.appendChild(div2);
+				panel.appendChild(a);
+				$("#img2").append(panel);
+			}
+
+		}
+		
+	}
+
+
+	function clickEvent() {
+		location.href = "case_entry.html?license=" + license + "&latitude=" + latitude + "&longitude=" + longitude;
+	}
+	
+	function showdataType(type) {
+		switch (type) {
+		case 'identity':
+			return '身份证正面照';
+			break;
+		case 'conIdentity':
+			return '身份证反面照';
+			break;
+		case 'business':
+			return '工商营业执照';
+			break;
+		case 'license':
+			return '营业许可证';
+			break;
+		case 'sing':
+			return '签名照';
+			break;
+		case 'other':
+			return '其它';
+			break;
+		}
+	}
+
+	$.ajax({
+		type : "POST",
+		url : "../../user/getRoomInfoByGUID.do",
+		data : {
+			"license" : license
+		},
+		dataType : "json",
+		error : function(request) {
+			console.log(request);
+		},
+		success : function(text) {
+			var obj = text.roomInfo;
+			var license = obj.license;
+			init(text);
+			var distance = null;
+			console.log(obj.name + "   " + obj.detail + "  " + obj.lng + "   "
+					+ obj.lat);
+			if (obj.lng != "" && obj.lat != "") {
+				distance = getDistance(obj.lng, obj.lat);
+				var point = new BMap.Point(obj.lng, obj.lat);
+				var pointEnd = point;
+				map.centerAndZoom(point, 12);
+				var myIcon = new BMap.Icon("../../img/blackPoint.jpg",
+						new BMap.Size(30, 38));
+				var marker = new BMap.Marker(point); // 创建点
+				map.addOverlay(marker); //增加点
+			}
+			//导航路线
+			navigation(pointStart, pointEnd);
+
+			if (obj.lng != "" && obj.lat != "") {
+				$("#navigation").on(
+						"click",
+						function() {
+							location.href = "../../1/navigation.html?latitude="
+									+ latitude + "&longitude=" + longitude
+									+ "&latitude2=" + obj.lat + "&longitude2="
+									+ obj.lng;
+						});
+			} else {
+				$("#navigation").hide();
+			}
+
+			var chartlicense = encodeURI(obj.chartlicense);
+			$("#State").click(
+					function() {
+						location.href = "assetState.html?chartlicense="
+								+ chartlicense + "&latitude=" + latitude
+								+ "&longitude=" + longitude;
+					});
+		}
+	});
+
+	//线路
+	function navigation(p1, p2) {
+		var points = [ p1, p2 ];
+		var curve = new BMapLib.CurveLine(points, {
+			strokeColor : "blue",
+			strokeWeight : 2,
+			strokeOpacity : 0.5
+		});
+		map.addOverlay(curve);
+	}
+
+	function actionTime(value) {
+		var date = new Date(value);
+		Y = date.getFullYear() + '年';
+		M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date
+				.getMonth() + 1)
+				+ '月';
+		D = date.getDate() + '日 ';
+		h = date.getHours() + ':';
+		m = date.getMinutes() + ':';
+		s = date.getSeconds();
+		return Y + M + D;
+	}
+
+	function getByteLen(val) { //传入一个字符串
+		var len = 0;
+		for (var i = 0; i < val.length; i++) {
+			if (val[i].match(/[^\x00-\xff]/ig) != null) //全角 
+				len += 2; //如果是全角，占用两个字节  如果mysql中某字段是text, 如果设置编码为utf-8,那么一个中文是占3个字节, gbk是两个字节
+			else
+				len += 1; //半角占用一个字节
+		}
+		return len;
+	}
+
+	function getDistance(lng, lat) {
+		var pointA = new BMap.Point(longitude, latitude); // 创建点坐标A--大渡口区
+		var pointB = new BMap.Point(lng, lat); // 创建点坐标B--江北区
+		var d = map.getDistance(pointA, pointB) / 1000;
+		return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
+	}
+
+	url = document.location.toString();
+
+	$.ajax({
+		url : "../../../wechat/sign.do",
+		data : {
+			campusId : 1,
+			url : url
+		},
+		async : false,
+		type : "GET",
+		success : function(data) {
+			var ticket = JSON.parse(data);
+
+			wx.config({
+				debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				appId : ticket.appId,
+				timestamp : ticket.timestamp,
+				nonceStr : ticket.nonceStr,
+				signature : ticket.signature,
+				jsApiList : [ 'checkJsApi', 'onMenuShareTimeline',
+						'onMenuShareAppMessage', 'onMenuShareQQ',
+						'onMenuShareWeibo', 'hideMenuItems', 'showMenuItems',
+						'hideAllNonBaseMenuItem', 'showAllNonBaseMenuItem',
+						'translateVoice', 'startRecord', 'stopRecord',
+						'onRecordEnd', 'playVoice', 'pauseVoice', 'stopVoice',
+						'uploadVoice', 'downloadVoice', 'chooseImage',
+						'previewImage', 'uploadImage', 'downloadImage',
+						'getNetworkType', 'openLocation', 'getLocation',
+						'hideOptionMenu', 'showOptionMenu', 'closeWindow',
+						'scanQRCode', 'chooseWXPay', 'openProductSpecificView',
+						'addCard', 'chooseCard', 'openCard' ]
+			});
+
+			var images = {
+				localId : [],
+				serverId : []
+			};
+
+			document.querySelector('#showPicker').onclick = function() {
+
+				var imagename = "无标题";
+
+				wx.chooseImage({
+					success : function(res) {
+						images.localId = res.localIds;
+						console.log('已选择 ' + res.localIds.length + ' 张图片');
+
+						var i = 0, length = images.localId.length;
+						images.serverId = [];
+						function upload() {
+							wx.uploadImage({
+								localId : images.localId[i].toString(),
+								isShowProgressTips : images.localId[i]
+										.toString(),
+								success : function(res) {
+									i++;
+									console.log('已上传：' + i + '/' + length);
+									//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
+									wxImgCallback(imagename, res.serverId);
+									//   images.serverId.push(res.serverId);
+									if (i < length) {
+										upload();
+									}
+								},
+								fail : function(res) {
+									console.log(res);
+								}
+							});
+						}
+						upload();
+					}
+				});
+
+			}
+
+		}
+	});
+
+	function wxImgCallback(imagename, serverId) {
+		//将serverId传给wx_upload.php的upload方法
+		var url = "../../user/updatePositionByRoomInfo.do";
+		$.get(url, {
+			campusId : 1,
+			imagename : imagename,
+			serverId : serverId,
+			id : license,
+			classType : "User_License",
+			license : license,
+			lng : longitude,
+			lat : latitude
+		}, function(data) {
+			console.log(data);
+			if (data == 0) {
+				alert("上传图片失败!");
+				console.log(data.msg);
+			} else if (data == 1) {
+				//存储到服务器成功后的处理
+				/*   $.get("/ycglj/mobile/asset/updatePositionByRoomInfo.do",{
+					   license:license,
+					   lng:longitude,
+					   lat:latitude
+				   },function(text){
+					   //console.log(text);
+				   });
+				 */
+				location.reload();
+			}
+		});
+	}
+</script>
+
+
+<script src="../../../js/previewImage.min.js"></script>
+
+<script>
+
+	var im = {};
+	/**
+	 * 得到多个元素
+	 * @public
+	 */
+	im.all = function (selector, contextElement) {
+		var nodeList,
+			list = [];
+		if (contextElement) {
+			nodeList = contextElement.querySelectorAll(selector);
+		} else {
+			nodeList = document.querySelectorAll(selector);
+		}
+		if (nodeList && nodeList.length > 0) {
+			list = Array.prototype.slice.call(nodeList);
+		}
+		return list;
+	}
+
+	/**
+	 * 将事件委托给父元素
+	 * @public
+	 * @param  array     $el         父元素
+	 * @param  string    eventType  事件类型名称
+	 * @param  string    selector   目标的选择器
+	 * @param  function  fn
+	 */
+	im.delegate = function ($el, eventType, selector, fn) {
+		if (!$el) { return; }
+		$el.addEventListener(eventType, function (e) {
+			var targets = im.all(selector, $el);
+			if (!targets) {
+				return;
+			}
+			// findTarget:
+			for (var i = 0; i < targets.length; i++) {
+				var $node = e.target;
+				while ($node) {
+					if ($node == targets[i]) {
+						fn.call($node, e);
+						break; //findTarget;
+					}
+					$node = $node.parentNode;
+					if ($node == $el) {
+						break;
+					}
+				}
+			}
+		}, false);
+	};
+
+
+	im.delegate(document.querySelector('#img'), 'click', 'img', function () {
+
+		var urls = [];
+		var imgs = im.all('img', im.all('#img')[0]);
+		imgs.forEach(function (v, i) {
+			var str = v.src;
+			var url = str.replace(/\/compressFile/, "");
+			urls.push(url);
+		})
+
+		var thisStr = this.src;
+		var current = thisStr.replace(/\/compressFile/, "");
+		console.log(current);
+		var obj = {
+			urls: urls,
+			current: current
+		};
+		previewImage.start(obj);
+	});
+
+	var im2 = {};
+	/**
+	 * 得到多个元素
+	 * @public
+	 */
+	im2.all = function (selector, contextElement) {
+		var nodeList,
+			list = [];
+		if (contextElement) {
+			nodeList = contextElement.querySelectorAll(selector);
+		} else {
+			nodeList = document.querySelectorAll(selector);
+		}
+		if (nodeList && nodeList.length > 0) {
+			list = Array.prototype.slice.call(nodeList);
+		}
+		return list;
+	}
+
+	/**
+	 * 将事件委托给父元素
+	 * @public
+	 * @param  array     $el         父元素
+	 * @param  string    eventType  事件类型名称
+	 * @param  string    selector   目标的选择器
+	 * @param  function  fn
+	 */
+	im2.delegate = function ($el, eventType, selector, fn) {
+		if (!$el) { return; }
+		$el.addEventListener(eventType, function (e) {
+			var targets = im2.all(selector, $el);
+			if (!targets) {
+				return;
+			}
+			// findTarget:
+			for (var i = 0; i < targets.length; i++) {
+				var $node = e.target;
+				while ($node) {
+					if ($node == targets[i]) {
+						fn.call($node, e);
+						break; //findTarget;
+					}
+					$node = $node.parentNode;
+					if ($node == $el) {
+						break;
+					}
+				}
+			}
+		}, false);
+	};
+
+	
+	im2.delegate(document.querySelector('#img2'), 'click', 'img', function () {
+
+		var urls = [];
+		var imgs = im2.all('img', im2.all('#img2')[0]);
+		imgs.forEach(function (v, i) {
+			var str = v.src;
+			var url = str.replace(/\/compressFile/, "");
+			urls.push(url);
+		})
+
+		var thisStr = this.src;
+		var current = thisStr.replace(/\/compressFile/, "");
+		console.log(current);
+		var obj = {
+			urls: urls,
+			current: current
+		};
+		previewImage.start(obj);
+	});
+	
+</script>

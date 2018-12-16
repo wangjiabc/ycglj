@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Order_User;
@@ -31,6 +34,7 @@ import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.service.SellerService;
+import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.service.WeiXinService;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
@@ -58,6 +62,13 @@ public class UserController {
 	@Autowired
 	public void setWeiXinService(WeiXinService weiXinService) {
 		this.weiXinService = weiXinService;
+	}
+	
+	private UserService userService;
+	
+	@Autowired
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 	
 	ApplicationContext applicationContext=new Connect().get();
@@ -239,16 +250,16 @@ public class UserController {
 			e.printStackTrace();
 		}
 
-		int i;
-		
+		int i=0;
+	
 		if(result==1){
 			i=wechatSendMessageController.sendMessage(openId, "94bHvwYcW9ITl-FbQnY1BnFFrqorue-RkGdd5hND0bU", "审核通知",
 					"http://lzgfgs.com/ycglj/mobile/asset/",
 					"尊敬的零售户"+userName+"您的许可证"+license+"审核信息如下:", "审核通过", time, "",
 					"", "", "");
 		}else{
-			i=wechatSendMessageController.sendMessage(openId, "b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw", 
-					//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+			i=wechatSendMessageController.sendMessage(openId, //"b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw", 
+					"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
 					"申请驳回通知",
 					"http://lzgfgs.com/ycglj/mobile/asset/",
 					"许可证审核通知:", userName, time, "未通过",
@@ -432,7 +443,70 @@ public class UserController {
 		return userDao.findAllPreMessage(limit, offset, sort, order, where);
 	}
 	
+	@RequestMapping(value="/getAllWeixinUser")
+	public @ResponseBody
+	Map<String, Object> getAllWeixinUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
+			String search,HttpServletRequest request) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<com.ycglj.manage.model.Users> userlist;
+		
+		Integer campusId=1;
+
+		if(sort!=null&&sort.equals("subscribeTime")){
+			sort="subscribe_time";
+		}
+		
+		if(sort!=null&&sort.equals("totalAmount")){
+			sort="total_amount";
+		}
+		
+		if(sort!=null&&sort.equals("defaultAddress")){
+			sort="default_address";
+		}
+		
+		/*
+		 * 前端的user表与其它表不一样，必须指定查询参数，否则抛出sql异常
+		 * 默认按id降序排列
+		 */
+		if(sort==null){
+			sort="id";
+			order="desc";
+		}
+		
+		if(search!=null&&!search.trim().equals("")){
+			search="%"+search+"%";
+		}		
+					
+		HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
+
+		int offset=(page-1)*limit;
+		
+        userlist=userService.getAllFullUser(campusId,limit,offset,sort,order,search);
+
+		JSONArray  json=JSONArray.parseArray(JSON.toJSONStringWithDateFormat(userlist,"yyyy-MM-dd"));		
+		
+		map.put("code", "0");
+		
+		map.put("data", userlist);
+		
+		map.put("count", userService.getUserFullCount(campusId,search));
+		
+		return map;
+	}
 	
+	@RequestMapping(value="/upAtionFormatter")
+	public @ResponseBody Integer upAtionFormatter(HttpServletRequest request,@RequestParam String openId,
+			@RequestParam Integer place){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Integer campusId=1;
+		
+		map.put("openId", openId);
+		map.put("place", place);
+		map.put("campusId", campusId);
+		
+		return userService.upAtionFormatter(map);
+	}
 	
 	@RequestMapping(value="inputImage")
 	public @ResponseBody Integer uploadFilesSpecifyPath(@RequestParam("file") MultipartFile[] file,@RequestParam String openId,@RequestParam String data_type,String license,HttpServletRequest request,HttpServletResponse response) throws Exception {  

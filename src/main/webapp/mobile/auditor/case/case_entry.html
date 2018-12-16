@@ -48,38 +48,34 @@
     <div class="weui-cell">
       <div class="weui-cell__hd"><label class="weui-label">姓名</label></div>
       <div class="weui-cell__bd">
-        <input class="weui-input" type="text">
+        <input class="weui-input" id="name" type="text">
       </div>
       <div class="weui-cell__hd"><label class="weui-label">性别</label></div>
       <div class="weui-cell__bd">
-        <input class="weui-input" type="text">
-      </div>
-      <div class="weui-cell__hd"><label class="weui-label">年龄</label></div>
-      <div class="weui-cell__bd">
-        <input class="weui-input" type="text">
+        <input class="weui-input" id="sex" type="text">
       </div>
     </div>
     <div class="weui-cell">
       <div class="weui-cell__hd"><label class="weui-label">地址</label></div>
       <div class="weui-cell__bd">
-        <input class="weui-input" type="text">
+        <input class="weui-input" id="address" type="text">
       </div>
     </div>
     <div class="weui-cell">
       <div class="weui-cell__hd"><label class="weui-label">证件号</label></div>
       <div class="weui-cell__bd">
-        <input class="weui-input" type="text">
+        <input class="weui-input" id="idcard" type="text">
       </div>
     </div>
     <div class="weui-cell">
       <div class="weui-cell__hd"><label class="weui-label">电话</label></div>
       <div class="weui-cell__bd">
-        <input class="weui-input" type="text">
+        <input class="weui-input" id="phone" type="text">
       </div>
     </div>
     <div class="weui-cell">
       <div class="weui-cell__hd"><label class="weui-label">备注</label></div>
-      <textarea class="weui-textarea" placeholder="" rows="3"></textarea>
+      <textarea class="weui-textarea" id="remark" placeholder="" rows="3"></textarea>
     </div>
 
   </div>
@@ -93,19 +89,121 @@
           <div class="weui-cell__ft">
             <div class="weui-count">
               <a class="weui-count__btn weui-count__decrease"></a>
-              <input class="weui-count__number" type="number" value="1" />
+              <input name="jm" class="weui-count__number" type="number" value="0" />
               <a class="weui-count__btn weui-count__increase"></a>
             </div>
           </div>
         </div>
       </div>
-      <div class="weui-flex__item"></div>
+      <div class="weui-flex__item">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>非渠道</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="fqd" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
+    <div class="weui-flex">
+      <div class="weui-flex__item">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>走私</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="zs" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="weui-flex__item">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>无证批发</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="wzpf" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="weui-flex">
+      <div class="weui-flex__item">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>无证经营</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="wzjy" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="weui-flex__item">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>无证运输</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="wzys" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="weui-flex">
+      <div class="weui-flex__item">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>超邮</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="cy" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="weui-flex__item">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>其它</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="other" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </div>
   <div class="button_sp_area">
-    <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary">确认录入</a>
+    <a href="javascript:;" onclick="insertCase();" class="weui-btn weui-btn_mini weui-btn_primary">确认录入</a>
   </div>
   <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
@@ -117,15 +215,113 @@
   </script>
 
   <script>
+  
+  function getQueryString(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null) return unescape(r[2]); return null;
+	}
+  
     $('#date').val(new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate());
-    $("#date").calendar({
-      onChange: function (p, values, displayValues) {
-        console.log(values, displayValues);
-      }
+    // $("#date").calendar({
+    //   onChange: function (p, values, displayValues) {
+    //     date = displayValues;
+    //   }
+    // });
+    
+    var MAX = 99, MIN = 0;
+    //减
+    $('.weui-count__decrease').click(function (e) {
+      var $input = $(e.currentTarget).parent().find('.weui-count__number');
+      var number = parseInt($input.val() || "0") - 1
+      if (number < MIN) number = MIN;
+      $input.val(number)
+    })
+    //加
+    $('.weui-count__increase').click(function (e) {
+      var $input = $(e.currentTarget).parent().find('.weui-count__number');
+      var number = parseInt($input.val() || "0") + 1
+      if (number > MAX) number = MAX;
+      $input.val(number)
+    })
+    
+    var license = getQueryString("license");
+    var longitude = getQueryString("longitude");
+	var latitude = getQueryString("latitude");
+	
+    $.ajax({
+		type : "POST",
+		url : "../../user/getRoomInfoByGUID.do",
+		data : {
+			"license" : license
+		},
+		dataType : "json",
+		error : function(request) {
+			console.log(request);
+		},
+		success : function(text) {
+			console.log(text);
+			var obj = text.roomInfo;
+			var license = obj.license;
+			 $('#name').val(obj.name);
+			 $('#sex').val(obj.sex);
+			 $('#address').val(obj.address);
+			 $('#idcard').val(obj.id_number);
+			 $('#phone').val(obj.phone);
+		}
     });
-    reason = "走私";
-    time = "2018-08-08";
-    $('.record').append('<div class="weui-cell"><div class="weui-cells__title">' + time + '</div><div class="weui-cells__title">' + reason + '</div></div>');
+    
+    //录入
+    function insertCase() {
+    //   $('#name').val()
+    // $('#sex').val()
+    // $('#age').val()
+    // $('#address').val()
+    // $('#idcard').val()
+    // $('#phone').val()
+    // $('#note').val()
+      var ay = [];
+      var type;
+      $("input[type='number']").each(function () {
+        //循环需要录入的案件
+        if ($(this).val() > 0) {
+          type = $(this).parents('.weui-cell').find('p').text();
+          ay.push(type, $(this).val());
+        }
+      });
+      var remark=$("#remark").val();
+      var date=$("#date").val();
+      console.log(remark+" , "+date+","+ay);
+      
+      $.ajax({
+  		type : "POST",
+  		url : "../../user/insertIntoCrimalCase.do",
+  		data : {
+  			"license" : license,
+  			"dateTime" : date,
+  			"ay" : JSON.stringify(ay),
+  			"remark" : remark,
+  			"lng" : longitude,
+  			"lat" : latitude
+  		},
+  		dataType : "json",
+  		error : function(request) {
+  			console.log(request);
+  		},
+  		success : function(text) {
+  			if (text > 0) {
+	        	alert("新建记录成功!");
+	        	history.back();
+	        } else if (text == -1) {
+	        	alert("新建记录失败,至少选择一项违法记录!");
+	        }else{
+	        	alert("新建记录失败!");
+	        }
+  		}
+      });
+      
+    }
+
   </script>
 
 </body>
