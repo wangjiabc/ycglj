@@ -103,8 +103,8 @@
 	var yit=new Array();
 	var any=new Array();
 	
-	var startTime;
-	var endTime;
+	var startTime="";
+	var endTime="";
 	
 	var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
 	var ay = ["非渠道", "售假", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
@@ -121,14 +121,14 @@
 		}
 		$("#date").calendar({
 			onChange: function (p, values, displayValues) {
-				console.log(values, displayValues);
-				startTime=values;
+				console.log(displayValues);
+				startTime=displayValues;
 			}
 		});
 		$("#date1").calendar({
 			onChange: function (p, values, displayValues) {
-				console.log(values, displayValues);
-				endTime=values;
+				console.log(displayValues);
+				endTime=displayValues;
 			}
 		});
 
@@ -138,8 +138,13 @@
 			console.log(yit+"           "+any);
 			console.log(" starttime= "+startTime);
 			console.log(" endtime= "+endTime);
-			var userName = document.getElementById("userName").value;
-			console.log(userName);
+			var name = document.getElementById("userName").value;
+			console.log(name);
+			
+			map.clearOverlays();
+			
+			addDeck(name,startTime,endTime,yit,any);
+			
 		}
 		
 	}
@@ -256,124 +261,113 @@
 		if (r != null) return unescape(r[2]); return null;
 	}
 
-	var xhm = new XMLHttpRequest();
-	xhm.open("GET", "../../../baiduMap/getAllAssetPosition.do", false);
-	xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xhm.send();
-	var data = JSON.parse(xhm.responseText);
-	var ticket = data.rows;
-
-	console.log(ticket);
-	var points = [];  // 添加海量点数据
-
-	for (var i = 0; i < ticket.length; i++) {
-		points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
-	}
-	var options = {
-		size: BMAP_POINT_SIZE_SMALL,
-		shape: BMAP_POINT_SHAPE_STAR,
-		color: '#d340c3'
-	}
-	var pointCollection = new BMap.PointCollection(points, options);  // 初始化PointCollection
-
-
-	pointCollection.addEventListener('click', function (e) {
-		// alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
+	addDeck("",startTime,endTime,yit,any);
+	
+	function addDeck(name,startTime,endTime,yit,any) {
+		
+		var condition="?name="+name+"&startTime="+startTime+"&endTime="+endTime+"&yit="+yit+"&any="+any;
+		
 		var xhm = new XMLHttpRequest();
-		xhm.open("GET", "../../baiduMap/getAssetGUIDByPosition.do?lng=" + e.point.lng + "&lat=" + e.point.lat, false);
-		xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhm.open("GET", "../../../baiduMap/getAllLicensePosition.do"+condition, false);
+		xhm.setRequestHeader("Content-type",
+				"application/x-www-form-urlencoded");
 		xhm.send();
 		var data = JSON.parse(xhm.responseText);
-		var obj = data.roomInfo;
-		var url = "../../" + data.url;
-		total = data.total;
-		console.log(total);
-		if (total == 1) {
-			var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'> 资产名称 : " + obj.address + "</h4>" +
-				"<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='139' height='104'/>" +
-				"<p>" +
-				" 管理分区 : " + obj.manageRegion + " " +
-				" 资产性质 : " + obj.roomProperty + " " +
-				" 资产编号 : " + obj.num + " </br>" +
-				" 面积 : " + obj.buildArea + " m<sup>2</sup> " +
-				" 租金 :" + obj.hire + " " +
-				"</p>" + "</div>";
-			var infoWindow = new BMap.InfoWindow(content);  // 创建信息窗口对象
-			map.openInfoWindow(infoWindow, new BMap.Point(e.point.lng, e.point.lat)); //开启信息窗口
-		} else {
-			console.log(data.list);
-			rows = data.list;
-			div1 = document.getElementById('div1')
-			var tab = "<table border=1 width=700>";
-			for (var i = 0; i < rows.length; i++) {
-				var obj = rows[i];
-				tab += "<tr>";
-				tab += "<td> 资产名称 : " + obj.address + " </td>";
-				tab += "<td> 管理分区 : " + obj.manageRegion + " </td>";
-				tab += "<td> 资产性质 : " + obj.roomProperty + " </td>";
-				tab += "<td> 资产编号 : " + obj.num + " </td>";
-				tab += "<td> 面积 : " + obj.buildArea + " m<sup>2</sup> </td>";
-				tab += "<td> 租金 :" + obj.hire + " </td>";
-				tab += "<td>" + "<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='50' height='30'/>" + "</td>";
-				tab += "</tr>";
-			}
-			tab += "</table>";
+		var ticket = data.rows;
 
-			var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>  资产数量 : " + data.total + "</h4>" +
-				"<p>" +
-				"  " + tab + " " +
-				"</p>" + "</div>";
-			var infoWindow = new BMap.InfoWindow(content);  // 创建信息窗口对象
-			map.openInfoWindow(infoWindow, new BMap.Point(e.point.lng, e.point.lat));
+		console.log(ticket);
+		var points = []; // 添加海量点数据
+
+		for (var i = 0; i < ticket.length; i++) {
+			points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
 		}
-	});
-	map.addOverlay(pointCollection);  // 添加Overlay
+		var options = {
+			size : BMAP_POINT_SIZE_SMALL,
+			shape : BMAP_POINT_SHAPE_STAR,
+			color : '#d340c3'
+		}
+		var pointCollection = new BMap.PointCollection(points, options); // 初始化PointCollection
 
-    /*
-    var geoc = new BMap.Geocoder();  
+		pointCollection
+				.addEventListener(
+						'click',
+						function(e) {
+							// alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
+							var xhm = new XMLHttpRequest();
+							xhm.open("GET",
+									"../../baiduMap/getAssetGUIDByPosition.do?lng="
+											+ e.point.lng + "&lat="
+											+ e.point.lat, false);
+							xhm.setRequestHeader("Content-type",
+									"application/x-www-form-urlencoded");
+							xhm.send();
+							var data = JSON.parse(xhm.responseText);
+							var obj = data.roomInfo;
+							var url = "../../" + data.url;
+							total = data.total;
+							console.log(total);
+							if (total == 1) {
+								var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'> 资产名称 : "
+										+ obj.address
+										+ "</h4>"
+										+ "<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='139' height='104'/>"
+										+ "<p>"
+										+ " 管理分区 : "
+										+ obj.manageRegion
+										+ " "
+										+ " 资产性质 : "
+										+ obj.roomProperty
+										+ " "
+										+ " 资产编号 : "
+										+ obj.num
+										+ " </br>"
+										+ " 面积 : "
+										+ obj.buildArea
+										+ " m<sup>2</sup> "
+										+ " 租金 :"
+										+ obj.hire + " " + "</p>" + "</div>";
+								var infoWindow = new BMap.InfoWindow(content); // 创建信息窗口对象
+								map.openInfoWindow(infoWindow, new BMap.Point(
+										e.point.lng, e.point.lat)); //开启信息窗口
+							} else {
+								console.log(data.list);
+								rows = data.list;
+								div1 = document.getElementById('div1')
+								var tab = "<table border=1 width=700>";
+								for (var i = 0; i < rows.length; i++) {
+									var obj = rows[i];
+									tab += "<tr>";
+									tab += "<td> 资产名称 : " + obj.address
+											+ " </td>";
+									tab += "<td> 管理分区 : " + obj.manageRegion
+											+ " </td>";
+									tab += "<td> 资产性质 : " + obj.roomProperty
+											+ " </td>";
+									tab += "<td> 资产编号 : " + obj.num + " </td>";
+									tab += "<td> 面积 : " + obj.buildArea
+											+ " m<sup>2</sup> </td>";
+									tab += "<td> 租金 :" + obj.hire + " </td>";
+									tab += "<td>"
+											+ "<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='50' height='30'/>"
+											+ "</td>";
+									tab += "</tr>";
+								}
+								tab += "</table>";
 
-    //获取标注位置信息    
-    function getAttr(){
-		var p = marker.getPosition();       //获取marker的位置
-		alert("marker的位置是" + p.lng + "," + p.lat);   
+								var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>  资产数量 : "
+										+ data.total
+										+ "</h4>"
+										+ "<p>"
+										+ "  "
+										+ tab + " " + "</p>" + "</div>";
+								var infoWindow = new BMap.InfoWindow(content); // 创建信息窗口对象
+								map.openInfoWindow(infoWindow, new BMap.Point(
+										e.point.lng, e.point.lat));
+							}
+						});
+		map.addOverlay(pointCollection); // 添加Overlay
+		
 	}
- 
- 
-    var xhm=new XMLHttpRequest();
-    xhm.open("GET","../../baiduMap/getAssetsByPoint.do?limit=100&offset=0&lng="+lng+"&lat="+lat+"&distance=1500",false);
-    xhm.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xhm.send();
-    var ticket=JSON.parse(xhm.responseText);
-    console.log(ticket);
-    addDeck(ticket.rows);
- 
-function addDeck(ticket){	
-
-// console.log(ticket);
-var json_data = new Array();
-
-for(var i=0;i<ticket.length;i++){
-	json_data[i]=[ticket[i].lng,ticket[i].lat,
-	              ticket[i].address];
-}
-
-console.log(json_data);
-
-var pointArray = new Array();
-for(var i=0;i<json_data.length;i++){
-	var point=new BMap.Point(json_data[i][0], json_data[i][1]);
-	var myIcon = new BMap.Icon("../../img/blackPoint.jpg", new BMap.Size(30,38));
-	var marker = new BMap.Marker(point,{icon:myIcon}); // 创建点
-	map.addOverlay(marker);    //增加点
-
-	marker.addEventListener("click",attribute);
-}
-//让所有点在视野范围内
-map.setViewport(pointArray);
-
-}
-
-*/
 
 	//获取覆盖物位置
 	function attribute(e) {
@@ -382,24 +376,25 @@ map.setViewport(pointArray);
 		var hidden_lat = p.getPosition().lat;
 
 		$.get("../../baiduMap/getAssetGUIDByPosition.do", {
-			lng: hidden_lng,
-			lat: hidden_lat
-		}, function (data) {
+			lng : hidden_lng,
+			lat : hidden_lat
+		}, function(data) {
 			var obj = $.parseJSON(data).roomInfo;
 			var assetGuid = encodeURI(obj.guid);
-			location.href = "assetDetail.html?guid=" + assetGuid + "&latitude=" + lat + "&longitude=" + lng;
+			location.href = "assetDetail.html?guid=" + assetGuid + "&latitude="
+					+ lat + "&longitude=" + lng;
 		});
 
 	}
 
 	function getDistance(lng, lat) {
-		var pointA = new BMap.Point(longitude, latitude);  // 创建点坐标A--大渡口区
-		var pointB = new BMap.Point(lng, lat);  // 创建点坐标B--江北区
+		var pointA = new BMap.Point(longitude, latitude); // 创建点坐标A--大渡口区
+		var pointB = new BMap.Point(lng, lat); // 创建点坐标B--江北区
 		var d = map.getDistance(pointA, pointB) / 1000;
-		return d.toFixed(2) + ' KM';  //获取两点距离,保留小数点后两位
+		return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
 	}
 
-	function getByteLen(val) {    //传入一个字符串
+	function getByteLen(val) { //传入一个字符串
 		var len = 0;
 		for (var i = 0; i < val.length; i++) {
 			if (val[i].match(/[^\x00-\xff]/ig) != null) //全角 
@@ -409,5 +404,4 @@ map.setViewport(pointArray);
 		}
 		return len;
 	}
-
 </script>

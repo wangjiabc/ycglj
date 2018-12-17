@@ -67,6 +67,13 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	}
 
 	@Override
+	public Map getAllLicensePositionJoin() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	@Override
 	public Map<String, Object> findAllLicense_Position(Integer limit, Integer offset,Double lng, Double lat,String term,Map search) {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub

@@ -16,6 +16,8 @@ public interface LicenseDAO {
 
 	public Map getAllLicensePosition();
 	
+	public Map getAllLicensePositionJoin();
+	
 	public Map<String, Object> findAllLicense_Position(Integer limit, Integer offset, Double lng, Double lat,String term,Map search);
 	
 	public Map<String, Object> getAllLicense_Position(Integer limit, Integer offset,String sort,String order,Map search);

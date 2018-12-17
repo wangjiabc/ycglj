@@ -1,0 +1,136 @@
+package com.ycglj.manage.daoModelJoin;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.ycglj.manage.daoSQL.annotations.SQLDateTime;
+import com.ycglj.manage.daoSQL.annotations.SQLDouble;
+import com.ycglj.manage.daoSQL.annotations.SQLInteger;
+import com.ycglj.manage.daoSQL.annotations.SQLString;
+
+public class License_Position_Join implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+
+    @SQLString(name="license")
+	private String license;
+
+    @SQLString(name="region")
+	private String region;
+
+    @SQLDateTime(name="date")
+	private Date date;
+
+    @SQLInteger(name="id")
+	private Integer id;
+
+    @SQLInteger(name="is_license")
+	private Integer is_license;
+
+    @SQLString(name="check_id")
+	private String check_id;
+
+    @SQLString(name="neaten_id")
+	private String neaten_id;
+
+    @SQLDouble(name="lng")
+	private Double lng;
+
+    @SQLDouble(name="lat")
+	private Double lat;
+
+    @SQLString(name="business_state")
+	private String business_state;
+    
+    @SQLInteger(name="criminal_number")
+	private Integer criminal_number;
+    
+	public void setLicense(String license){
+		this.license = license;
+	}
+
+	public String getLicense(){
+		return license;
+	}
+
+	public void setRegion(String region){
+		this.region = region;
+	}
+
+	public String getRegion(){
+		return region;
+	}
+
+	public void setDate(Date date){
+		this.date = date;
+	}
+
+	public Date getDate(){
+		return date;
+	}
+
+	public void setIs_license(Integer is_license){
+		this.is_license = is_license;
+	}
+
+	public Integer getIs_license(){
+		return is_license;
+	}
+
+	public void setCheck_id(String check_id){
+		this.check_id = check_id;
+	}
+
+	public String getCheck_id(){
+		return check_id;
+	}
+
+	public void setNeaten_id(String neaten_id){
+		this.neaten_id = neaten_id;
+	}
+
+	public String getNeaten_id(){
+		return neaten_id;
+	}
+
+	public void setLng(Double lng){
+		this.lng = lng;
+	}
+
+	public Double getLng(){
+		return lng;
+	}
+
+	public void setLat(Double lat){
+		this.lat = lat;
+	}
+
+	public Double getLat(){
+		return lat;
+	}
+	
+	public void setId(Integer id){
+		this.id = id;
+	}
+
+	public Integer getId(){
+		return id;
+	}
+
+	public void setBusiness_state(String business_state){
+		this.business_state = business_state;
+	}
+
+	public String getBusiness_state(){
+		return business_state;
+	}
+
+	public void setCriminal_number(Integer criminal_number){
+		this.criminal_number = criminal_number;
+	}
+
+	public Integer getCriminal_number(){
+		return criminal_number;
+	}
+
+}

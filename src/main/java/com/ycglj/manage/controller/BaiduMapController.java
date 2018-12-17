@@ -67,4 +67,52 @@ public class BaiduMapController {
 		
 	}
 	
+	@RequestMapping("/getAllLicensePosition")
+	public @ResponseBody Map getAllLicensePosition(String name,Long startTime,Long endTime,
+			String yit,String any){
+		
+		System.out.println(name+" "+startTime+" "+endTime+" "+yit+" "+any);
+		
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+		
+		String startDate = null,endDate = null;
+		
+		String[] yitStrings = null,anyStrings = null;
+		
+		if(startTime!=null){			
+			startDate=sdf.format(startTime);
+		}
+		
+		if(endTime!=null){
+			endDate=sdf.format(endTime);
+		}
+		
+		System.out.println("startDate="+startDate+"   endDate="+endDate);
+		
+		if (yit != null && !yit.equals("")) {
+
+			yitStrings = yit.split(",");
+			
+			MyTestUtil.print(yitStrings);
+
+		}
+
+		if (any != null && !any.equals("")) {
+			
+			anyStrings = any.split(",");
+			
+			MyTestUtil.print(anyStrings);
+		}
+		
+		System.out.println("yitStrings="+yitStrings+"   anyStrings="+anyStrings);
+		
+		
+		
+		Map map=licenseDAO.getAllLicensePosition();
+		
+		MyTestUtil.print(map);
+		
+		return map;
+		
+	}
 }

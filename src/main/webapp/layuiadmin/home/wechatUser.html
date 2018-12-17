@@ -11,7 +11,22 @@
 </head>
 
 <body>
+    <div class="layui-inline">
+        <input type="text" id="search" lay-verify="search" autocomplete="off" placeholder="请输入微信昵称" class="layui-input">
+    </div>
+    <div class="layui-inline">
+        <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="search">
+            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+        </button>
+    </div>
     <table class="layui-hide" id="test" lay-filter="test"></table>
+    <script type="text/html" id="barDemo">
+        {{#   if(d.place > 0){ }}
+        <i class="layui-icon layui-icon-face-smile" lay-event="dispass" style="color: #FF5722;"></i>  
+        {{#  } else { }}
+        <i class="layui-icon layui-icon-face-cry" lay-event="pass"></i> 
+        {{#  } }}  
+      </script>
     <script src="../layui/layui.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
     <script type="text/html" id="wechatHead">
@@ -37,11 +52,64 @@
                     , { field: 'city', edit: 'text', title: '微信所在地' }
                     , { field: 'openId', title: 'openId' }
                     , { field: 'subscribeTime', title: '关注时间', align: 'center', templet: function (d) { return util.toDateString(d.subscribeTime, 'yyyy-MM-dd HH:mm') } }
-
+                    , { title: '操作', toolbar: '#barDemo' }
                 ]]
-
             });
+            //监听行工具事件
+            table.on('tool(test)', function (obj) {
+                var openId = obj.data.openId;
+                if (obj.event === 'pass') {
+                    place = 2;
+                    $.ajax({
+                        type: "get",
+                        url: "/ycglj/user/upAtionFormatter.do?openId=" + openId + "&place=2",
+                        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                        data: {},
+                        dataType: "json",
+                        success: function (data) {
+                            // layer.msg("设置成功", { icon: 1 });
+                            table.reload('test');
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    })
+                } else if (obj.event === 'dispass') {
+                    $.ajax({
+                        type: "get",
+                        url: "/ycglj/user/upAtionFormatter.do?openId=" + openId + "&place=0",
+                        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                        data: {},
+                        dataType: "json",
+                        success: function (data) {
+                            // layer.msg("设置成功", { icon: 1 });
+                            table.reload('test');
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    })
+                }
+                layer.msg("设置成功", { icon: 1 });
+            })
+            //监听搜索
+            layui.form.on('submit(search)', function (data) {
+                //input值
+                var search = $('#search').val();
+                var field = data.field;
+
+                //执行重载
+                table.reload('test', {
+                    where: field,
+                    url: '/ycglj/user/getAllWeixinUser.do?search='+search,
+                });
+            });
+
         })
+        function setStatus(openId, place) {
+
+        }
+
     </script>
 </body>
 
