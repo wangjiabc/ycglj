@@ -67,8 +67,8 @@ public class BaiduMapController {
 		
 	}
 	
-	@RequestMapping("/getAllLicensePosition")
-	public @ResponseBody Map getAllLicensePosition(String name,Long startTime,Long endTime,
+	@RequestMapping("/getAllLicensePositionJoin")
+	public @ResponseBody Map getAllLicensePositionJoin(String name,Long startTime,Long endTime,
 			String yit,String any){
 		
 		System.out.println(name+" "+startTime+" "+endTime+" "+yit+" "+any);
@@ -108,7 +108,7 @@ public class BaiduMapController {
 		
 		
 		
-		Map map=licenseDAO.getAllLicensePosition();
+		Map map=licenseDAO.getAllLicensePositionJoin(name, startDate, endDate, yitStrings, anyStrings);
 		
 		MyTestUtil.print(map);
 		

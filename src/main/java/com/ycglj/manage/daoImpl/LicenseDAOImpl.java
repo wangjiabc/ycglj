@@ -67,8 +67,42 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	}
 
 	@Override
-	public Map getAllLicensePositionJoin() {
+	public Map getAllLicensePositionJoin(String name,String startDate,String endDate,String[] yitStrings,String[] anyStrings) {
 		// TODO Auto-generated method stub
+		String sql01 = "SELECT  [Users].name,[User_License].open_id,[User_License].phone,"
+				+ "[User_License].license,[Position].lng," 
+				+"[Position].lat , c FROM [User_License] left join ("
+				+"SELECT [license],COUNT(*) as c "
+				+"FROM [YC].[dbo].[Law_Case] ";
+		
+		if(anyStrings==null){
+			sql01=sql01+" group by license )";
+		}else{
+			StringBuilder sb = new StringBuilder();
+			for(String str : anyStrings){
+				
+			    	sb.append("criminal_type=");
+			    	sb.append("'"+str+"'");
+			    	sb.append(" OR ");
+			
+			}
+			
+			String ay=sb.substring(0, sb.length() - 3);
+			
+			sql01=sql01+" where "+ay+" group by license )";
+		}
+		
+		sql01=sql01+" as t on [User_License].license = t.license ";
+		
+		String sql02 = " left join [Users] " 
+				+ "on [User_License].phone = [Users].phone "
+				+ "left join  [Position]"
+				+ "on [User_License].license = [Position].license ";
+		
+		String sql=sql01+sql02;
+		
+		System.out.println("sql="+sql);
+		
 		return null;
 	}
 
@@ -84,7 +118,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 				+ "[Position].id," + "[Position].license," + "[Position].is_license," + "[Position].check_id,"
 				+ "[Position].neaten_id," + "[Position].province," + "[Position].city," + "[Position].district,"
 				+ "[Position].street," + "[Position].street_number," + "[Position].lng," + "[Position].lat,"
-				+ "[Position].date," + "[Users].id," + "[Users].open_id," + "[Users].name," + "[Users].card_type,"
+				+ "[Position].wgs84_lng," + "[Position].wgs84_lat,"+ "[Position].date," + "[Users].id," + "[Users].open_id," + "[Users].name," + "[Users].card_type,"
 				+ "[Users].sex," + "[Users].id_number," + "[Users].phone," + "[Users].causa," + "[Users].date,"
 				+ "[Users].up_date" + " FROM [User_License] left join  [Position]"
 				+ "on [User_License].license = [Position].license " + "left join [Users] "
@@ -317,6 +351,10 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		
 		List fileSelfBelongs=this.getJdbcTemplate().query(sql,new fileSelfBelongRowMapper());
 	
+		System.out.println("fileSelfBelongs=");
+		
+		MyTestUtil.print(fileSelfBelongs);
+		
 		Iterator<FileSelfBelong> iterator=fileSelfBelongs.iterator();
 		
 		while(iterator.hasNext()){			
@@ -327,7 +365,10 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 				//String fileByte=Base64Test.getImageStr(filePath+"\\"+hidden_Data_Join.getURI());
 				
-				String oldFile=Singleton.ROOMINFOIMGPATH+fileSelfBelong.getUpFileFullName();
+				String oldFile=Singleton.ROOMINFOIMGPATH2+"\\"+fileSelfBelong.getUpFileFullName();
+				
+				System.out.println("imgPath="+imgPath);
+				System.out.println("oldfile="+oldFile);
 				
 				CopyFile.set(imgPath, oldFile, fileSelfBelong.getUpFileFullName());
 				

@@ -283,7 +283,8 @@ public class MoblieUserController {
     		@RequestParam Integer campusId,@RequestParam String id,
     		@RequestParam String classType,
     		@RequestParam String license,
-			@RequestParam Double lng,@RequestParam Double lat){
+			@RequestParam Double lng,@RequestParam Double lat,
+			@RequestParam Double wgs84_lng,@RequestParam Double wgs84_lat){
 		
 		int upload=0;
 				
@@ -302,6 +303,8 @@ public class MoblieUserController {
 			position.setLicense(license);
 			position.setLat(lat);
 			position.setLng(lng);
+			position.setWgs84_lat(wgs84_lat);
+			position.setWgs84_lng(wgs84_lng);
 
 			Date date=new Date();
 		    
