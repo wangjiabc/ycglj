@@ -12,7 +12,7 @@ import com.ycglj.weixin.base.SNSUserInfo;
 
 public interface UserService {
 	
-	List<Users> getAllFullUser(Integer campusId,Integer limit, Integer offset, String sort,String order,String search);
+	List<Users> getAllFullUser(Integer campusId,Integer limit, Integer offset, String sort,String order,Integer place,String search);
 	
 	List<Users> getAllChartUser(Integer campusId,Integer limit, Integer offset, String sort,String order,String search);
 	

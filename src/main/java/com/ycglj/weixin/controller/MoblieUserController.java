@@ -94,6 +94,7 @@ public class MoblieUserController {
 			where.put("[Users].name like ", search);
 			where.put("[User_License].license like ", search);
 			where.put("[User_License].phone like ", search);
+			where.put("[User_License].address like ", search);
 		}		
 
 

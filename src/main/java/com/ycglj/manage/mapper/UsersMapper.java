@@ -37,7 +37,7 @@ public interface UsersMapper {
     
     //**新增方法
 
-	List<Users> getAllFullUser(@Param(value="campusId")Integer campusId,@Param(value="limit")Integer limit, @Param(value="offset")Integer offset, @Param(value="sort")String sort, @Param(value="order")String order,@Param(value="search")String search);
+	List<Users> getAllFullUser(@Param(value="campusId")Integer campusId,@Param(value="limit")Integer limit, @Param(value="offset")Integer offset, @Param(value="sort")String sort, @Param(value="order")String order,@Param(value="place")Integer place,@Param(value="search")String search);
 
 	List<Users> getAllChartUser(@Param(value="campusId")Integer campusId,@Param(value="limit")Integer limit, @Param(value="offset")Integer offset, @Param(value="sort")String sort, @Param(value="order")String order,@Param(value="search")String search);
 	

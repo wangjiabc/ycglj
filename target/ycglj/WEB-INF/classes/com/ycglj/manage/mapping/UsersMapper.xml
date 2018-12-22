@@ -103,19 +103,22 @@
 		users.open_id = usersinfo.open_id
 		<where>
 			users.campus_id=#{campusId,jdbcType=INTEGER}
+		<if test="place != null and place !='' ">
+			and place > #{place,jdbcType=INTEGER}
+		</if>
 		<if test="search != null and search !='' ">
 				and (nickname like #{search,jdbcType=VARCHAR} or
 				usersinfo.name like
 				#{search,jdbcType=VARCHAR} or
 				usersinfo.phone like
 				#{search,jdbcType=VARCHAR} or usersinfo.address like #{search,jdbcType=VARCHAR})
-			</if>
-			<if test="sort != null">
+		</if>
+		<if test="sort != null">
 				order by ${sort}
-			</if>
-			<if test="sort != null and order != null">
+		</if>
+		<if test="sort != null and order != null">
 				${order}
-			</if>
+		</if>
 		</where>
 		<if test="offset != null and limit != null">
 			limit #{offset,jdbcType=INTEGER} ,

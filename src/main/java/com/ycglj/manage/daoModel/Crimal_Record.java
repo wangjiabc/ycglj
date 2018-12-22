@@ -11,12 +11,18 @@ public class Crimal_Record implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
+    @SQLInteger(name="id")
+	private Integer id;
+    
     @SQLString(name="crimal_id")
 	private String crimal_id;
 
     @SQLString(name="license")
 	private String license;
 
+    @SQLString(name="phone")
+	private String phone;
+    
     @SQLDateTime(name="criminal_time")
 	private Date criminal_time;
 
@@ -38,6 +44,14 @@ public class Crimal_Record implements Serializable{
     @SQLDateTime(name="date")
 	private Date date;
 
+	public void setId(Integer id){
+		this.id = id;
+	}
+
+	public Integer getId(){
+		return id;
+	}
+    
 	public void setCrimal_id(String crimal_id){
 		this.crimal_id = crimal_id;
 	}
@@ -54,6 +68,14 @@ public class Crimal_Record implements Serializable{
 		return license;
 	}
 
+	public void setPhone(String phone){
+		this.phone = phone;
+	}
+
+	public String getPhone(){
+		return phone;
+	}
+	
 	public void setCriminal_time(Date criminal_time){
 		this.criminal_time = criminal_time;
 	}

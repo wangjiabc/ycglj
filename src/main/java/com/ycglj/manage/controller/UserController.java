@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Order_User;
@@ -76,6 +77,8 @@ public class UserController {
 	UserDAO userDao=(UserDAO) applicationContext.getBean("userdao");
 	
 	OrderDAO orderDao=(OrderDAO) applicationContext.getBean("orderdao");
+	
+	LicenseDAO licenseDAO=(LicenseDAO) applicationContext.getBean("licensedao");
 	
 	@RequestMapping("getAllUser")
 	public @ResponseBody Map<String, Object> getAllUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
@@ -446,7 +449,7 @@ public class UserController {
 	@RequestMapping(value="/getAllWeixinUser")
 	public @ResponseBody
 	Map<String, Object> getAllWeixinUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
-			String search,HttpServletRequest request) {
+			Integer place,String search,HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<com.ycglj.manage.model.Users> userlist;
 		
@@ -481,10 +484,8 @@ public class UserController {
 
 		int offset=(page-1)*limit;
 		
-        userlist=userService.getAllFullUser(campusId,limit,offset,sort,order,search);
+        userlist=userService.getAllFullUser(campusId,limit,offset,sort,order,place,search);
 
-		JSONArray  json=JSONArray.parseArray(JSON.toJSONStringWithDateFormat(userlist,"yyyy-MM-dd"));		
-		
 		map.put("code", "0");
 		
 		map.put("data", userlist);
@@ -506,6 +507,49 @@ public class UserController {
 		map.put("campusId", campusId);
 		
 		return userService.upAtionFormatter(map);
+	}
+	
+	
+	@RequestMapping(value="/getAllCrimalRecord")
+	public @ResponseBody
+	Map<String, Object> getAllCrimalRecordJoin(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
+			String search,HttpServletRequest request) {
+
+		Map<String, Object> map;
+
+
+		if(sort!=null&&!sort.equals("")){
+
+		}else{
+			sort="criminal_time";
+		}
+				
+		if(order!=null&&!order.equals("")){
+
+		}else{
+			order="desc";
+		}
+		
+		Map searchMap=new HashMap<>();
+		
+		if(search!=null&&!search.trim().equals("")){
+			searchMap.put("[Crimal_Record].license like ","%"+search+"%");
+			searchMap.put("[Crimal_Record].phone like ","%"+search+"%");
+			searchMap.put("[Users].name like ","%"+search+"%");
+		}		
+					
+		HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
+
+		int offset=(page-1)*limit;
+		
+        map=licenseDAO.getAllCrimalRecordJoin(limit, offset, sort, order,searchMap);
+
+        if(map==null){
+        	map = new HashMap<String, Object>();
+        }else{
+        	map.put("code", "0");
+        }
+		return map;
 	}
 	
 	@RequestMapping(value="inputImage")
@@ -670,6 +714,7 @@ public class UserController {
         }
     }
 	
+    
     
 
     

@@ -33,4 +33,8 @@ public interface LicenseDAO {
 	public Integer insertIntoCrimalCase(List<Crimal_Case> crimalCaseList,Crimal_Record crimal_Record);
 	
 	public List getAllCaseByLicense(String license);
+	
+	public List findPosition(Position position);
+	
+	public Map getAllCrimalRecordJoin(Integer limit, Integer offset, String sort,String order,Map search);
 }

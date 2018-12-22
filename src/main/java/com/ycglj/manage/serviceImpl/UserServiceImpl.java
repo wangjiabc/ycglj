@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	public List<Users> getAllFullUser(Integer campusId,Integer limit, Integer offset, String sort,
-			String order,String search) {
-		return usersMapper.getAllFullUser(campusId,limit,offset,sort,order,search);
+			String order,Integer place,String search) {
+		return usersMapper.getAllFullUser(campusId, limit, offset, sort, order, place, search);
 	}
 	
 	public Integer getUserCount(String campusAdmin ,Integer campusId,String search) {

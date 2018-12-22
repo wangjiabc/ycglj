@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ycglj.manage.dao.LicenseDAO;
+import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
@@ -113,6 +114,57 @@ public class BaiduMapController {
 		MyTestUtil.print(map);
 		
 		return map;
+		
+	}
+	
+	@RequestMapping("/getPosition")
+	public @ResponseBody JSONObject getPosition() {
+		JSONObject jsonObject=new JSONObject();
+		Position position=new Position();
+		position.setLimit(10);
+		position.setOffset(0);		
+		position.setSort("date");
+		position.setOrder("desc");
+		position.setNotIn("id");
+        		
+		try{
+			position=(Position) licenseDAO.findPosition(position).get(0);
+			jsonObject.put("lat", position.getLat());
+			jsonObject.put("lng", position.getLng());
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return jsonObject;
+		
+	}
+	
+	@RequestMapping("/location")
+	public @ResponseBody JSONObject baiduSwitch(HttpServletRequest request){
+		JSONObject jsonObject=null;
+		String requestUrl = "http://api.map.baidu.com/location/ip?ak=pQFgFpS0VnMXwCRN6cTc1jDOcBVi3XoD&coor=bd09ll";
+		
+		HttpGet g = new HttpGet(requestUrl);
+    	RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
+    	CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+    	CloseableHttpResponse r;
+    	String content = null;
+		try {
+			r = httpClient.execute(g);
+			content = EntityUtils.toString(r.getEntity());
+	        r.close();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+		jsonObject=JSONObject.parseObject(content);
+  		
+		return jsonObject;
 		
 	}
 }
