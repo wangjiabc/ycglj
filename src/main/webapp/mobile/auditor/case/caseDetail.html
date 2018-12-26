@@ -577,27 +577,34 @@
 		}
 	});
 
+	var geoc = new BMap.Geocoder();
+	
 	function wxImgCallback(imagename, serverId,lng,lat,wgs84_lng,wgs84_lat) {
 		//将serverId传给wx_upload.php的upload方法
-		var url = "../../user/updatePositionByRoomInfo.do";
-		$.get(url, {
-			campusId : 1,
-			imagename : imagename,
-			serverId : serverId,
-			id : license,
-			classType : "User_License",
-			license : license,
-			lng : lng,
-			lat : lat,
-			wgs84_lng : wgs84_lng,
-			wgs84_lat : wgs84_lat
-		}, function(data) {
-			console.log(data);
-			if (data == 0) {
-				alert("上传图片失败!");
-				console.log(data.msg);
-			} else if (data == 1) {
-				//存储到服务器成功后的处理
+		 geoc.getLocation(point, function(rs){
+	 	   var addComp;
+	  		addComp = rs.addressComponents;    	
+	  		var addComp1=JSON.stringify(addComp);
+			var url = "../../user/updatePositionByRoomInfo.do";
+			$.get(url, {
+				campusId : 1,
+				imagename : imagename,
+				serverId : serverId,
+				id : license,
+				classType : "User_License",
+				license : license,
+				lng : lng,
+				lat : lat,
+				addComp:addComp1,
+				wgs84_lng : wgs84_lng,
+				wgs84_lat : wgs84_lat
+			}, function(data) {
+				console.log(data);
+				if (data == 0) {
+					alert("上传图片失败!");
+					console.log(data.msg);
+				} else if (data == 1) {
+					//存储到服务器成功后的处理
 				/*   $.get("/ycglj/mobile/asset/updatePositionByRoomInfo.do",{
 					   license:license,
 					   lng:longitude,
@@ -606,9 +613,10 @@
 					   //console.log(text);
 				   });
 				 */
-				location.reload();
-			}
-		});
+					location.reload();
+				}
+			});
+		}
 	}
 </script>
 
