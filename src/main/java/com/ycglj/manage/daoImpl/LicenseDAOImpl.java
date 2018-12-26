@@ -234,16 +234,16 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		// TODO Auto-generated method stub
 		String sql0 = "SELECT TOP " + limit + " * from " 
 				+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
-				+ "[User_License].license " 
+				+ "[User_License].license ,[User_License].open_id " 
 				+ " FROM [User_License] left join  [Users]"
 				+ "on  [User_License].open_id = [Users].open_id "
 				+ "left join [Position] "
 				+ "on [User_License].license = [Position].license " 
-				+ ")as t2 left join User_License on t2.license=User_License.license "
+				+ ")as t2 "
 				+ " left join  [Users]"
-				+ "on  [User_License].phone = [Users].phone "
+				+ "on  t2.open_id = [Users].open_id "
 				+ "left join [Position] "
-				+ "on [User_License].license = [Position].license " 
+				+ "on t2.license = [Position].license " 
 				;
 		
 		
@@ -255,12 +255,13 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 				" FROM [User_License] left join [Users] "
 				+ "on [User_License].phone = [Users].phone "
 				+ "left join [Position] "
-				+ "on [User_License].license = [Position].license ";
+				+ "on [User_License].license = [Position].license "
+				+"where (Position.lat is not null and Position.lng is not null)";
 		
 		System.out.println("search="+search);
 		
 		if(search.equals("")||search.isEmpty()){
-			sql=sql0+" where rows>"+offset+" "+sql1;
+			sql=sql0+" where (Position.lat is not null and Position.lng is not null) and rows>"+offset+" "+sql1;
 		}else{
 			
 			StringBuilder sb = new StringBuilder();
@@ -284,9 +285,9 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			System.out.println("serach="+serach);
 			
-			sql=sql0+"  where ("+serach+" ) and rows>"+offset
+			sql=sql0+"  where ("+serach+" ) and (Position.lat is not null and Position.lng is not null) and rows>"+offset
 					+" "+sql1;
-			sql2=sql2+" WHERE ("+serach+")";
+			sql2=sql2+" WHERE (Position.lat is not null and Position.lng is not null) and ("+serach+")";
 		}
 	
 		System.out.println("sql="+sql);
@@ -724,6 +725,27 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		}
 		
 		return map;
+	}
+
+	@Override
+	public String findRoomInfoPositionByLatLng(Double lat, Double lng) {
+		// TODO Auto-generated method stub
+		Position position = new Position();
+		position.setLimit(1);
+		position.setOffset(0);
+		position.setNotIn("id");
+
+		String[] where={"lng=",String.valueOf(lng),"lat=",String.valueOf(lat)};
+		
+		position.setWhere(where);
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), position);
+		
+		position=(Position) list.get(0);
+		
+		String license=position.getLicense();
+		
+		return license;
 	}
 	
 }

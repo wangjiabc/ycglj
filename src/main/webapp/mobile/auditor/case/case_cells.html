@@ -26,7 +26,18 @@
         <div class="refresh">正在刷新</div>
     </div>
 
-
+    <div class="page__bd" style="height:50px;">
+        <div class="weui-tab">
+            <div class="weui-navbar">
+               <div id="tab1" class="weui-navbar__item weui-bar__item_on">
+                    	有位置商户
+                </div>
+                <div id="tab2" class="weui-navbar__item ">
+                    	全部商户
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="weui-cells weui-cells_form">
         <div class="weui-cell">
             <div class="weui-cell__bd weui_cell_primary name">
@@ -45,7 +56,7 @@
 
         </div>
     </div>
-
+    </div>
     <div class="weui-loadmore" style="padding-bottom:30px;height:20px">
         <i class="weui-loading"></i>
         <span class="weui-loadmore__tips">正在加载</span>
@@ -82,7 +93,7 @@
     var latitude = getQueryString("latitude");
     var map = new BMap.Map("allmap");
 
-    var url = "../../user/getAll.do";
+    var url = "../../user/getAll.do?position=1";
 
     var limit = 10;
     var offset = 0;
@@ -103,9 +114,25 @@
         loading = false;
         loadlist();
     });
+    $("#tab1").on("click", function () {
+        url = "../../user/getAll.do?position=1";
+        limit = 10;
+        offset = 0;
+        $("#ul").children('li').remove();
+        loading = false;
+        loadlist();
+    })
+    $("#tab2").on("click", function () {
+        url = "../../user/getAll.do?position=0";
+        limit = 10;
+        offset = 0;
+        $("#ul").children('li').remove();
+        loading = false;
+        loadlist();
+    })
 
     loadlist();
-
+    //下拉刷新 
     $(document.body).pullToRefresh().on("pull-to-refresh", function () {
         limit = 10;
         offset = 0;
@@ -114,7 +141,7 @@
         loadlist();
         $(document.body).pullToRefreshDone();
     });
-
+    //上拉加载
     $(document.body).infinite().on("infinite", function () {
         if (loading)
             return;
@@ -485,13 +512,15 @@
         bottom: 50px;
         display: none;
     }
-    .weui-media-box__title{
-        width:200px;
-        white-space:nowrap;
-        text-overflow:ellipsis;
+
+    .weui-media-box__title {
+        width: 200px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         font-size: 13px;
     }
-    .weui-media-box__desc{
+
+    .weui-media-box__desc {
         line-height: 2;
     }
 </style>

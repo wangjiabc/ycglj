@@ -9,9 +9,9 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<meta name="format-detection" content="telephone=no" />
 	<meta charset="utf-8" />
-	<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
 	<link rel="stylesheet" href="css/weui.css" />
 	<link rel="stylesheet" href="css/example.css" />
+	<link rel="stylesheet" href="css/jquery-weui.css">
 	<style type="text/css">
 		body,
 		html,
@@ -22,9 +22,7 @@
 			font-family: "微软雅黑";
 		}
 	</style>
-	<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=cR98TwX2FnKTpANIOYhMYMot9a4ioxjc"></script>
-	<script type="text/javascript" src="https://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
-	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
 </head>
 
 <body>
@@ -71,21 +69,21 @@
 				</div>
 			</div>
 		</div>
-		
-		 <div class="weui-cells weui-cells_form">
-            <div id="crimal" class="weui-cell weui-cell_access">
-            </div>
-   		 </div>
-    
+
 		<div class="weui-cells weui-cells_form">
-            <div class="weui-cell weui-cell_access" onclick="clickEvent();">
-                <div class="weui-cell__hd"><label class="weui-label">案件录入</label></div>
-                <div id="ay" class="weui-cell__bd" >
-                </div>
-                <div class="weui-cell__ft"></div>
-            </div>
-    	</div> 
-    	
+			<div id="crimal" class="weui-cell weui-cell_access">
+			</div>
+		</div>
+
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell weui-cell_access" onclick="clickEvent();">
+				<div class="weui-cell__hd"><label class="weui-label">案件录入</label></div>
+				<div id="ay" class="weui-cell__bd">
+				</div>
+				<div class="weui-cell__ft"></div>
+			</div>
+		</div>
+
 	</form>
 
 	<div class="weui-cells weui-cells_form">
@@ -119,6 +117,11 @@
 </body>
 
 </html>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=cR98TwX2FnKTpANIOYhMYMot9a4ioxjc"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="../../../js/jquery-weui.js"></script>
 <script type="text/javascript">
 	function getQueryString(name) {
 		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
@@ -172,93 +175,93 @@
 		console.log(data);
 		$('#address').html(data.roomInfo.address);
 		$('#name').html(data.roomInfo.name);
-		if(data.crimal!=null&&data.crimal!=""){
-				var hidden1=document.createElement("div");
-				hidden1.setAttribute("class","weui-cell__bd");
-				var span1=document.createElement("span");
-				span1.setAttribute("style","vertical-align: middle");
-				span1.innerHTML="案由";
-				var span2=document.createElement("span");
-				span2.setAttribute("style","margin-left: 25px;");
-				span2.innerHTML="<font color='#FF0000'>"+data.crimal+"</font>";
-				hidden1.appendChild(span1);
-				hidden1.appendChild(span2);
-    			$("#crimal").append(hidden1); 
-    			var hidden2=document.createElement("div");
-    			$("#crimal").append(hidden2); 
-		}else{
-				var hidden=document.createElement("div");
-				hidden.setAttribute("class","weui-cell__bd");
-				var span1=document.createElement("span");
-				span1.setAttribute("style","vertical-align: middle");
-				span1.innerHTML="案由";
-				var span2=document.createElement("span");
-				span2.setAttribute("style","margin-left: 15px;");
-				span2.innerHTML="无";
-				hidden.appendChild(span1);
-				hidden.appendChild(span2);
-				$("#crimal").append(hidden);
+		if (data.crimal != null && data.crimal != "") {
+			var hidden1 = document.createElement("div");
+			hidden1.setAttribute("class", "weui-cell__bd");
+			var span1 = document.createElement("span");
+			span1.setAttribute("style", "vertical-align: middle");
+			span1.innerHTML = "案由";
+			var span2 = document.createElement("span");
+			span2.setAttribute("style", "margin-left: 25px;");
+			span2.innerHTML = "<font color='#FF0000'>" + data.crimal + "</font>";
+			hidden1.appendChild(span1);
+			hidden1.appendChild(span2);
+			$("#crimal").append(hidden1);
+			var hidden2 = document.createElement("div");
+			$("#crimal").append(hidden2);
+		} else {
+			var hidden = document.createElement("div");
+			hidden.setAttribute("class", "weui-cell__bd");
+			var span1 = document.createElement("span");
+			span1.setAttribute("style", "vertical-align: middle");
+			span1.innerHTML = "案由";
+			var span2 = document.createElement("span");
+			span2.setAttribute("style", "margin-left: 15px;");
+			span2.innerHTML = "无";
+			hidden.appendChild(span1);
+			hidden.appendChild(span2);
+			$("#crimal").append(hidden);
 		}
-		if(data.roomInfo.phone!=null&&data.roomInfo.phone!=""){
-         	var phone=document.createElement("a");
-         	phone.setAttribute("href","tel:"+data.roomInfo.phone);
-         	phone.innerHTML=data.roomInfo.phone;
-         	$("#phone").append(phone);
-        }else{
-      	  $("#phone_div").hide();
-        }
-        
+		if (data.roomInfo.phone != null && data.roomInfo.phone != "") {
+			var phone = document.createElement("a");
+			phone.setAttribute("href", "tel:" + data.roomInfo.phone);
+			phone.innerHTML = data.roomInfo.phone;
+			$("#phone").append(phone);
+		} else {
+			$("#phone_div").hide();
+		}
+
 		$('#license').html(data.roomInfo.license);
 		$('#datetime').html(actionTime(data.roomInfo.date));
 		$('#business_status').html(data.roomInfo.business_state);
 		if (data.fileBytes != null) {
-				var imgs=data.fileBytes;
-				var i = 0;
-				for (; i < imgs.length; i++) {
-					var text=imgs[i];
-                 	var name=text.fileBelong;
-                 	var uri=text.compressUri;
-					var panel = document.createElement("div");
-					panel.setAttribute("class", "weui-panel__bd");
-					var a = document.createElement("a");
-					a.setAttribute("class", "weui_grid");
-					var a = document.createElement("a");
-					a.setAttribute("href", "javascript:void(0);");
-					a.setAttribute("class", "weui-media-box weui-media-box_appmsg");
-					var div = document.createElement("div");
-					div.setAttribute("class", "weui-media-box__hd");
-
-					src = "/ycglj/" + uri;
-					var img = document.createElement("img");
-					img.setAttribute("class", "weui-media-box__thumb");
-					img.setAttribute("src", src);
-
-					div.appendChild(img);
-
-					div2 = document.createElement("div");
-					div2.setAttribute("class", "weui-media-box__bd");
-					h4 = document.createElement("h4");
-					h4.setAttribute("class", "weui-media-box__title");
-					p = document.createElement("p");
-					p.setAttribute("class", "weui-media-box__desc");
-					p.innerHTML = name;
-					div2.appendChild(h4);
-					div2.appendChild(p);
-					a.appendChild(div);
-					a.appendChild(div2);
-					panel.appendChild(a);
-					$("#img").append(panel);
-				}
-
-			}
-
-		if (data.fileBytes2 != null) {
-			var imgs=data.fileBytes2;
+			var imgs = data.fileBytes;
 			var i = 0;
 			for (; i < imgs.length; i++) {
-				var text=imgs[i];
-             	var name=showdataType(text.dataType);
-             	var uri=text.compressUri;
+				var text = imgs[i];
+				var name = text.fileBelong;
+				var uri = text.compressUri;
+				var panel = document.createElement("div");
+				panel.setAttribute("class", "weui-panel__bd");
+				var a = document.createElement("a");
+				a.setAttribute("class", "weui_grid");
+				var a = document.createElement("a");
+				a.setAttribute("href", "javascript:void(0);");
+				a.setAttribute("class", "weui-media-box weui-media-box_appmsg");
+				var div = document.createElement("div");
+				div.setAttribute("class", "weui-media-box__hd");
+
+				src = "/ycglj/" + uri;
+				var img = document.createElement("img");
+				img.setAttribute("class", "weui-media-box__thumb");
+				img.setAttribute("src", src);
+
+				div.appendChild(img);
+
+				div2 = document.createElement("div");
+				div2.setAttribute("class", "weui-media-box__bd");
+				h4 = document.createElement("h4");
+				h4.setAttribute("class", "weui-media-box__title");
+				p = document.createElement("p");
+				p.setAttribute("class", "weui-media-box__desc");
+				p.innerHTML = name;
+				div2.appendChild(h4);
+				div2.appendChild(p);
+				a.appendChild(div);
+				a.appendChild(div2);
+				panel.appendChild(a);
+				$("#img").append(panel);
+			}
+
+		}
+
+		if (data.fileBytes2 != null) {
+			var imgs = data.fileBytes2;
+			var i = 0;
+			for (; i < imgs.length; i++) {
+				var text = imgs[i];
+				var name = showdataType(text.dataType);
+				var uri = text.compressUri;
 				var panel = document.createElement("div");
 				panel.setAttribute("class", "weui-panel__bd");
 				var a = document.createElement("a");
@@ -292,74 +295,68 @@
 			}
 
 		}
-		
+
 	}
 
 
 	function clickEvent() {
 		location.href = "case_entry.html?license=" + license + "&latitude=" + latitude + "&longitude=" + longitude;
 	}
-	
+
 	function showdataType(type) {
 		switch (type) {
-		case 'identity':
-			return '身份证正面照';
-			break;
-		case 'conIdentity':
-			return '身份证反面照';
-			break;
-		case 'business':
-			return '工商营业执照';
-			break;
-		case 'license':
-			return '营业许可证';
-			break;
-		case 'sing':
-			return '签名照';
-			break;
-		case 'other':
-			return '其它';
-			break;
+			case 'identity':
+				return '身份证正面照';
+				break;
+			case 'conIdentity':
+				return '身份证反面照';
+				break;
+			case 'business':
+				return '工商营业执照';
+				break;
+			case 'license':
+				return '营业许可证';
+				break;
+			case 'sing':
+				return '签名照';
+				break;
+			case 'other':
+				return '其它';
+				break;
 		}
 	}
+	if (license == null) {
 
-	$.ajax({
-		type : "POST",
-		url : "../../user/getRoomInfoByGUID.do",
-		data : {
-			"license" : license
-		},
-		dataType : "json",
-		error : function(request) {
-			console.log(request);
-		},
-		success : function(text) {
-			var obj = text.roomInfo;
-			var license = obj.license;
-			init(text);
-			var distance = null;
-			console.log(obj.name + "   " + obj.detail + "  " + obj.lng + "   "
+	} else {
+		$.ajax({
+			type: "POST",
+			url: "../../user/getRoomInfoByGUID.do",
+			data: {
+				"license": license
+			},
+			dataType: "json",
+			error: function (request) {
+				console.log(request);
+			},
+			success: function (text) {
+				var obj = text.roomInfo;
+				var license = obj.license;
+				init(text);
+				var distance = null;
+				console.log(obj.name + "   " + obj.detail + "  " + obj.lng + "   "
 					+ obj.lat);
-			if (obj.lng != "" && obj.lat != "") {
-				distance = getDistance(obj.lng, obj.lat);
-				var point = new BMap.Point(obj.lng, obj.lat);
-				var pointEnd = point;
-				map.centerAndZoom(point, 12);
-				var myIcon = new BMap.Icon("../../img/blackPoint.jpg",
-						new BMap.Size(30, 38));
-				var marker = new BMap.Marker(point); // 创建点
-				map.addOverlay(marker); //增加点
-			}
-			//导航路线
-			navigation(pointStart, pointEnd);
+				if (obj.lng != "" && obj.lat != "") {
+					distance = getDistance(obj.lng, obj.lat);
+					addPoint(obj.lng,obj.lat);
+				}
 
-			if (obj.wgs84_lng != "" && obj.wgs84_lat != "") {
-				$("#navigation").on(
+				if (obj.wgs84_lng != "" && obj.wgs84_lat != "") {
+					$("#navigation").on(
 						"click",
 						function () {
 							wechatLat = wgs84togcj02(obj.wgs84_lng, obj.wgs84_lat).lat;
 							wechatLng = wgs84togcj02(obj.wgs84_lng, obj.wgs84_lat).lng;
-							console.log(wechatLat,wechatLng);
+							console.log(wechatLat, wechatLng);
 							wx.openLocation({
 								latitude: wechatLat, // 纬度，浮点数，范围为90 ~ -90
 								longitude: wechatLng, // 经度，浮点数，范围为180 ~ -180。
@@ -369,20 +366,97 @@
 								infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
 							});
 						});
-			} else {
-				$("#navigation").hide();
-			}
+				} else {
+					$("#navigation").hide();
+				}
 
-			var chartlicense = encodeURI(obj.chartlicense);
-			$("#State").click(
-					function() {
+				var chartlicense = encodeURI(obj.chartlicense);
+				$("#State").click(
+					function () {
 						location.href = "assetState.html?chartlicense="
-								+ chartlicense + "&latitude=" + latitude
-								+ "&longitude=" + longitude;
+							+ chartlicense + "&latitude=" + latitude
+							+ "&longitude=" + longitude;
 					});
-		}
-	});
+			}
+		});
+	}
+	
+	function addPoint(lng,lat){		
+		var point = new BMap.Point(lng,lat);
+		var pointEnd = point;
+		map.centerAndZoom(point, 12);
+		var myIcon = new BMap.Icon("../../img/blackPoint.jpg",
+			new BMap.Size(30, 38));
+		var marker = new BMap.Marker(point); // 创建点
+		map.addOverlay(marker); //增加点
 
+		marker.enableDragging(); //标注可拖拽
+
+		// 开启事件监听
+		marker.addEventListener("dragend", function (e) {
+			
+			var clng = e.point.lng; //经度
+			var clat = e.point.lat; //纬度
+			var bMap=bMapTransWechatMap(clng, clat);
+			var gcj02=gcj02towgs84(bMap.lng, bMap.lat);
+			var wgs84_lng=gcj02.lng;
+			var wgs84_lat=gcj02.lat;
+			$.confirm({
+				title: '提示',
+				text: '是否修改零售户到当前位置?',
+				onOK: function () {
+					//点击确认
+					
+					var geoc = new BMap.Geocoder();
+					
+					 geoc.getLocation(point, function(rs){
+					 	   var addComp;
+					  		addComp = rs.addressComponents;    	
+					  		var addComp1=JSON.stringify(addComp);
+							var url = "../../user/manualUpdatePosition.do";
+							$.get(url, {
+								license : license,
+								lng : clng,
+								lat : clat,
+								addComp:addComp1,
+								wgs84_lng : wgs84_lng,
+								wgs84_lat : wgs84_lat
+							}, function (data) {
+								console.log(data);
+								if (data == 1) {									
+									$.get("../../user/findPositionByLicense.do", {
+										license : license
+									}, function (text) {
+										var data=JSON.parse(text);
+										map.clearOverlays();
+										addPoint(data.lng,data.lat);
+									});
+							} else {
+								
+								alert("修改位置失败");
+								map.clearOverlays();					
+								addPoint(lng,lat);
+							}
+						});
+				  	});
+					
+				},
+				onCancel: function () {
+					
+					$.get("../../user/findPositionByLicense.do", {
+						license : license
+					}, function (text) {
+						var data=JSON.parse(text);
+						map.clearOverlays();
+						addPoint(data.lng,data.lat);
+					});
+					
+				}
+			});
+
+		});
+	}
+	
 	/**
 	 * WGS84转GCj02
 	 * @param lng
@@ -390,40 +464,40 @@
 	 * @returns {*[]}
 	 */
 	function wgs84togcj02(lng, lat) {
-		 	var PI = 3.1415926535897932384626;
-		 	var a = 6378245.0;
-		 	var ee = 0.00669342162296594323;
-	        var dlat = transformlat(lng - 105.0, lat - 35.0);
-	        var dlng = transformlng(lng - 105.0, lat - 35.0);
-	        var radlat = lat / 180.0 * PI;
-	        var magic = Math.sin(radlat);
-	        magic = 1 - ee * magic * magic;
-	        var sqrtmagic = Math.sqrt(magic);
-	        dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
-	        dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
-	        var mglat = lat + dlat;
-	        var mglng = lng + dlng;
-	        return { lng:mglng, lat:mglat };
+		var PI = 3.1415926535897932384626;
+		var a = 6378245.0;
+		var ee = 0.00669342162296594323;
+		var dlat = transformlat(lng - 105.0, lat - 35.0);
+		var dlng = transformlng(lng - 105.0, lat - 35.0);
+		var radlat = lat / 180.0 * PI;
+		var magic = Math.sin(radlat);
+		magic = 1 - ee * magic * magic;
+		var sqrtmagic = Math.sqrt(magic);
+		dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
+		dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
+		var mglat = lat + dlat;
+		var mglng = lng + dlng;
+		return { lng: mglng, lat: mglat };
 	}
-	
+
 	function transformlat(lng, lat) {
-			var PI = 3.1415926535897932384626;
-		    var ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lng * lat + 0.2 * Math.sqrt(Math.abs(lng));
-		    ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
-		    ret += (20.0 * Math.sin(lat * PI) + 40.0 * Math.sin(lat / 3.0 * PI)) * 2.0 / 3.0;
-		    ret += (160.0 * Math.sin(lat / 12.0 * PI) + 320 * Math.sin(lat * PI / 30.0)) * 2.0 / 3.0;
-		    return ret
-	} 
-	
+		var PI = 3.1415926535897932384626;
+		var ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lng * lat + 0.2 * Math.sqrt(Math.abs(lng));
+		ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
+		ret += (20.0 * Math.sin(lat * PI) + 40.0 * Math.sin(lat / 3.0 * PI)) * 2.0 / 3.0;
+		ret += (160.0 * Math.sin(lat / 12.0 * PI) + 320 * Math.sin(lat * PI / 30.0)) * 2.0 / 3.0;
+		return ret
+	}
+
 	function transformlng(lng, lat) {
 		var PI = 3.1415926535897932384626;
-	    var ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * Math.sqrt(Math.abs(lng));
-	    ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
-	    ret += (20.0 * Math.sin(lng * PI) + 40.0 * Math.sin(lng / 3.0 * PI)) * 2.0 / 3.0;
-	    ret += (150.0 * Math.sin(lng / 12.0 * PI) + 300.0 * Math.sin(lng / 30.0 * PI)) * 2.0 / 3.0;
-	    return ret
+		var ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * Math.sqrt(Math.abs(lng));
+		ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
+		ret += (20.0 * Math.sin(lng * PI) + 40.0 * Math.sin(lng / 3.0 * PI)) * 2.0 / 3.0;
+		ret += (150.0 * Math.sin(lng / 12.0 * PI) + 300.0 * Math.sin(lng / 30.0 * PI)) * 2.0 / 3.0;
+		return ret
 	}
-	
+
 	//百度地图转换微信地图经纬度
 	function bMapTransWechatMap(lng, lat) {
 		var PI = 3.1415926535897932384626;
@@ -435,14 +509,37 @@
 		let lats = z * Math.sin(theta);
 		return { lng: lngs, lat: lats };
 	}
+
+	/**
+	 * GCJ02 转换为 WGS84
+	 * @param lng
+	 * @param lat
+	 * @returns {*[]}
+	 */
+	function gcj02towgs84(lng, lat) {
+		    var PI = 3.1415926535897932384626;
+		    var a = 6378245.0;
+			var ee = 0.00669342162296594323;
+	        var dlat = transformlat(lng - 105.0, lat - 35.0);
+	        var dlng = transformlng(lng - 105.0, lat - 35.0);
+	        var radlat = lat / 180.0 * PI;
+	        var magic = Math.sin(radlat);
+	        magic = 1 - ee * magic * magic;
+	        var sqrtmagic = Math.sqrt(magic);
+	        dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
+	        dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
+	        mglat = lat + dlat;
+	        mglng = lng + dlng;
+	        return {lng:lng * 2 - mglng, lat:lat * 2 - mglat};
+	}
 	
 	//线路
 	function navigation(p1, p2) {
-		var points = [ p1, p2 ];
+		var points = [p1, p2];
 		var curve = new BMapLib.CurveLine(points, {
-			strokeColor : "blue",
-			strokeWeight : 2,
-			strokeOpacity : 0.5
+			strokeColor: "blue",
+			strokeWeight: 2,
+			strokeOpacity: 0.5
 		});
 		map.addOverlay(curve);
 	}
@@ -451,14 +548,15 @@
 		var date = new Date(value);
 		Y = date.getFullYear() + '年';
 		M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date
-				.getMonth() + 1)
-				+ '月';
+			.getMonth() + 1)
+			+ '月';
 		D = date.getDate() + '日 ';
 		h = date.getHours() + ':';
 		m = date.getMinutes() + ':';
 		s = date.getSeconds();
 		return Y + M + D;
 	}
+
 
 	function getByteLen(val) { //传入一个字符串
 		var len = 0;
@@ -481,94 +579,94 @@
 	url = document.location.toString();
 
 	$.ajax({
-		url : "../../../wechat/sign.do",
-		data : {
-			campusId : 1,
-			url : url
+		url: "../../../wechat/sign.do",
+		data: {
+			campusId: 1,
+			url: url
 		},
-		async : false,
-		type : "GET",
-		success : function(data) {
+		async: false,
+		type: "GET",
+		success: function (data) {
 			var ticket = JSON.parse(data);
 
 			wx.config({
-				debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-				appId : ticket.appId,
-				timestamp : ticket.timestamp,
-				nonceStr : ticket.nonceStr,
-				signature : ticket.signature,
-				jsApiList : [ 'checkJsApi', 'onMenuShareTimeline',
-						'onMenuShareAppMessage', 'onMenuShareQQ',
-						'onMenuShareWeibo', 'hideMenuItems', 'showMenuItems',
-						'hideAllNonBaseMenuItem', 'showAllNonBaseMenuItem',
-						'translateVoice', 'startRecord', 'stopRecord',
-						'onRecordEnd', 'playVoice', 'pauseVoice', 'stopVoice',
-						'uploadVoice', 'downloadVoice', 'chooseImage',
-						'previewImage', 'uploadImage', 'downloadImage',
-						'getNetworkType', 'openLocation', 'getLocation',
-						'hideOptionMenu', 'showOptionMenu', 'closeWindow',
-						'scanQRCode', 'chooseWXPay', 'openProductSpecificView',
-						'addCard', 'chooseCard', 'openCard' ]
+				debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				appId: ticket.appId,
+				timestamp: ticket.timestamp,
+				nonceStr: ticket.nonceStr,
+				signature: ticket.signature,
+				jsApiList: ['checkJsApi', 'onMenuShareTimeline',
+					'onMenuShareAppMessage', 'onMenuShareQQ',
+					'onMenuShareWeibo', 'hideMenuItems', 'showMenuItems',
+					'hideAllNonBaseMenuItem', 'showAllNonBaseMenuItem',
+					'translateVoice', 'startRecord', 'stopRecord',
+					'onRecordEnd', 'playVoice', 'pauseVoice', 'stopVoice',
+					'uploadVoice', 'downloadVoice', 'chooseImage',
+					'previewImage', 'uploadImage', 'downloadImage',
+					'getNetworkType', 'openLocation', 'getLocation',
+					'hideOptionMenu', 'showOptionMenu', 'closeWindow',
+					'scanQRCode', 'chooseWXPay', 'openProductSpecificView',
+					'addCard', 'chooseCard', 'openCard']
 			});
 
 			var images = {
-				localId : [],
-				serverId : []
+				localId: [],
+				serverId: []
 			};
 
-			document.querySelector('#showPicker').onclick = function() {
+			document.querySelector('#showPicker').onclick = function () {
 
 				var imagename = "无标题";
 
 
-			wx.getLocation({
-					type : 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-					success : function(res) {
+				wx.getLocation({
+					type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+					success: function (res) {
 						var wgs84_lat = res.latitude; // 纬度，浮点数，范围为90 ~ -90
 						var wgs84_lng = res.longitude; // 经度，浮点数，范围为180 ~ -180。
 						var speed = res.speed; // 速度，以米/每秒计
 						var accuracy = res.accuracy; // 位置精度
-						$.get("/ycglj/mobile/map/baiduSwitch.do",{ //微信地理位置坐标转换成百度地图坐标
-		                	 longitude:wgs84_lng,
-		                	 latitude:wgs84_lat               	 
-		                 },function(text){
-		                	 var obj = $.parseJSON(text);
-		                	 var result=obj.result;
-		                	 var lat=result[0].y;
-		                	 var lng=result[0].x;
-						wx.chooseImage({
-							success : function(res) {
-								images.localId = res.localIds;
-								console.log('已选择 ' + res.localIds.length
+						$.get("/ycglj/mobile/map/baiduSwitch.do", { //微信地理位置坐标转换成百度地图坐标
+							longitude: wgs84_lng,
+							latitude: wgs84_lat
+						}, function (text) {
+							var obj = $.parseJSON(text);
+							var result = obj.result;
+							var lat = result[0].y;
+							var lng = result[0].x;
+							wx.chooseImage({
+								success: function (res) {
+									images.localId = res.localIds;
+									console.log('已选择 ' + res.localIds.length
 										+ ' 张图片');
 
-								var i = 0, length = images.localId.length;
-								images.serverId = [];
-								function upload() {
-									wx.uploadImage({
-										localId : images.localId[i].toString(),
-										isShowProgressTips : images.localId[i]
+									var i = 0, length = images.localId.length;
+									images.serverId = [];
+									function upload() {
+										wx.uploadImage({
+											localId: images.localId[i].toString(),
+											isShowProgressTips: images.localId[i]
 												.toString(),
-										success : function(res) {
-											i++;
-											console.log('已上传：' + i + '/'
+											success: function (res) {
+												i++;
+												console.log('已上传：' + i + '/'
 													+ length);
-											//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
-											wxImgCallback(imagename,res.serverId,
-													lng,lat,wgs84_lng,wgs84_lat);
-											if (i < length) {
-												upload();
+												//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
+												wxImgCallback(imagename, res.serverId,
+													lng, lat, wgs84_lng, wgs84_lat);
+												if (i < length) {
+													upload();
+												}
+											},
+											fail: function (res) {
+												console.log(res);
 											}
-										},
-										fail : function(res) {
-											console.log(res);
-										}
-									});
+										});
+									}
+									upload();
 								}
-								upload();
-							}
+							});
 						});
-		              });						
 					}
 				});
 
@@ -579,44 +677,38 @@
 
 	var geoc = new BMap.Geocoder();
 	
-	function wxImgCallback(imagename, serverId,lng,lat,wgs84_lng,wgs84_lat) {
+	function wxImgCallback(imagename, serverId, lng, lat, wgs84_lng, wgs84_lat) {
 		//将serverId传给wx_upload.php的upload方法
+		var url = "../../user/updatePositionByRoomInfo.do";
 		 geoc.getLocation(point, function(rs){
-	 	   var addComp;
-	  		addComp = rs.addressComponents;    	
-	  		var addComp1=JSON.stringify(addComp);
-			var url = "../../user/updatePositionByRoomInfo.do";
-			$.get(url, {
-				campusId : 1,
-				imagename : imagename,
-				serverId : serverId,
-				id : license,
-				classType : "User_License",
-				license : license,
-				lng : lng,
-				lat : lat,
-				addComp:addComp1,
-				wgs84_lng : wgs84_lng,
-				wgs84_lat : wgs84_lat
-			}, function(data) {
-				console.log(data);
-				if (data == 0) {
+		 	   var addComp;
+		  		addComp = rs.addressComponents;    	
+		  		var addComp1=JSON.stringify(addComp);
+				var url = "../../user/updatePositionByRoomInfo.do";
+				$.get(url, {
+					campusId : 1,
+					imagename : imagename,
+					serverId : serverId,
+					id : license,
+					classType : "User_License",
+					license : license,
+					lng : lng,
+					lat : lat,
+					addComp:addComp1,
+					wgs84_lng : wgs84_lng,
+					wgs84_lat : wgs84_lat
+				}, function (data) {
+					console.log(data);
+					if (data == 0) {
 					alert("上传图片失败!");
 					console.log(data.msg);
 				} else if (data == 1) {
-					//存储到服务器成功后的处理
-				/*   $.get("/ycglj/mobile/asset/updatePositionByRoomInfo.do",{
-					   license:license,
-					   lng:longitude,
-					   lat:latitude
-				   },function(text){
-					   //console.log(text);
-				   });
-				 */
-					location.reload();
+				
+				location.reload();
+			
 				}
 			});
-		}
+	  	});
 	}
 </script>
 
@@ -748,7 +840,7 @@
 		}, false);
 	};
 
-	
+
 	im2.delegate(document.querySelector('#img2'), 'click', 'img', function () {
 
 		var urls = [];
@@ -768,5 +860,5 @@
 		};
 		previewImage.start(obj);
 	});
-	
+
 </script>

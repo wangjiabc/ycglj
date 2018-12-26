@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
@@ -80,7 +81,7 @@ public class MoblieUserController {
 	LicenseDAO licenseDAO=(LicenseDAO) applicationContext.getBean("licensedao");
 	
 	@RequestMapping("/getAll")
-	public @ResponseBody Map<String, Object> getAll(@RequestParam Integer limit,@RequestParam Integer offset,
+	public @ResponseBody Map<String, Object> getAll(@RequestParam Integer position,@RequestParam Integer limit,@RequestParam Integer offset,
 			@RequestParam Double lng, @RequestParam Double lat,String search,HttpServletRequest request) {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -98,7 +99,13 @@ public class MoblieUserController {
 		}		
 
 
-		Map license_Positions=licenseDAO.findAllLicense_Position(limit, offset, lng, lat, term, where);
+		Map license_Positions;
+		
+		if(position==1){
+			license_Positions=licenseDAO.findAllLicense_Position(limit, offset, lng, lat, term, where);
+		}else {
+			license_Positions=licenseDAO.getAllLicense_Position(limit, offset, "", "", where);
+		}
 		
 		List licenses=(List) license_Positions.get("rows");
 		int total=(int) license_Positions.get("total");
@@ -215,9 +222,10 @@ public class MoblieUserController {
 		Users_License_Position_Join users_License_Position_Join = new Users_License_Position_Join();
 		
 		try {
-			List<Users_License_Position_Join> users_License_Position_Joins = (List<Users_License_Position_Join>) licenseDAO
-					.findAllLicense_Position(1, 0, null, null, term, searchMap).get("rows");
+			 Map licenseMap=licenseDAO.getAllLicense_Position(1, 0, "", "", searchMap);
 
+			 List<Users_License_Position_Join> users_License_Position_Joins = (List<Users_License_Position_Join>) licenseMap.get("rows");
+			 
 			users_License_Position_Join = users_License_Position_Joins.get(0);
 
 			map.put("roomInfo", users_License_Position_Join);
@@ -285,6 +293,7 @@ public class MoblieUserController {
     		@RequestParam String classType,
     		@RequestParam String license,
 			@RequestParam Double lng,@RequestParam Double lat,
+			@RequestParam String addComp,
 			@RequestParam Double wgs84_lng,@RequestParam Double wgs84_lat){
 		
 		int upload=0;
@@ -296,6 +305,7 @@ public class MoblieUserController {
 			e.printStackTrace();
 		}
 		
+
 		if(upload==1){
 			
 			boolean isUpdate=false;   //如果有位置就不更新
@@ -307,6 +317,25 @@ public class MoblieUserController {
 			position.setWgs84_lat(wgs84_lat);
 			position.setWgs84_lng(wgs84_lng);
 
+			try {
+				
+				JSONObject jsonObject = JSONObject.parseObject(addComp);
+
+				String province = jsonObject.getString("province");
+				String city = jsonObject.getString("city");
+				String district = jsonObject.getString("district");
+				String street = jsonObject.getString("street");
+				String streetNumber = jsonObject.getString("streetNumber");
+				position.setProvince(province);
+				position.setCity(city);
+				position.setDistrict(district);
+				position.setStreet(streetNumber);
+				position.setStreet_number(streetNumber);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
 			Date date=new Date();
 		    
 		    position.setDate(date);
@@ -317,6 +346,70 @@ public class MoblieUserController {
 		return upload;
 		
 	}
+	
+	@RequestMapping("/manualUpdatePosition")
+	public @ResponseBody Integer manualUpdatePosition(
+			HttpServletRequest request,ServletResponse response, 
+    		@RequestParam String license,
+			@RequestParam Double lng,@RequestParam Double lat,
+			@RequestParam String addComp,
+			@RequestParam Double wgs84_lng,@RequestParam Double wgs84_lat){
+
+		int upload = 0;
+
+		boolean isUpdate = true; // 有位置更新
+
+		Position position = new Position();
+		position.setLicense(license);
+		position.setLat(lat);
+		position.setLng(lng);
+		position.setWgs84_lat(wgs84_lat);
+		position.setWgs84_lng(wgs84_lng);
+
+		try {
+
+			JSONObject jsonObject = JSONObject.parseObject(addComp);
+
+			String province = jsonObject.getString("province");
+			String city = jsonObject.getString("city");
+			String district = jsonObject.getString("district");
+			String street = jsonObject.getString("street");
+			String streetNumber = jsonObject.getString("streetNumber");
+			position.setProvince(province);
+			position.setCity(city);
+			position.setDistrict(district);
+			position.setStreet(streetNumber);
+			position.setStreet_number(streetNumber);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		Date date = new Date();
+
+		position.setDate(date);
+
+		upload=licenseDAO.updatePositionByLicense(position, isUpdate);
+
+		return upload;
+		
+	}
+	
+	@RequestMapping("/findPositionByLicense")
+	public @ResponseBody Position findPositionByLicense(@RequestParam String license){
+		
+		Position position = new Position();
+		position.setLimit(1);
+		position.setOffset(0);
+		position.setNotIn("id");
+		String[] where={"license=",license};
+		
+		position.setWhere(where);
+		position=(Position) licenseDAO.findPosition(position).get(0);
+		
+		return position;
+	}
+	
 	
 	@RequestMapping("/insertIntoCrimalCase")
 	public @ResponseBody Integer insertIntoCrimalCase(@RequestParam String license,@RequestParam String dateTime,

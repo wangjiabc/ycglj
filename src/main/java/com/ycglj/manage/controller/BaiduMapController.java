@@ -167,4 +167,19 @@ public class BaiduMapController {
 		return jsonObject;
 		
 	}
+	
+	@RequestMapping("getLicenseGUIDByPosition")
+	public @ResponseBody Map getLicenseGUIDByPosition(@RequestParam Double lng,
+			@RequestParam Double lat ,HttpServletRequest request){
+		
+		Map map=new HashMap<>();
+		
+		String license=licenseDAO.findRoomInfoPositionByLatLng(lat, lng);
+		
+		map.put("license", license);
+		
+		return map;
+        
+	}
+	
 }
