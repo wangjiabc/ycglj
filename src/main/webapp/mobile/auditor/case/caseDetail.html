@@ -347,7 +347,7 @@
 					+ obj.lat);
 				if (obj.lng != "" && obj.lat != "") {
 					distance = getDistance(obj.lng, obj.lat);
-					addPoint(obj.lng,obj.lat);
+					addPoint(obj.lng, obj.lat);
 				}
 
 				if (obj.wgs84_lng != "" && obj.wgs84_lat != "") {
@@ -380,9 +380,9 @@
 			}
 		});
 	}
-	
-	function addPoint(lng,lat){		
-		var point = new BMap.Point(lng,lat);
+
+	function addPoint(lng, lat) {
+		var point = new BMap.Point(lng, lat);
 		var pointEnd = point;
 		map.centerAndZoom(point, 12);
 		var myIcon = new BMap.Icon("../../img/blackPoint.jpg",
@@ -394,69 +394,69 @@
 
 		// 开启事件监听
 		marker.addEventListener("dragend", function (e) {
-			
+
 			var clng = e.point.lng; //经度
 			var clat = e.point.lat; //纬度
-			var bMap=bMapTransWechatMap(clng, clat);
-			var gcj02=gcj02towgs84(bMap.lng, bMap.lat);
-			var wgs84_lng=gcj02.lng;
-			var wgs84_lat=gcj02.lat;
+			var bMap = bMapTransWechatMap(clng, clat);
+			var gcj02 = gcj02towgs84(bMap.lng, bMap.lat);
+			var wgs84_lng = gcj02.lng;
+			var wgs84_lat = gcj02.lat;
 			$.confirm({
 				title: '提示',
 				text: '是否修改零售户到当前位置?',
 				onOK: function () {
 					//点击确认
-					
+
 					var geoc = new BMap.Geocoder();
-					
-					 geoc.getLocation(point, function(rs){
-					 	   var addComp;
-					  		addComp = rs.addressComponents;    	
-					  		var addComp1=JSON.stringify(addComp);
-							var url = "../../user/manualUpdatePosition.do";
-							$.get(url, {
-								license : license,
-								lng : clng,
-								lat : clat,
-								addComp:addComp1,
-								wgs84_lng : wgs84_lng,
-								wgs84_lat : wgs84_lat
-							}, function (data) {
-								console.log(data);
-								if (data == 1) {									
-									$.get("../../user/findPositionByLicense.do", {
-										license : license
-									}, function (text) {
-										var data=JSON.parse(text);
-										map.clearOverlays();
-										addPoint(data.lng,data.lat);
-									});
+
+					geoc.getLocation(point, function (rs) {
+						var addComp;
+						addComp = rs.addressComponents;
+						var addComp1 = JSON.stringify(addComp);
+						var url = "../../user/manualUpdatePosition.do";
+						$.get(url, {
+							license: license,
+							lng: clng,
+							lat: clat,
+							addComp: addComp1,
+							wgs84_lng: wgs84_lng,
+							wgs84_lat: wgs84_lat
+						}, function (data) {
+							console.log(data);
+							if (data == 1) {
+								$.get("../../user/findPositionByLicense.do", {
+									license: license
+								}, function (text) {
+									var data = JSON.parse(text);
+									map.clearOverlays();
+									addPoint(data.lng, data.lat);
+								});
 							} else {
-								
+
 								alert("修改位置失败");
-								map.clearOverlays();					
-								addPoint(lng,lat);
+								map.clearOverlays();
+								addPoint(lng, lat);
 							}
 						});
-				  	});
-					
+					});
+
 				},
 				onCancel: function () {
-					
+
 					$.get("../../user/findPositionByLicense.do", {
-						license : license
+						license: license
 					}, function (text) {
-						var data=JSON.parse(text);
+						var data = JSON.parse(text);
 						map.clearOverlays();
-						addPoint(data.lng,data.lat);
+						addPoint(data.lng, data.lat);
 					});
-					
+
 				}
 			});
 
 		});
 	}
-	
+
 	/**
 	 * WGS84转GCj02
 	 * @param lng
@@ -517,22 +517,22 @@
 	 * @returns {*[]}
 	 */
 	function gcj02towgs84(lng, lat) {
-		    var PI = 3.1415926535897932384626;
-		    var a = 6378245.0;
-			var ee = 0.00669342162296594323;
-	        var dlat = transformlat(lng - 105.0, lat - 35.0);
-	        var dlng = transformlng(lng - 105.0, lat - 35.0);
-	        var radlat = lat / 180.0 * PI;
-	        var magic = Math.sin(radlat);
-	        magic = 1 - ee * magic * magic;
-	        var sqrtmagic = Math.sqrt(magic);
-	        dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
-	        dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
-	        mglat = lat + dlat;
-	        mglng = lng + dlng;
-	        return {lng:lng * 2 - mglng, lat:lat * 2 - mglat};
+		var PI = 3.1415926535897932384626;
+		var a = 6378245.0;
+		var ee = 0.00669342162296594323;
+		var dlat = transformlat(lng - 105.0, lat - 35.0);
+		var dlng = transformlng(lng - 105.0, lat - 35.0);
+		var radlat = lat / 180.0 * PI;
+		var magic = Math.sin(radlat);
+		magic = 1 - ee * magic * magic;
+		var sqrtmagic = Math.sqrt(magic);
+		dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
+		dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
+		mglat = lat + dlat;
+		mglng = lng + dlng;
+		return { lng: lng * 2 - mglng, lat: lat * 2 - mglat };
 	}
-	
+
 	//线路
 	function navigation(p1, p2) {
 		var points = [p1, p2];
@@ -619,6 +619,7 @@
 				var imagename = "无标题";
 
 
+
 				wx.getLocation({
 					type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
 					success: function (res) {
@@ -634,15 +635,55 @@
 							var result = obj.result;
 							var lat = result[0].y;
 							var lng = result[0].x;
-							wx.chooseImage({
-								success: function (res) {
+							
+							$.modal({
+								title: "选择上传图片类型",
+								text: '<div class="weui-cell weui-cell_select weui-cell_select-after">' +
+									'<div class="weui-cell__bd">' +
+									'<select class="weui-select" id="select" name="select2">' +
+									'<option value="1">零售户照片</option>' +
+									' <option value="2">许可证号</option>' +
+									' <option value="3">身份证正面</option>' +
+									' <option value="4">身份证反面</option>' +
+									' <option value="5">营业扏照</option>' +
+									' <option value="6">其他</option>' +
+									' </select>' +
+									'</div>' +
+									'</div>',
+								buttons: [
+									{ text: "确定", onClick: function () { 
+										 
+										var objS = document.getElementById("select"); 
+										var grade = objS.options[objS.selectedIndex].value; 
+										var classType;
+										if(grade==1){
+											classType="User_License";
+										}else if(grade==2){
+											classType="license";
+										}else if(grade==3){
+											classType="identity";
+										}else if(grade==4){
+											classType="conIdentity";
+										}else if(grade==5){
+											classType="business";
+										}else if(grade==6){
+											classType="other";
+										}
+										upImage(classType);
+									} },
+									{ text: "取消", className: "default", onClick: function () { console.log(3) } },
+								]
+							});
+							
+							function upImage(classType){
+								wx.chooseImage({
+									success: function (res) {
 									images.localId = res.localIds;
 									console.log('已选择 ' + res.localIds.length
 										+ ' 张图片');
-
 									var i = 0, length = images.localId.length;
 									images.serverId = [];
-									function upload() {
+									function upload(classType) {
 										wx.uploadImage({
 											localId: images.localId[i].toString(),
 											isShowProgressTips: images.localId[i]
@@ -652,10 +693,10 @@
 												console.log('已上传：' + i + '/'
 													+ length);
 												//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
-												wxImgCallback(imagename, res.serverId,
+												wxImgCallback(imagename, res.serverId,classType,
 													lng, lat, wgs84_lng, wgs84_lat);
 												if (i < length) {
-													upload();
+													upload(classType);
 												}
 											},
 											fail: function (res) {
@@ -663,12 +704,15 @@
 											}
 										});
 									}
-									upload();
-								}
-							});
+									upload(classType);
+									}
+								});
+							}
+							
 						});
 					}
 				});
+
 
 			}
 
@@ -676,39 +720,39 @@
 	});
 
 	var geoc = new BMap.Geocoder();
-	
-	function wxImgCallback(imagename, serverId, lng, lat, wgs84_lng, wgs84_lat) {
+
+	function wxImgCallback(imagename, serverId,classType,lng, lat, wgs84_lng, wgs84_lat) {
 		//将serverId传给wx_upload.php的upload方法
 		var url = "../../user/updatePositionByRoomInfo.do";
-		 geoc.getLocation(point, function(rs){
-		 	   var addComp;
-		  		addComp = rs.addressComponents;    	
-		  		var addComp1=JSON.stringify(addComp);
-				var url = "../../user/updatePositionByRoomInfo.do";
-				$.get(url, {
-					campusId : 1,
-					imagename : imagename,
-					serverId : serverId,
-					id : license,
-					classType : "User_License",
-					license : license,
-					lng : lng,
-					lat : lat,
-					addComp:addComp1,
-					wgs84_lng : wgs84_lng,
-					wgs84_lat : wgs84_lat
-				}, function (data) {
-					console.log(data);
-					if (data == 0) {
+		geoc.getLocation(point, function (rs) {
+			var addComp;
+			addComp = rs.addressComponents;
+			var addComp1 = JSON.stringify(addComp);
+			var url = "../../user/updatePositionByRoomInfo.do";
+			$.get(url, {
+				campusId: 1,
+				imagename: imagename,
+				serverId: serverId,
+				id: license,
+				classType: classType,
+				license: license,
+				lng: lng,
+				lat: lat,
+				addComp: addComp1,
+				wgs84_lng: wgs84_lng,
+				wgs84_lat: wgs84_lat
+			}, function (data) {
+				console.log(data);
+				if (data == 0) {
 					alert("上传图片失败!");
 					console.log(data.msg);
 				} else if (data == 1) {
-				
-				location.reload();
-			
+
+					location.reload();
+
 				}
 			});
-	  	});
+		});
 	}
 </script>
 

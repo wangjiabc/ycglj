@@ -35,7 +35,7 @@ public abstract class AbstractFileUpload {
 		
 	}
 	
-	public Map<String,Object> uploadFile(Object object,String ID,String dataType,String license,List<String> names, List<byte[]> files) {
+	public Map<String,Object> uploadFile(Object object,String ID,String dataType,String license,List<String> names, List<byte[]> files,Integer currently) {
         String pathRoot = System.getProperty("user.home");
                
         BufferedOutputStream os=null;
@@ -116,6 +116,9 @@ public abstract class AbstractFileUpload {
               System.out.println("license="+license);
               if(license!=null&&!license.equals("")){
             	  user_Data.setLicense(license);
+              }
+              if(currently==1){
+            	  user_Data.setCurrently(1);
               }
               userDao.insertUserData(user_Data);
               CopyFile.set(Singleton.ROOMINFOIMGPATH2, savePath+"\\"+fileName+"."+mimeType, fileName+"."+mimeType);

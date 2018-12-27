@@ -20,7 +20,7 @@ public interface LicenseDAO {
 	
 	public Map<String, Object> findAllLicense_Position(Integer limit, Integer offset, Double lng, Double lat,String term,Map search);
 	
-	public Map<String, Object> getAllLicense_Position(Integer limit, Integer offset,String sort,String order,Map search);
+	public Map<String, Object> getAllLicense_Position(Integer limit, Integer offset,String sort,String order,String term,Map search);
 	
 	public Map<String, Object> License_PositionImageQuery(HttpServletRequest request, List LicenseLits);
 	

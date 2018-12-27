@@ -234,11 +234,12 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		// TODO Auto-generated method stub
 		String sql0 = "SELECT TOP " + limit + " * from " 
 				+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
-				+ "[User_License].license ,[User_License].open_id " 
+				+ "[User_License].license ,[User_License].open_id,[User_License].phone,[User_License].address " 
 				+ " FROM [User_License] left join  [Users]"
 				+ "on  [User_License].open_id = [Users].open_id "
 				+ "left join [Position] "
 				+ "on [User_License].license = [Position].license " 
+				+ "where (Position.lat is not null and Position.lng is not null) "
 				+ ")as t2 "
 				+ " left join  [Users]"
 				+ "on  t2.open_id = [Users].open_id "
@@ -287,7 +288,19 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			sql=sql0+"  where ("+serach+" ) and (Position.lat is not null and Position.lng is not null) and rows>"+offset
 					+" "+sql1;
-			sql2=sql2+" WHERE (Position.lat is not null and Position.lng is not null) and ("+serach+")";
+			sql2="SELECT count(*) from " 
+					+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
+					+ "[User_License].license ,[User_License].open_id,[User_License].phone,[User_License].address " 
+					+ " FROM [User_License] left join  [Users]"
+					+ "on  [User_License].open_id = [Users].open_id "
+					+ "left join [Position] "
+					+ "on [User_License].license = [Position].license " 
+					+ ")as t2 "
+					+ " left join  [Users]"
+					+ "on  t2.open_id = [Users].open_id "
+					+ "left join [Position] "
+					+ "on t2.license = [Position].license " 
+					+ "where ("+serach+" ) and (Position.lat is not null and Position.lng is not null)";
 		}
 	
 		System.out.println("sql="+sql);
@@ -319,24 +332,33 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 
 	@Override
 	public Map<String, Object> getAllLicense_Position(Integer limit, Integer offset, String sort, String order,
-			Map search) {
+			String term,Map search) {
 		// TODO Auto-generated method stub
+		
+		if(term.equals("or")||term.equals("OR")){
+			term="OR";
+		}else{
+			term="AND";
+		}
 		
 		User_License user_License=new User_License();
 
 		user_License.setLimit(limit);
 		user_License.setOffset(offset);
 		user_License.setNotIn("license");
+		user_License.setWhereTerm(term);
 		
 		Position position=new Position();	
 		position.setLimit(limit);
 		position.setOffset(offset);
 		position.setNotIn("license");
+		position.setWhereTerm(term);
 		
 		Users users=new Users();
 		users.setLimit(limit);
 		users.setOffset(offset);
 		users.setNotIn("license");
+		users.setWhereTerm(term);
 		
 		if(search!=null&&!search.isEmpty()&&!search.equals("")){
 			String[] where=TransMapToString.get(search);

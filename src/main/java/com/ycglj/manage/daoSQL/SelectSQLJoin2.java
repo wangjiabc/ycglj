@@ -279,7 +279,7 @@ public class SelectSQLJoin2 {
             }
          
           
-          select=select+"\n  AND "+whereCommand.substring(0,whereCommand.length()-7);
+          select=select+"\n  AND ("+whereCommand.substring(0,whereCommand.length()-7)+")";
        //   System.out.println("select="+select);
           i=1;
           iterator=wheres.iterator();

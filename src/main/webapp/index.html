@@ -8,3 +8,40 @@
 	location.href="layuiadmin/admin.html";
 	
 </script>
+
+
+$.modal({
+								title: "选择上传图片类型",
+								text: '<div class="weui-cell weui-cell_select weui-cell_select-after">' +
+									'<div class="weui-cell__bd">' +
+									'<select class="weui-select" id="select" name="select2">' +
+									'<option value="1">零售户照片</option>' +
+									' <option value="2">许可证号</option>' +
+									' <option value="3">身份证号</option>' +
+									' <option value="4">营业扏照</option>' +
+									' <option value="5">其他</option>' +
+									' </select>' +
+									'</div>' +
+									'</div>',
+								buttons: [
+									{ text: "确定", onClick: function () { 
+										 
+										var objS = document.getElementById("select"); 
+										var grade = objS.options[objS.selectedIndex].value; 
+										var classType;
+										if(grade==1){
+											classType="User_License";
+										}else if(grade==2){
+											classType="license";
+										}else if(grade==3){
+											classType="identity";
+										}else if(grade==4){
+											classType="business";
+										}else if(grade==5){
+											classType="other";
+										}
+										upload(classType);
+									} },
+									{ text: "取消", className: "default", onClick: function () { console.log(3) } },
+								]
+							});

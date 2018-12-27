@@ -29,6 +29,7 @@ import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
+import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Law_Case;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.User_Data;
@@ -90,21 +91,27 @@ public class MoblieUserController {
 		
 		Map where=new HashMap<>();
 		
-		if(search!=null&&!search.trim().equals("")){
-			search="%"+search+"%";  
-			where.put("[Users].name like ", search);
-			where.put("[User_License].license like ", search);
-			where.put("[User_License].phone like ", search);
-			where.put("[User_License].address like ", search);
-		}		
-
-
 		Map license_Positions;
 		
 		if(position==1){
+			if(search!=null&&!search.trim().equals("")){
+				search="%"+search+"%";  
+				where.put("[Users].name like ", search);
+				where.put("t2.license like ", search);
+				where.put("t2.phone like ", search);
+				where.put("t2.address like ", search);
+			}		
+
 			license_Positions=licenseDAO.findAllLicense_Position(limit, offset, lng, lat, term, where);
 		}else {
-			license_Positions=licenseDAO.getAllLicense_Position(limit, offset, "", "", where);
+			if(search!=null&&!search.trim().equals("")){
+				search="%"+search+"%";  
+				where.put("[Users].name like ", search);
+				where.put("[User_License].license like ", search);
+				where.put("[User_License].phone like ", search);
+				where.put("[User_License].address like ", search);
+			}		
+			license_Positions=licenseDAO.getAllLicense_Position(limit, offset, "", "","or", where);
 		}
 		
 		List licenses=(List) license_Positions.get("rows");
@@ -222,7 +229,7 @@ public class MoblieUserController {
 		Users_License_Position_Join users_License_Position_Join = new Users_License_Position_Join();
 		
 		try {
-			 Map licenseMap=licenseDAO.getAllLicense_Position(1, 0, "", "", searchMap);
+			 Map licenseMap=licenseDAO.getAllLicense_Position(1, 0, "", "","and", searchMap);
 
 			 List<Users_License_Position_Join> users_License_Position_Joins = (List<Users_License_Position_Join>) licenseMap.get("rows");
 			 
@@ -299,6 +306,17 @@ public class MoblieUserController {
 		int upload=0;
 				
 		try {
+			if(!classType.equals("User_License")){
+				Map searchMap=new HashMap<>();
+				searchMap.put("[User_License].license=", license);
+	        	Map map=licenseDAO.getAllLicense_Position(1, 0, "", "","and", searchMap);
+	        	List<Users_License_Position_Join> license_Position_Joins=(List<Users_License_Position_Join>) map.get("rows");
+	        	Users_License_Position_Join users_License_Position_Join=license_Position_Joins.get(0);
+	        	id=users_License_Position_Join.getOpen_id();
+	        	
+	        	System.out.println("license="+license);
+	        	MyTestUtil.print(license_Position_Joins);
+	        }
 			upload=FileUploadController.fildUpload2(request, response, classType, serverId, campusId, id, classType, weixinService, license, photoService);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

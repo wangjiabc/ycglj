@@ -36,6 +36,7 @@ import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.file.ImageFileFactory;
+import com.ycglj.manage.file.ImageLicenseFactory;
 import com.ycglj.manage.model.Photo;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.UserService;
@@ -435,23 +436,22 @@ public class FileUploadController {
         List<byte[]> files=new ArrayList<>();
         byte[] fileByte=FileConvect.fileToByte(file2);
         files.add(fileByte);
-        /*
-        if(classType.equals("hidden")){
-        	objectClass=Hidden_Data.class;
-        }else if(classType.equals("check")){
-        	objectClass=Hidden_Check_Date.class;
-        }else if(classType.equals("neaten")){
-        	objectClass=Hidden_Neaten_Date.class;
-        }else if(classType.equals("roomInfo")){
-        	objectClass=FileSelfBelong.class;
-        }
-        */
         
         if(classType.equals("User_License")){
         	objectClass=FileSelfBelong.class;
+        }else if(classType.equals("license")){
+        	objectClass=User_Data.class;
+        }else if(classType.equals("identity")){
+        	objectClass=User_Data.class;
+        }else if(classType.equals("conIdentity")){
+        	objectClass=User_Data.class;
+        }else if(classType.equals("business")){
+        	objectClass=User_Data.class;
+        }else if(classType.equals("other")){
+        	objectClass=User_Data.class;
         }
         
-        new ImageFileFactory().upload(objectClass,id,dataType,license,names, files);
+        new ImageLicenseFactory().upload(objectClass,id,dataType,license,names,files);
         
         String imageUrl="/ycglj/mobile/photo/"+uname+"."+mimeType;
         String openId=( String ) hrequest.getSession().getAttribute("openId");

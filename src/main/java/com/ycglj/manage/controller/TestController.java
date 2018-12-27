@@ -147,7 +147,7 @@ public class TestController {
 			searchMap.put("[User_License].license like ", search);
 		}
 		
-		Map license_Positions=licenseDAO.getAllLicense_Position(10, 0, null, null, searchMap);
+		Map license_Positions=licenseDAO.getAllLicense_Position(10, 0, null, null,"or", searchMap);
 		
 		List licenses=(List) license_Positions.get("rows");
 		int total=(int) license_Positions.get("total");

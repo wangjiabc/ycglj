@@ -10,7 +10,8 @@
   <!--jquery weui-->
   <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
   <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
-
+  <link rel="stylesheet" href="../asset/css/icon.css">
+  <link rel="stylesheet" href="../asset/css/weuix.css">
   <script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
 
   <script type="text/javascript">
@@ -23,6 +24,66 @@
 
 </head>
 <style>
+  .current{
+    opacity:0.4;
+  }
+  .weui-flex{padding: 10px;}
+  .page-bd li {
+                background-color: #fff;
+                border-radius: 2px;
+                cursor: pointer;
+                margin: 10px 0;
+                overflow: hidden;
+                vertical-align: bottom;
+                display: block;
+            }
+
+            .page-bd li.js-show .weui-flex {
+                opacity: 0.4;
+            }
+
+            .page-bd li.js-show .page-category {
+                height: auto;
+            }
+
+            .page-bd li.js-show .page-category-content {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+
+            .page-bd li:first-child {
+                margin-top: 0;
+            }
+
+            .page-bd .page-category {
+                height: 0;
+                overflow: hidden;
+            }
+
+            .page-bd .page-category-content {
+                opacity: 0;
+                transform: translateY(-50%);
+                transition: 0.3s;
+            }
+
+            .page-bd .weui-flex {
+
+                align-items: center;
+                padding: 10px;
+                transition: all 0.3s ease 0s;
+                display: -webkit-flex;
+                display: -webkit-box;
+                display: flex;
+            }
+
+            .page-bd .weui-flex--item {
+                -webkit-flex: 1 1 0;
+                flex: 1 1 0;
+            }
+
+            .page-bd .weui-cells {
+                margin-top: 0;
+            }
   .header img {
     height: 100%;
     width: 100%;
@@ -163,38 +224,26 @@
         </div>
       </div>
       <div id="tab2" class="weui-tab__bd-item">
-        <div class="weui-cells">
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>用户姓名</p>
+        <div class="weui-search-bar" id="searchBar">
+          <form class="weui-search-bar__form">
+            <div class="weui-search-bar__box">
+              <i class="weui-icon-search"></i>
+              <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+              <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
             </div>
-            <div class="weui-cell__ft">说明文字</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>手机号</p>
-            </div>
-            <div class="weui-cell__ft">说明文字</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>身份证号</p>
-            </div>
-            <div class="weui-cell__ft">说明文字</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>经营地址</p>
-            </div>
-            <div class="weui-cell__ft">说明文字</div>
-          </div>
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>许可证号</p>
-            </div>
-            <div class="weui-cell__ft">说明文字</div>
-          </div>
+            <label class="weui-search-bar__label" id="searchText">
+              <i class="weui-icon-search"></i>
+              <span>搜索</span>
+            </label>
+          </form>
+          <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
         </div>
+        <ul>
+          <li>
+            <div id="firstpane" class="menu_list">
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -222,7 +271,27 @@
       FastClick.attach(document.body);
     });
   </script>
-  <script>
+  <script> $(document).ready(function () {
+      // $('ul').append($("li").clone());
+      $("#firstpane .menu_body:eq(0)").show();
+      init();
+      setValue();
+
+      $("#firstpane div.weui-flex").click(function () {
+        $("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
+        if ($(this).hasClass('current')) {
+          $(this).removeClass('current');
+          $(this).children('i').removeClass('icon-74').addClass('icon-35');
+        } else {
+          $(this).siblings().removeClass('current');
+          $(this).addClass('current');
+          $(this).children('i').removeClass('icon-35').addClass('icon-74');
+          $(this).siblings().find('i').removeClass('icon-74').addClass('icon-35');
+        }
+
+      });
+    });
+
     $('#position').css("background-color", "#904343");
     $('#case').css("background-color", "#925f39");
     $('#echart').css("background-color", "#304c68");
@@ -230,7 +299,58 @@
     $('#echart').click(function () {
       window.location.href = "echart.html";
     });
-
+    function init() {
+      var html = '<div class="weui-flex current">' +
+        '<div class="weui-flex__item">赵晓丹</div>' +
+        '<i class="icon icon-74"></i></div>' +
+        '<div style="display:block weui-cells" class="menu_body">' +
+        '<div class="weui-cell">' +
+        '  <div class="weui-cell__bd"><p>姓名</p></div>' +
+        '<div name="name" id="name" class="weui-cell__ft">null</div>' +
+        '</div>' +
+        '<div class="weui-cell">' +
+        '  <div class="weui-cell__bd"><p>单位</p></div>' +
+        '<div id="unit" class="weui-cell__ft">null</div>' +
+        '</div>' +
+        '<div class="weui-cell">' +
+        '  <div class="weui-cell__bd"><p>部门</p></div>' +
+        '<div id="department" class="weui-cell__ft">null</div>' +
+        '</div>' +
+        '<div class="weui-cell">' +
+        '  <div class="weui-cell__bd"><p>职务</p></div>' +
+        '<div id="duty" class="weui-cell__ft">null</div>' +
+        '</div>' +
+        '<div class="weui-cell">' +
+        '  <div class="weui-cell__bd"><p>电话</p></div>' +
+        '<div id="phone" class="weui-cell__ft">null</div>' +
+        '</div>' +
+        '<div class="weui-cell">' +
+        '  <div class="weui-cell__bd"><p>执法证编号</p></div>' +
+        '<div id="liscence" class="weui-cell__ft">null</div>' +
+        '</div>'
+      $('.menu_list').append(html);
+      $('div[name]').text('asdfasdfasdfsdf')
+    }
+    function setValue() {
+      $.ajax({
+        type: "get",
+        url: "",
+        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+        data: {},
+        dataType: "json",
+        success: function (data) {
+          $('#user_name').text(data.data[0].name);
+          $('#uesr_num').text(data.data[0].phone);
+          $('#user_idnum').text(data.data[0].id_number);
+          $('#user_liscence').text(data.data[0].license);
+          $('#user_address').text(data.data[0].address);
+          $('#order_time').text(data.data[0].up_date);
+        },
+        error: function (e) {
+          console.log(e);
+        }
+      });
+    }
 
   </script>
 
