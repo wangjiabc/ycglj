@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>统计图表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+    <!--jquery weui-->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+</head>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">业态统计图</div>
+                    <div class="layui-card-body">
+                        <!-- <div class="main" id="main"></div>
+                        <div class="pie" id="pie"></div> -->
+
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-header">业态统计图</div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-heapline">
+                            <div carousel-item id="LAY-index-heapline">
+                                <div><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-header">案件统计图</div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-diffline">
+                            <div carousel-item id="LAY-index-diffline">
+                                <div><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">案件统计图</div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-heaparea">
+                            <div carousel-item id="LAY-index-heaparea">
+                                <div><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-header">三烟统计图</div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-area">
+                            <div carousel-item id="LAY-index-area">
+                                <div><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-header">三烟统计图</div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-carousel layadmin-carousel layadmin-dataview" data-anim="fade" lay-filter="LAY-index-logline">
+                            <div carousel-item id="LAY-index-logline">
+                                <div><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script src="../layui/layui.js"></script>
+    <script src="../echarts.common.min.js"></script>
+    <script>
+        tab1();
+ function tab1() {
+      var myChart = echarts.init(document.getElementById('main'), 'light');
+      var myChart2 = echarts.init(document.getElementById('pie'), 'light');
+      var option = {
+        baseOption: {
+          timeline: {
+            axisType: 'category',//轴类型 value category time
+            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+            left: 0,
+            right: 0,
+            bottom: 60
+          },
+          series: [
+            {
+              name: '业态统计',
+              type: 'pie',
+              radius: '55%',
+              center: ['50%', '50%'],
+            }
+          ],
+          legend: {
+            x: 'left',
+            top: 30,
+            // y: 'bottom',
+            data: ['食杂店', '便利店', '超市', '商场', '烟酒店', '娱乐服务', '路边摊', '其他']
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c}条 ({d}%)"
+          },
+          calculable: true,
+        },
+        options: [
+          { // 这是'2002-01-01' 对应的 option
+            title: {
+              text: '2018年1月业态饼状图',
+            },
+            series: [
+              {
+                data: [{ value: 10, name: '食杂店' },
+                { value: 5, name: '便利店' },
+                { value: 15, name: '超市' },
+                { value: 25, name: '商场' },
+                { value: 20, name: '烟酒店' },
+                { value: 35, name: '娱乐服务' },
+                { value: 30, name: '路边摊' },
+                { value: 40, name: '其他' }]
+              },
+            ]
+          }, { // 这是'2002-01-01' 对应的 option
+            title: {
+              text: '2018年2月业态饼状图'
+            },
+            series: [
+              {
+                data: [{ value: 20, name: '食杂店' },
+                { value: 15, name: '便利店' },
+                { value: 4, name: '超市' },
+                { value: 3, name: '商场' },
+                { value: 22, name: '烟酒店' },
+                { value: 14, name: '娱乐服务' },
+                { value: 31, name: '路边摊' },
+                { value: 40, name: '其他' }]
+              }
+            ]
+          },
+        ],
+
+      };
+
+      var option2 = {
+
+        //固定框架的option
+        baseOption: {
+          timeline: {
+            //loop: false,      
+            axisType: 'category',//轴类型 value category time
+            show: true,//开关
+            autoPlay: true,//是否自动播放
+            playInterval: 2000,//播放时间
+            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+            left: 0,
+            right: 0
+          },
+          // legend: {
+          //     data: ['业态', '案件', '三烟']
+          // },
+          grid: { containLabel: true },
+          yAxis: [{
+            // type: 'value',
+            // name: '单位/条',
+            // max: 100
+          }],
+          xAxis: [{
+            type: 'category',
+            // inverse: true, 反转
+            data: ['食杂店', '便利店', '超市', '商场', '烟酒店', '娱乐场所', '路边摊', '其他']
+          }],
+          tooltip: {
+            trigger: 'axis',
+            formatter: "{a} <br/>{b} : {c} " + '条'
+          },
+          series: [
+            {
+              name: '业态',
+              type: 'bar',
+            },
+          ]
+        },
+        //变化数据
+        options: [
+          //1990
+          {
+            title: {
+              text: '2018年1月业态统计图'
+            },
+            series: [
+              {
+                data: [5, 40, 16, 10, 10, 20, 10, 10]
+              },
+
+            ]
+          },
+          //1995
+          {
+            title: {
+              text: '2018年2月业态统计图'
+            },
+            series: [
+              {
+                data: [5, 24, 32, 73, 31, 65, 25, 55]
+              },
+            ]
+          },
+        ]
+      }
+ }
+    </script>
+</body>
+
+</html>

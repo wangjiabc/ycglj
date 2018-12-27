@@ -101,60 +101,65 @@
                             </dl>
                         </li>
                         <li data-name="user" class="layui-nav-item">
-                                <a href="javascript:;" lay-tips="用户管理" lay-direction="2">
-                                    <i class="layui-icon layui-icon-user"></i>
-                                    <cite>用户管理</cite>
+                            <a href="javascript:;" lay-tips="用户管理" lay-direction="2">
+                                <i class="layui-icon layui-icon-user"></i>
+                                <cite>用户管理</cite>
+                            </a>
+                            <dl class="layui-nav-child">
+                                <dd data-name="user">
+                                    <a lay-href="home/allUser.html">全部用户管理</a>
+                                </dd>
+                                <dd data-name="wechatuser" class="layui">
+                                    <a lay-href="home/wechatUser.html">微信用户管理</a>
+                                </dd>
+                            </dl>
+                        </li>
+                        <li data-name="order" class="layui-nav-item">
+                            <a href="javascript:;" lay-tips="预约管理" lay-direction="2">
+                                <i class="layui-icon layui-icon-home"></i>
+                                <cite>预约管理</cite>
+                            </a>
+                            <dl class="layui-nav-child">
+                                <dd data-name="order" class="layui">
+                                    <a lay-href="order/order.html">预约状态设置</a>
+                                </dd>
+                                <dd data-name="detail" class="layui">
+                                    <a lay-href="order/detail.html">预约人数详情</a>
+                                </dd>
+                            </dl>
+                        </li>
+
+                        <li data-name="order" class="layui-nav-item">
+                            <a href="javascript:;" lay-tips="预约管理" lay-direction="2">
+                                <i class="layui-icon layui-icon-user"></i>
+                                <cite>稽查人员</cite>
+                            </a>
+                            <dl class="layui-nav-child">
+                                <dd data-name="order" class="layui">
+                                    <a lay-href="check/checkPerson.html">权限设置</a>
+                                </dd>
+                                <dd data-name="order" class="layui">
+                                    <a lay-href="check/caseManager.html">案件管理</a>
+                                </dd>
+                            </dl>
+                        </li>
+                        <li data-name="order" class="layui-nav-item">
+                            <a href="javascript:;" lay-tips="零售点位" lay-direction="2">
+                                <i class="layui-icon layui-icon-home"></i>
+                                <cite>零售点位</cite>
+                            </a>
+                            <dl class="layui-nav-child">
+                                <dd data-name="order" class="layui">
+                                    <a lay-href="map/allMap.html">零售点位分布图</a>
+                                </dd>
+                            </dl>
+                        </li>
+                        <li data-name="echart" class="layui-nav-item">
+                                <a lay-href="map/echarts.html" lay-tips="统计图表" lay-direction="2">
+                                    <i class="layui-icon layui-icon-home"></i>
+                                    <cite>统计图表</cite>
                                 </a>
-                                <dl class="layui-nav-child">
-                                    <dd data-name="user">
-                                        <a lay-href="home/allUser.html">全部用户管理</a>
-                                    </dd>
-                                    <dd data-name="wechatuser" class="layui">
-                                        <a lay-href="home/wechatUser.html">微信用户管理</a>
-                                    </dd>
-                                </dl>
                             </li>
-                            <li data-name="order" class="layui-nav-item">
-                                    <a href="javascript:;" lay-tips="预约管理" lay-direction="2">
-                                        <i class="layui-icon layui-icon-home"></i>
-                                        <cite>预约管理</cite>
-                                    </a>
-                                    <dl class="layui-nav-child">
-                                        <dd data-name="order" class="layui">
-                                            <a lay-href="order/order.html">预约状态设置</a>
-                                        </dd>
-                                        <dd data-name="detail" class="layui">
-                                            <a lay-href="order/detail.html">预约人数详情</a>
-                                        </dd>
-                                    </dl>
-                                </li>
-                                
-                                <li data-name="order" class="layui-nav-item">
-                                    <a href="javascript:;" lay-tips="预约管理" lay-direction="2">
-                                        <i class="layui-icon layui-icon-user"></i>
-                                        <cite>稽查人员</cite>
-                                    </a>
-                                    <dl class="layui-nav-child">
-                                        <dd data-name="order" class="layui">
-                                            <a lay-href="check/checkPerson.html">权限设置</a>
-                                        </dd>
-                                        <dd data-name="order" class="layui">
-                                                <a lay-href="check/caseManager.html">案件管理</a>
-                                            </dd>
-                                    </dl>
-                                </li>
-                                <li data-name="order" class="layui-nav-item">
-                                    <a href="javascript:;" lay-tips="零售点位" lay-direction="2">
-                                        <i class="layui-icon layui-icon-home"></i>
-                                        <cite>零售点位</cite>
-                                    </a>
-                                    <dl class="layui-nav-child">
-                                        <dd data-name="order" class="layui">
-                                            <a lay-href="map/allMap.html">零售点位分布图</a>
-                                        </dd>
-                                        
-                                    </dl>
-                                </li>
                     </ul>
                 </div>
             </div>

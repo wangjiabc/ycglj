@@ -117,11 +117,11 @@
 	var endTime = "";
 
 	var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
-	var ay = ["非渠道", "售假", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+	var ay = ["非渠道", "假冒", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
 
 	function querySearch() {
 		var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
-		var ay = ["非渠道", "售假", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+		var ay = ["非渠道", "假冒", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
 		for (var i = 0; i < yt.length; i++) {
 			$('#yt').append('<button href="javascript:;" style="margin-left:5px" onclick="toggleYt(' + i + ')" class="weui-btn weui-btn_mini weui-btn_default">' + yt[i] + '</button>');
 		}

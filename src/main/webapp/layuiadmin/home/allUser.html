@@ -89,6 +89,7 @@
           , { field: 'license', title: '许可证号' }
           , { field: 'address', title: '地址' }
           , { field: 'region', title: '所属中队' }
+          , { field: 'business_status', title: '业态', edit: 'text' }
           , { field: 'up_date', title: '办理时间', align: 'center', templet: function (d) { return createTime(d.up_date); } }
           , { field: 'date', title: '注册时间', align: 'center', templet: function (d) { return createTime(d.date); } }
           , { field: 'license_start_date', title: '许可证起始日期', align: 'center', templet: function (d) { return createTime(d.license_start_date); } }
@@ -184,7 +185,7 @@
               data: {},
               dataType: "json",
               success: function (data) {
-            	  console.log("data="+data);
+                console.log("data=" + data);
                 if (data == 1) {
                   console.log("发送信息通知 ");
                   layer.open({
@@ -262,14 +263,14 @@
       layui.form.on('select(status)', function (data) {
         authentication = data.value;
         table.reload('test', {
-        	url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication + "&region=" + region
+          url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication + "&region=" + region
         });
       })
       layui.form.on('select(region)', function (data) {
         region = data.value;
         console.log(region);
         table.reload('test', {
-        	url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication + "&region=" + region
+          url: '/ycglj/user/getAllUser.do?search=' + search + "&authentication=" + authentication + "&region=" + region
         });
       })
       //监听搜索

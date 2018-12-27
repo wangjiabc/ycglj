@@ -59,6 +59,9 @@ public class Users_License_Join {
 	    @SQLDateTime(name="date")
 		private Date date;
 	    
+	    @SQLString(name="business_state")
+		private String business_state;
+	    
 		public void setId(Integer id){
 			this.id = id;
 		}
@@ -195,6 +198,12 @@ public class Users_License_Join {
 			return region;
 		}
 
+		public void setBusiness_state(String business_state){
+			this.business_state = business_state;
+		}
 
+		public String getBusiness_state(){
+			return business_state;
+		}
 		
 }

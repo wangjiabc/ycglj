@@ -241,90 +241,58 @@
 			else if (name != '') {
 				// alert("aaa");
 				console.log(name);
-				map.removeOverlay(); 
+				map.removeOverlay();
 			} else {
 				var pointCollection = new BMap.PointCollection(points, options1); // 初始化PointCollection
 			}
 		}
 
 		pointCollection.addEventListener('click', function (e) {
-			alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
 			var xhm = new XMLHttpRequest();
 			xhm.open("GET",
-				"../../baiduMap/getAssetGUIDByPosition.do?lng="
+				"../../baiduMap/getLicenseGUIDByPosition.do?lng="
 				+ e.point.lng + "&lat="
 				+ e.point.lat, false);
 			xhm.setRequestHeader("Content-type",
 				"application/x-www-form-urlencoded");
 			xhm.send();
 			var data = JSON.parse(xhm.responseText);
-			var obj = data.roomInfo;
-			var url = "../../" + data.url;
-			total = data.total;
-			console.log(total);
-			if (total == 1) {
-				var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'> 烟点位置 : "
-					+ obj.address
-					+ "</h4>"
-					+ "<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='139' height='104'/>"
-					+ "<p>"
-					+ " 管理分区 : "
-					+ obj.manageRegion
-					+ " "
-					+ " 资产性质 : "
-					+ obj.roomProperty
-					+ " "
-					+ " 资产编号 : "
-					+ obj.num
-					+ " </br>"
-					+ " 面积 : "
-					+ obj.buildArea
-					+ " m<sup>2</sup> "
-					+ " 租金 :"
-					+ obj.hire + " " + "</p>" + "</div>";
-				var infoWindow = new BMap.InfoWindow(content); // 创建信息窗口对象
-				map.openInfoWindow(infoWindow, new BMap.Point(
-					e.point.lng, e.point.lat)); //开启信息窗口
-			} else {
-				console.log(data.list);
-				rows = data.list;
-				div1 = document.getElementById('div1')
-				var tab = "<table border=1 width=700>";
-				for (var i = 0; i < rows.length; i++) {
-					var obj = rows[i];
-					tab += "<tr>";
-					tab += "<td> 资产名称 : " + obj.address
-						+ " </td>";
-					tab += "<td> 管理分区 : " + obj.manageRegion
-						+ " </td>";
-					tab += "<td> 资产性质 : " + obj.roomProperty
-						+ " </td>";
-					tab += "<td> 资产编号 : " + obj.num + " </td>";
-					tab += "<td> 面积 : " + obj.buildArea
-						+ " m<sup>2</sup> </td>";
-					tab += "<td> 租金 :" + obj.hire + " </td>";
-					tab += "<td>"
-						+ "<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='50' height='30'/>"
-						+ "</td>";
-					tab += "</tr>";
+			var license = data.license;
+			$.ajax({
+				type: "POST",
+				url: "../../mobile/user/getRoomInfoByGUID.do",
+				data: {
+					"license": license
+				},
+				dataType: "json",
+				error: function (request) {
+					console.log(request);
+				},
+				success: function (result) {
+					setinfoWindow(result);
+					console.log(result.roomInfo.license);
+					var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'> 烟点位置: "
+						+ result.roomInfo.address
+						+ "</h4>"
+						+ "<img style='float:right;margin:4px' id='imgDemo' src=/ycglj" + result.fileBytes[0].uri + " width='139' height='104'/>"
+						+ "<p>"
+						+ " 用户姓名 : "
+						+ result.roomInfo.name
+						+ " "
+						+ " 手机号 : "
+						+ result.roomInfo.phone
+						+ " "
+						+ " 许可证号 : "
+						+ result.roomInfo.license
+					var infoWindow = new BMap.InfoWindow(content); // 创建信息窗口对象
+					map.openInfoWindow(infoWindow, new BMap.Point(
+						e.point.lng, e.point.lat)); //开启信息窗口
 				}
-				tab += "</table>";
-
-				var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>  资产数量 : "
-					+ data.total
-					+ "</h4>"
-					+ "<p>"
-					+ "  "
-					+ tab + " " + "</p>" + "</div>";
-				var infoWindow = new BMap.InfoWindow(content); // 创建信息窗口对象
-				map.openInfoWindow(infoWindow, new BMap.Point(
-					e.point.lng, e.point.lat));
-			}
+			})
 		});
 		map.addOverlay(pointCollection); // 添加Overlay
 
 	}
-
 	//获取覆盖物位置
 	function attribute(e) {
 		var p = e.target;

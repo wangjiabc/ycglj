@@ -389,9 +389,38 @@
 			new BMap.Size(30, 38));
 		var marker = new BMap.Marker(point); // 创建点
 		map.addOverlay(marker); //增加点
-
+		var geolocationControl = new BMap.GeolocationControl();
+		map.addControl(geolocationControl);
 		marker.enableDragging(); //标注可拖拽
+		// 定义一个控件类,即function
+		function ZoomControl() {
+			// 默认停靠位置和偏移量
+			this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+			this.defaultOffset = new BMap.Size(10, 10);
+		}
 
+		// 通过JavaScript的prototype属性继承于BMap.Control
+		ZoomControl.prototype = new BMap.Control();
+
+		// 自定义控件必须实现自己的initialize方法,并且将控件的DOM元素返回
+		// 在本方法中创建个div元素作为控件的容器,并将其添加到地图容器中
+		ZoomControl.prototype.initialize = function (map) {
+			// 创建一个DOM元素
+			var img = document.createElement("img");
+			img.src = "../../asset/images/max.png";
+			// 绑定事件,点击一次放大两级
+			img.onclick = function (e) {
+				map.setZoom(17);
+			}
+			// 添加DOM元素到地图中
+			map.getContainer().appendChild(img);
+			// 将DOM元素返回
+			return img;
+		}
+		// 创建控件
+		var myZoomCtrl = new ZoomControl();
+		// 添加到地图当中
+		map.addControl(myZoomCtrl);
 		// 开启事件监听
 		marker.addEventListener("dragend", function (e) {
 
@@ -635,7 +664,7 @@
 							var result = obj.result;
 							var lat = result[0].y;
 							var lng = result[0].x;
-							
+
 							$.modal({
 								title: "选择上传图片类型",
 								text: '<div class="weui-cell weui-cell_select weui-cell_select-after">' +
@@ -651,64 +680,66 @@
 									'</div>' +
 									'</div>',
 								buttons: [
-									{ text: "确定", onClick: function () { 
-										 
-										var objS = document.getElementById("select"); 
-										var grade = objS.options[objS.selectedIndex].value; 
-										var classType;
-										if(grade==1){
-											classType="User_License";
-										}else if(grade==2){
-											classType="license";
-										}else if(grade==3){
-											classType="identity";
-										}else if(grade==4){
-											classType="conIdentity";
-										}else if(grade==5){
-											classType="business";
-										}else if(grade==6){
-											classType="other";
+									{
+										text: "确定", onClick: function () {
+
+											var objS = document.getElementById("select");
+											var grade = objS.options[objS.selectedIndex].value;
+											var classType;
+											if (grade == 1) {
+												classType = "User_License";
+											} else if (grade == 2) {
+												classType = "license";
+											} else if (grade == 3) {
+												classType = "identity";
+											} else if (grade == 4) {
+												classType = "conIdentity";
+											} else if (grade == 5) {
+												classType = "business";
+											} else if (grade == 6) {
+												classType = "other";
+											}
+											upImage(classType);
 										}
-										upImage(classType);
-									} },
+									},
 									{ text: "取消", className: "default", onClick: function () { console.log(3) } },
 								]
 							});
-							
-							function upImage(classType){
+
+							function upImage(classType) {
 								wx.chooseImage({
 									success: function (res) {
-									images.localId = res.localIds;
-									console.log('已选择 ' + res.localIds.length
-										+ ' 张图片');
-									var i = 0, length = images.localId.length;
-									images.serverId = [];
-									function upload(classType) {
-										wx.uploadImage({
-											localId: images.localId[i].toString(),
-											isShowProgressTips: images.localId[i]
-												.toString(),
-											success: function (res) {
-												i++;
-												console.log('已上传：' + i + '/'
-													+ length);
-												//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
-												wxImgCallback(imagename, res.serverId,classType,
-													lng, lat, wgs84_lng, wgs84_lat);
-												if (i < length) {
-													upload(classType);
+										images.localId = res.localIds;
+										console.log('已选择 ' + res.localIds.length
+											+ ' 张图片');
+										var i = 0, length = images.localId.length;
+										images.serverId = [];
+										function upload(classType) {
+											wx.uploadImage({
+												localId: images.localId[i].toString(),
+												isShowProgressTips: images.localId[i]
+													.toString(),
+												success: function (res) {
+													i++;
+													console.log('已上传：' + i + '/'
+														+ length);
+													//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
+													wxImgCallback(imagename, res.serverId, classType,
+														lng, lat, wgs84_lng, wgs84_lat);
+													if (i < length) {
+														upload(classType);
+													}
+												},
+												fail: function (res) {
+													console.log(res);
 												}
-											},
-											fail: function (res) {
-												console.log(res);
-											}
-										});
-									}
-									upload(classType);
+											});
+										}
+										upload(classType);
 									}
 								});
 							}
-							
+
 						});
 					}
 				});
@@ -721,7 +752,7 @@
 
 	var geoc = new BMap.Geocoder();
 
-	function wxImgCallback(imagename, serverId,classType,lng, lat, wgs84_lng, wgs84_lat) {
+	function wxImgCallback(imagename, serverId, classType, lng, lat, wgs84_lng, wgs84_lat) {
 		//将serverId传给wx_upload.php的upload方法
 		var url = "../../user/updatePositionByRoomInfo.do";
 		geoc.getLocation(point, function (rs) {

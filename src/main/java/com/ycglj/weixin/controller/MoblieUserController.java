@@ -278,7 +278,7 @@ public class MoblieUserController {
 			
 			Law_Case law_Case=(Law_Case) iterator.next();
 			
-			crimal=crimal+","+law_Case.getCriminal_type()+law_Case.getCriminal_number()+ "件";
+			crimal=crimal+","+law_Case.getCriminal_type()+law_Case.getCriminal_number()+ "条";
 		
 		}
 		
@@ -471,7 +471,7 @@ public class MoblieUserController {
 					crimal_Case.setCriminal_type(ayString);
 					content = content + "," + ayString;
 				} else if (i != 0 && i % 2 != 0) {
-					content = content + ayString + "件";
+					content = content + ayString + "条";
 					int number = Integer.parseInt(ayString);
 					crimal_Case.setLicense(license);
 					crimal_Case.setCrimal_id(uuid.toString());
