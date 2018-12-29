@@ -14,15 +14,15 @@
 </head>
 
 <body>
-
+    <div class="main" id="main"></div>
+    <div class="pie" id="pie"></div>
     <div class="layui-fluid">
         <div class="layui-row layui-col-space15">
             <div class="layui-col-md6">
                 <div class="layui-card">
                     <div class="layui-card-header">业态统计图</div>
                     <div class="layui-card-body">
-                        <!-- <div class="main" id="main"></div>
-                        <div class="pie" id="pie"></div> -->
+                        
 
                     </div>
                 </div>
@@ -96,8 +96,12 @@
 
     <script src="../layui/layui.js"></script>
     <script src="../echarts.common.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <script>
-        tab1();
+      $(document).ready(function(){
+       tab1();
+      })
+       
  function tab1() {
       var myChart = echarts.init(document.getElementById('main'), 'light');
       var myChart2 = echarts.init(document.getElementById('pie'), 'light');
@@ -169,7 +173,6 @@
       };
 
       var option2 = {
-
         //固定框架的option
         baseOption: {
           timeline: {
@@ -234,6 +237,8 @@
           },
         ]
       }
+      myChart.setOption(option2);
+      myChart2.setOption(option);
  }
     </script>
 </body>

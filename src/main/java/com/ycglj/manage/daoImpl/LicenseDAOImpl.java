@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.google.common.collect.Lists;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
@@ -215,7 +216,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		License_Position_Join license_Position_Join=new License_Position_Join();
 		
 		try{
-			List list=SelectSqlJoinExe.get(this.getJdbcTemplate(), sql, objects,license_Position_Join);
+			//List list=SelectSqlJoinExe.get(this.getJdbcTemplate(), sql, objects,license_Position_Join);
+			List list=this.getJdbcTemplate().query(sql,new allPositionCriminal());
 			int total=(int) SelectSqlJoinExe.getCount(this.getJdbcTemplate(), sql2, objects).get("");
 			map.put("rows", list);
 			map.put("total", total);
@@ -227,6 +229,30 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		return map;
 	}
 
+	class allPositionCriminal implements RowMapper<Map> {
+
+		@Override
+		public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
+			// TODO Auto-generated method stub
+			
+			Double lng=rs.getDouble("lng");
+			
+			Double lat=rs.getDouble("lat");
+			
+			Integer criminal_number=rs.getInt("criminal_number");
+			
+			Map map=new HashMap<>();
+			
+			map.put("lng", lng);
+			
+			map.put("lat", lat);
+			
+			map.put("criminal_number", criminal_number);
+			
+			return map;
+		}
+		
+	}
 	
 	@Override
 	public Map<String, Object> findAllLicense_Position(Integer limit, Integer offset,Double lng, Double lat,String term,Map search) {

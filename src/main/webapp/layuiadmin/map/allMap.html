@@ -90,10 +90,12 @@
 		//监听下拉框
 		layui.form.on('select(yt)', function (data) {
 			yetai = data.value;
+			addDeck("","","",yetai,"");
 		})
 		//监听下拉框
 		layui.form.on('select(ay)', function (data) {
 			anyou = data.value;
+			addDeck("","","","",anyou);
 		})
 		//监听搜索
 		layui.form.on('submit(search)', function (data) {
@@ -123,11 +125,11 @@
 	var endTime = "";
 
 	var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
-	var ay = ["非渠道", "售假", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+	var ay = ["非渠道", "假冒", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违规"];
 
 	function querySearch() {
 		var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
-		var ay = ["非渠道", "售假", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+		var ay = ["非渠道", "假冒", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违规"];
 		for (var i = 0; i < yt.length; i++) {
 			$('#yt').append('<option value="' + yt[i] + '">' + yt[i] + '</option>');
 		}
@@ -135,19 +137,6 @@
 			console.log(ay[i]);
 			$('#ay').append('<option value="' + ay[i] + '">' + ay[i] + '</option>');
 		}
-		// document.getElementById("search").onclick = clickHandler;
-
-		// function clickHandler() {
-		// 	console.log(yit + "           " + any);
-		// 	console.log(" starttime= " + startTime);
-		// 	console.log(" endtime= " + endTime);
-		// 	var name = document.getElementById("userName").value;
-		// 	console.log(name);
-		// 	map.clearOverlays();
-
-		// 	addDeck(name, startTime, endTime, yit, any);
-		// }
-
 	}
 
 	sign_URL = document.location.toString();
@@ -188,6 +177,7 @@
 	}
 
 	function addDeck(name, startTime, endTime, yit, any) {
+		map.clearOverlays();
 		var condition = "?name=" + name + "&startTime=" + startTime + "&endTime=" + endTime + "&yit=" + yit + "&any=" + any;
 		console.log('url:' + condition);
 		var xhm = new XMLHttpRequest();
@@ -241,7 +231,7 @@
 			else if (name != '') {
 				// alert("aaa");
 				console.log(name);
-				map.removeOverlay();
+				
 			} else {
 				var pointCollection = new BMap.PointCollection(points, options1); // 初始化PointCollection
 			}
@@ -269,8 +259,6 @@
 					console.log(request);
 				},
 				success: function (result) {
-					setinfoWindow(result);
-					console.log(result.roomInfo.license);
 					var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'> 烟点位置: "
 						+ result.roomInfo.address
 						+ "</h4>"
@@ -293,6 +281,7 @@
 		map.addOverlay(pointCollection); // 添加Overlay
 
 	}
+	
 	//获取覆盖物位置
 	function attribute(e) {
 		var p = e.target;

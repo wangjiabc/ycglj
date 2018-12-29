@@ -41,6 +41,10 @@
 			z-index: 1;
 			width: 100%;
 		}
+
+		.BMap_noprint anchorTL {
+			top: 50px;
+		}
 	</style>
 	<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=pQFgFpS0VnMXwCRN6cTc1jDOcBVi3XoD"></script>
 	<title>烟点分布地图</title>
@@ -103,6 +107,46 @@
 
 	// var map = new BMap.Map("allmap");
 	var map = new BMap.Map("allmap", { enableMapClick: false });//构造底图时，关闭底图可点功能
+
+	var content = "";
+	var xhm = new XMLHttpRequest();
+	xhm.open("GET", "../../../baiduMap/getAllLicensePositionJoin.do", false);
+	xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhm.send();
+	var data = JSON.parse(xhm.responseText);
+	total = data.total;
+	// 定义一个控件类,即function
+	function ZoomControl() {
+		// 默认停靠位置和偏移量
+		this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+		this.defaultOffset = new BMap.Size(10, 50);
+	}
+
+	// 通过JavaScript的prototype属性继承于BMap.Control
+	ZoomControl.prototype = new BMap.Control();
+
+	// 自定义控件必须实现自己的initialize方法,并且将控件的DOM元素返回
+	// 在本方法中创建个div元素作为控件的容器,并将其添加到地图容器中
+	ZoomControl.prototype.initialize = function (map) {
+		// 创建一个DOM元素
+		var div = document.createElement("div");
+		content = total + "处"
+		// 添加文字说明
+		div.innerHTML = content;
+		// div.appendChild(document.createTextNode(total + "处"));
+		// 设置样式
+		div.style.cursor = "pointer";
+		div.style.color = "#26a69a";
+		// 添加DOM元素到地图中
+		map.getContainer().appendChild(div);
+		// 将DOM元素返回
+		return div;
+	}
+	// 创建控件
+	var myZoomCtrl = new ZoomControl();
+	// 添加到地图当中
+	map.addControl(myZoomCtrl);
+	map.enableScrollWheelZoom(true);
 	// 添加定位控件
 	geolocationControl.addEventListener("locationSuccess", function (e) {
 	})
@@ -112,16 +156,17 @@
 
 	var yit = new Array();
 	var any = new Array();
+	var total = "";
 
 	var startTime = "";
 	var endTime = "";
 
 	var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
-	var ay = ["非渠道", "假冒", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+	var ay = ["非渠道", "假冒", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违规"];
 
 	function querySearch() {
 		var yt = ["食杂店", "便利店", "超市", "商场", "烟酒店", "娱乐服务", "路边摊", "其它"];
-		var ay = ["非渠道", "假冒", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违观"];
+		var ay = ["非渠道", "假冒", "走私", "无证经营", "无证运输", "无证批发", "超邮", "多次违规"];
 		for (var i = 0; i < yt.length; i++) {
 			$('#yt').append('<button href="javascript:;" style="margin-left:5px" onclick="toggleYt(' + i + ')" class="weui-btn weui-btn_mini weui-btn_default">' + yt[i] + '</button>');
 		}
@@ -215,21 +260,20 @@
 	})
 	map.addOverlay(marker);    //增加点
 
-	var str = "我的位置";
-	var opts = {
-		position: point,    // 指定文本标注所在的地理位置
-		offset: new BMap.Size(-getByteLen(str) * 3, 5)    //设置文本偏移量
-	}
-	var label = new BMap.Label(str, opts);  // 创建文本标注对象
-	label.setStyle({
-		fontSize: "12px",
-		height: "20px",
-		lineHeight: "20px",
-		fontFamily: "微软雅黑"
-	});
-	// map.addOverlay(label);   
 
-	map.enableScrollWheelZoom(true);
+	$.ajax({
+		url: "../../../baiduMap/getAllLicensePositionJoin.do",
+		async: false,
+		type: "GET",
+		success: function (data) {
+
+		}, error: function (e) {
+
+		}
+	})
+
+
+	addDeck("", startTime, endTime, yit, any);
 
 	//切换样式
 	function toggleYt(index) {
@@ -275,20 +319,25 @@
 		if (r != null) return unescape(r[2]); return null;
 	}
 
-	addDeck("", startTime, endTime, yit, any);
 
 	function addDeck(name, startTime, endTime, yit, any) {
-
 		var condition = "?name=" + name + "&startTime=" + startTime + "&endTime=" + endTime + "&yit=" + yit + "&any=" + any;
 
 		var xhm = new XMLHttpRequest();
 		xhm.open("GET", "../../../baiduMap/getAllLicensePositionJoin.do" + condition, false);
-		xhm.setRequestHeader("Content-type",
-			"application/x-www-form-urlencoded");
+		xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xhm.send();
 		var data = JSON.parse(xhm.responseText);
 		var ticket = data.rows;
+		total = data.total;
+		setColor(ticket);
+		//移除控件后再添加控件
+		map.removeControl(myZoomCtrl);
+		map.addControl(myZoomCtrl);
 
+	}
+	
+	function setColor(ticket) {
 		var points = []; // 添加海量点数据
 		//默认颜色
 		var options1 = {
@@ -315,7 +364,7 @@
 			color: '#f4511e'
 		}
 		for (var i = 0; i < ticket.length; i++) {
-			console.log(ticket[0].license);
+			console.log(ticket[i]);
 			points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
 			if (yit.length > 0 && any.length == 0) {
 				var pointCollection = new BMap.PointCollection(points, options2); // 初始化PointCollection
@@ -329,104 +378,26 @@
 				var pointCollection = new BMap.PointCollection(points, options1); // 初始化PointCollection
 			}
 			//自定义属性存放license
-			pointCollection.customData = { license: ticket[i].license };
+			// pointCollection.customData = { license: ticket[i].license };
 
-			console.log("数据:" + pointCollection.customData.license);
+			// console.log("数据:" + pointCollection.customData.license);
 		}
 		pointCollection.addEventListener('click', function (e) {
 			// alert(e.point.lng + " " + e.point.lat + "  " + e.target.customData.license)
-			
+
 			$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
-										lng:e.point.lng,
-										lat:e.point.lat
-									}, function (text) {
-										var data=JSON.parse(text);
-										location.href = "../case/caseDetail.html?license="+data.license+"&longitude=" + e.point.lng + "&latitude=" + e.point.lat;
-									});
-			
+				lng: e.point.lng,
+				lat: e.point.lat
+			}, function (text) {
+				var data = JSON.parse(text);
+				location.href = "../case/caseDetail.html?license=" + data.license + "&longitude=" + e.point.lng + "&latitude=" + e.point.lat;
+			});
+
 		})
 
-
-		// pointCollection
-		// 	.addEventListener('click', function (e) {
-
-		// 		alert('单击点的坐标为：' + e.point.lng + ',' + e.point.lat);  // 监听点击事件
-		// 		var xhm = new XMLHttpRequest();
-		// 		xhm.open("GET",
-		// 			"../../baiduMap/getAssetGUIDByPosition.do?lng="
-		// 			+ e.point.lng + "&lat="
-		// 			+ e.point.lat, false);
-		// 		xhm.setRequestHeader("Content-type",
-		// 			"application/x-www-form-urlencoded");
-		// 		xhm.send();
-		// 		var data = JSON.parse(xhm.responseText);
-		// 		var obj = data.roomInfo;
-		// 		var url = "../../" + data.url;
-		// 		total = data.total;
-		// 		console.log(total);
-		// 		if (total == 1) {
-		// 			var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'> 资产名称 : "
-		// 				+ obj.address
-		// 				+ "</h4>"
-		// 				+ "<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='139' height='104'/>"
-		// 				+ "<p>"
-		// 				+ " 管理分区 : "
-		// 				+ obj.manageRegion
-		// 				+ " "
-		// 				+ " 资产性质 : "
-		// 				+ obj.roomProperty
-		// 				+ " "
-		// 				+ " 资产编号 : "
-		// 				+ obj.num
-		// 				+ " </br>"
-		// 				+ " 面积 : "
-		// 				+ obj.buildArea
-		// 				+ " m<sup>2</sup> "
-		// 				+ " 租金 :"
-		// 				+ obj.hire + " " + "</p>" + "</div>";
-		// 			var infoWindow = new BMap.InfoWindow(content); // 创建信息窗口对象
-		// 			map.openInfoWindow(infoWindow, new BMap.Point(
-		// 				e.point.lng, e.point.lat)); //开启信息窗口
-		// 		} else {
-		// 			console.log(data.list);
-		// 			rows = data.list;
-		// 			div1 = document.getElementById('div1')
-		// 			var tab = "<table border=1 width=700>";
-		// 			for (var i = 0; i < rows.length; i++) {
-		// 				var obj = rows[i];
-		// 				tab += "<tr>";
-		// 				tab += "<td> 资产名称 : " + obj.address
-		// 					+ " </td>";
-		// 				tab += "<td> 管理分区 : " + obj.manageRegion
-		// 					+ " </td>";
-		// 				tab += "<td> 资产性质 : " + obj.roomProperty
-		// 					+ " </td>";
-		// 				tab += "<td> 资产编号 : " + obj.num + " </td>";
-		// 				tab += "<td> 面积 : " + obj.buildArea
-		// 					+ " m<sup>2</sup> </td>";
-		// 				tab += "<td> 租金 :" + obj.hire + " </td>";
-		// 				tab += "<td>"
-		// 					+ "<img style='float:right;margin:4px' id='imgDemo' src=" + url + " width='50' height='30'/>"
-		// 					+ "</td>";
-		// 				tab += "</tr>";
-		// 			}
-		// 			tab += "</table>";
-
-		// 			var content = "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>  资产数量 : "
-		// 				+ data.total
-		// 				+ "</h4>"
-		// 				+ "<p>"
-		// 				+ "  "
-		// 				+ tab + " " + "</p>" + "</div>";
-		// 			var infoWindow = new BMap.InfoWindow(content); // 创建信息窗口对象
-		// 			map.openInfoWindow(infoWindow, new BMap.Point(
-		// 				e.point.lng, e.point.lat));
-		// 		}
-		// 	});
 		map.addOverlay(pointCollection); // 添加Overlay
 
 	}
-
 	//获取覆盖物位置
 	function attribute(e) {
 		var p = e.target;
