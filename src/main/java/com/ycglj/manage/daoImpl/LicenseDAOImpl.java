@@ -21,6 +21,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.collect.Lists;
 import com.ycglj.manage.dao.LicenseDAO;
+import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
 import com.ycglj.manage.daoModel.FileSelfBelong;
@@ -93,8 +94,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			if(startDate!=null&&!startDate.equals("")){
 				startDate="'"+startDate+"'";
-				sql01=sql01+"convert(varchar(10),[criminal_time],120)>"+startDate;
-				sql201=sql201+"convert(varchar(10),[criminal_time],120)>"+startDate;
+				sql01=sql01+"convert(varchar(10),[criminal_time],120)>="+startDate;
+				sql201=sql201+"convert(varchar(10),[criminal_time],120)>="+startDate;
 			}
 			
 			if((startDate!=null&&!startDate.equals(""))&&(endDate!=null&&!endDate.equals(""))){
@@ -104,8 +105,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			if(endDate!=null&&!endDate.equals("")){
 				endDate="'"+endDate+"'";
-				sql01=sql01+"convert(varchar(10),[criminal_time],120)<"+endDate;
-				sql201=sql201+"convert(varchar(10),[criminal_time],120)<"+endDate;
+				sql01=sql01+"convert(varchar(10),[criminal_time],120)<="+endDate;
+				sql201=sql201+"convert(varchar(10),[criminal_time],120)<="+endDate;
 			}
 			sql01=sql01+" group by license )";
 			sql201=sql201+" group by license )";
@@ -126,8 +127,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			if(startDate!=null&&!startDate.equals("")){
 				startDate="'"+startDate+"'";
-				sql01=sql01+"convert(varchar(10),[criminal_time],120)>"+startDate;
-				sql201=sql201+"convert(varchar(10),[criminal_time],120)>"+startDate;
+				sql01=sql01+"convert(varchar(10),[criminal_time],120)>="+startDate;
+				sql201=sql201+"convert(varchar(10),[criminal_time],120)>="+startDate;
 			}
 			
 			if((startDate!=null&&!startDate.equals(""))&&(endDate!=null&&!endDate.equals(""))){
@@ -137,8 +138,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			if(endDate!=null&&!endDate.equals("")){
 				endDate="'"+endDate+"'";
-				sql01=sql01+"convert(varchar(10),[criminal_time],120)<"+endDate;
-				sql201=sql201+"convert(varchar(10),[criminal_time],120)<"+endDate;
+				sql01=sql01+"convert(varchar(10),[criminal_time],120)<="+endDate;
+				sql201=sql201+"convert(varchar(10),[criminal_time],120)<="+endDate;
 			}
 			
 			if((startDate!=null&&!startDate.equals(""))||(endDate!=null&&!endDate.equals(""))){
@@ -691,7 +692,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		
 		Law_Case law_Case=new Law_Case();
 		
-		law_Case.setLimit(100);
+		law_Case.setLimit(1000);
 		law_Case.setOffset(0);
 		law_Case.setNotIn("license");
 		
@@ -794,6 +795,35 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		String license=position.getLicense();
 		
 		return license;
+	}
+
+	@Override
+	public Map getAllCheckPerson(Integer limit, Integer offset, String sort, String order, Map search) {
+		// TODO Auto-generated method stub
+		
+		Check_Person check_Person=new Check_Person();
+		check_Person.setLimit(limit);
+		check_Person.setOffset(offset);
+		check_Person.setSort(sort);
+		check_Person.setOrder(order);
+		check_Person.setNotIn("id");
+		
+		if(search!=null&&!search.isEmpty()&&!search.equals("")){
+			String[] where=TransMapToString.get(search);
+			check_Person.setWhere(where);
+		}
+		
+		List list=SelectExe.get(this.getJdbcTemplate(),check_Person);
+		
+		int total=(int) SelectExe.getCount(this.getJdbcTemplate(),check_Person).get("");
+		
+		Map map=new HashMap<>();
+		
+		map.put("code", "0");
+		map.put("data", list);
+		map.put("count", total);
+		
+		return map;
 	}
 	
 }

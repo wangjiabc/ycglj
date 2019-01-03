@@ -238,12 +238,8 @@
           </form>
           <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
         </div>
-        <ul>
-          <li>
-            <div id="firstpane" class="menu_list">
-            </div>
-          </li>
-        </ul>
+        <div id="firstpane" class="menu_list">
+        </div>
       </div>
     </div>
 
@@ -271,14 +267,99 @@
       FastClick.attach(document.body);
     });
   </script>
-  <script> $(document).ready(function () {
-      // $('ul').append($("li").clone());
-      $("#firstpane .menu_body:eq(0)").show();
+  <script>
+    $(document).ready(function () {
+      var html;
+      $("#name0 .menu_body:eq(0)").show();
       init();
-      setValue();
+      //搜索栏绑定事件
+      $("#searchInput").bind('input propertychange', function () {
+        var val = $(this).val();
+        console.log(val);
+        if (val != "") {
+          $.ajax({
+            type: "get",
+            url: "/ycglj/mobile/user/getAllCheckPerson.do?offset=0&limit=10&search=" + val,
+            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+            dataType: "json",
+            success: function (data) {
+              $('#firstpane').empty();
+              setuserInfo(data);
+            },
+            error: function (e) {
+              console.log(e);
+            }
+          })
+        };
+      });
+    })
+    //界面初始化渲染
+    function init() {
+      $('#position').css("background-color", "#904343");
+      $('#case').css("background-color", "#925f39");
+      $('#echart').css("background-color", "#304c68");
+      $('#b4').css("background-color", "#77a3ad");
+      $('#echart').click(function () {
+        window.location.href = "echart.html";
+      });
+      $.ajax({
+        type: "get",
+        url: "/ycglj/mobile/user/getAllCheckPerson.do?offset=0&limit=30",
+        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+        dataType: "json",
+        success: function (data) {
+          setuserInfo(data);
+        },
+        error: function (e) {
+          console.log(e);
+        }
+      });
+    }
+    //设置值
+    function setValue(data, index) {
+      $('#name' + index + '').text(data.data[index].name);
+      $('#unit' + index + '').text(data.data[index].unit);
+      $('#department' + index + '').text(data.data[index].department);
+      $('#duty' + index + '').text(data.data[index].duty);
+      $('#phone' + index + '').text(data.data[index].phone);
+      $('#card_number' + index + '').text(data.data[index].card_number);
+    }
+    //界面渲染
+    function setuserInfo(data) {
+    	console.log(data);
+      for (let index = 0; index < data.data.length; index++) {
+        html = '<div class="weui-flex">' +
+          '<div id="name' + index + '" class="weui-flex__item">赵晓丹</div>' +
+          '<i class="icon icon-74"></i></div>' +
+          '<div id="toggle' + index + '" style="display:none;" class="menu_body">' +
+          '<div class="weui-cell">' +
+          '  <div class="weui-cell__bd"><p>单位</p></div>' +
+          '<div id="unit' + index + '" class="weui-cell__ft">null</div>' +
+          '</div>' +
+          '<div class="weui-cell">' +
+          '  <div class="weui-cell__bd"><p>部门</p></div>' +
+          '<div id="department' + index + '" class="weui-cell__ft">null</div>' +
+          '</div>' +
+          '<div class="weui-cell">' +
+          '  <div class="weui-cell__bd"><p>职务</p></div>' +
+          '<div id="duty' + index + '" class="weui-cell__ft">null</div>' +
+          '</div>' +
+          '<div class="weui-cell">' +
+          '  <div class="weui-cell__bd"><p>电话</p></div>' +
+          '<a id="phone' + index + ' "href="tel:' + data.data[index].phone + '">' + data.data[index].phone + '</a>'
+        '<div class="weui-cell">' +
+          '  <div class="weui-cell__bd"><p>执法证编号</p></div>' +
+          '<div id="card_number' + index + '" class="weui-cell__ft">null</div>' +
+          '</div>'
+        '</div>'
+        $('.menu_list').append(html);
+        setValue(data, index);
+        // $("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
 
-      $("#firstpane div.weui-flex").click(function () {
-        $("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
+      }
+      $("div.weui-flex").click(function () {
+        $(this).next('div.menu_body').slideToggle(300);
+        // $("#toggle" + index).slideToggle(300).siblings("#toggle" + index).slideUp("slow");
         if ($(this).hasClass('current')) {
           $(this).removeClass('current');
           $(this).children('i').removeClass('icon-74').addClass('icon-35');
@@ -288,72 +369,9 @@
           $(this).children('i').removeClass('icon-35').addClass('icon-74');
           $(this).siblings().find('i').removeClass('icon-74').addClass('icon-35');
         }
-
-      });
-    });
-
-    $('#position').css("background-color", "#904343");
-    $('#case').css("background-color", "#925f39");
-    $('#echart').css("background-color", "#304c68");
-    $('#b4').css("background-color", "#77a3ad");
-    $('#echart').click(function () {
-      window.location.href = "echart.html";
-    });
-    function init() {
-      var html = '<div class="weui-flex current">' +
-        '<div class="weui-flex__item">赵晓丹</div>' +
-        '<i class="icon icon-74"></i></div>' +
-        '<div style="display:block weui-cells" class="menu_body">' +
-        '<div class="weui-cell">' +
-        '  <div class="weui-cell__bd"><p>姓名</p></div>' +
-        '<div name="name" id="name" class="weui-cell__ft">null</div>' +
-        '</div>' +
-        '<div class="weui-cell">' +
-        '  <div class="weui-cell__bd"><p>单位</p></div>' +
-        '<div id="unit" class="weui-cell__ft">null</div>' +
-        '</div>' +
-        '<div class="weui-cell">' +
-        '  <div class="weui-cell__bd"><p>部门</p></div>' +
-        '<div id="department" class="weui-cell__ft">null</div>' +
-        '</div>' +
-        '<div class="weui-cell">' +
-        '  <div class="weui-cell__bd"><p>职务</p></div>' +
-        '<div id="duty" class="weui-cell__ft">null</div>' +
-        '</div>' +
-        '<div class="weui-cell">' +
-        '  <div class="weui-cell__bd"><p>电话</p></div>' +
-        '<div id="phone" class="weui-cell__ft">null</div>' +
-        '</div>' +
-        '<div class="weui-cell">' +
-        '  <div class="weui-cell__bd"><p>执法证编号</p></div>' +
-        '<div id="liscence" class="weui-cell__ft">null</div>' +
-        '</div>'
-      $('.menu_list').append(html);
-      $('div[name]').text('asdfasdfasdfsdf')
-    }
-    function setValue() {
-      $.ajax({
-        type: "get",
-        url: "",
-        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-        data: {},
-        dataType: "json",
-        success: function (data) {
-          $('#user_name').text(data.data[0].name);
-          $('#uesr_num').text(data.data[0].phone);
-          $('#user_idnum').text(data.data[0].id_number);
-          $('#user_liscence').text(data.data[0].license);
-          $('#user_address').text(data.data[0].address);
-          $('#order_time').text(data.data[0].up_date);
-        },
-        error: function (e) {
-          console.log(e);
-        }
       });
     }
-
   </script>
-
 </body>
 
 </html>

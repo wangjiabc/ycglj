@@ -3,6 +3,8 @@ package com.ycglj.manage.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.ycglj.manage.daoSQL.annotations.SQLString;
+
 public class Users implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
@@ -55,12 +57,11 @@ public class Users implements Serializable{
     
     private Date upTime;
 
-    private String Charter;
+   	private String department;
 
-    private String IDNo;
-    
-    private String hirePhone;
+	private String duty;
 
+	private String card_number;
     
     public Integer getCampusId() {
 		return campusId;
@@ -267,29 +268,30 @@ public class Users implements Serializable{
 		this.address = address;
 	}
 
-	public String getCharter() {
-		return Charter;
+	public String getDepartment() {
+		return department;
 	}
 
-	public void setCharter(String Charter) {
-		this.Charter = Charter;
+	public void setDepartment(String department) {
+		this.department = department;
 	}
 
-	public String getIDNo() {
-		return IDNo;
+	public String getDuty() {
+		return duty;
 	}
 
-	public void setIDNo(String iDNo) {
-		IDNo = iDNo;
+	public void setDuty(String duty) {
+		this.duty = duty;
 	}
 
-	public String getHirePhone() {
-		return hirePhone;
+	public String getCard_number() {
+		return card_number;
 	}
 
-	public void setHirePhone(String hirePhone) {
-		this.hirePhone = hirePhone;
+	public void setCard_number(String card_number) {
+		this.card_number = card_number;
 	}
+
 
 
 

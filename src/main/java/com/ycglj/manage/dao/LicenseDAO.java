@@ -39,4 +39,6 @@ public interface LicenseDAO {
 	public Map getAllCrimalRecordJoin(Integer limit, Integer offset, String sort,String order,Map search);
 	
 	public String findRoomInfoPositionByLatLng(Double lat, Double lng);
+	
+	public Map getAllCheckPerson(Integer limit, Integer offset, String sort,String order,Map search);
 }

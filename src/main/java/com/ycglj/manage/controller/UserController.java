@@ -29,6 +29,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
@@ -261,8 +262,8 @@ public class UserController {
 					"尊敬的零售户"+userName+"您的许可证"+license+"审核信息如下:", "审核通过", time, "",
 					"", "", "");
 		}else{
-			i=wechatSendMessageController.sendMessage(openId, //"b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw", 
-					"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+			i=wechatSendMessageController.sendMessage(openId, "b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw", 
+					//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
 					"申请驳回通知",
 					"http://lzgfgs.com/ycglj/mobile/asset/",
 					"许可证审核通知:", userName, time, "未通过",
@@ -382,7 +383,7 @@ public class UserController {
 	
 	@RequestMapping("/getPreMessage")
 	public @ResponseBody Map getPreMessage(@RequestParam Integer limit,@RequestParam Integer page,
-			@RequestParam Integer time,String sort,String order,
+			String sort,String order,
 			String search){
 		
 		if(sort!=null&&!sort.equals("")){
@@ -400,39 +401,8 @@ public class UserController {
 			order="desc";
 		}
 		
-		Calendar cal = Calendar.getInstance();  
-        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);  
-        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
-        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-		
-        if(time==2){
-        	cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        }
-        
-        String startTime = null;
-		
-		startTime=sdf.format(cal.getTime());
-        
-		cal = Calendar.getInstance();  
-
-        String endTime = null;
-		
-		endTime=sdf.format(cal.getTime());
-		
-		System.out.println("startTime="+startTime+"   endTime="+endTime);
-		
 		Map where=new HashMap<>();
-		
-		if(time==1){
-			where.put("convert(varchar(11),"+Singleton.ROOMDATABASE+
-					".[dbo].[PreMessage].OptDate ,120 ) = ", endTime);
-		}else if(time>1){
-			where.put("convert(varchar(11),"+Singleton.ROOMDATABASE+
-					".[dbo].[PreMessage].OptDate ,120 ) >= ", startTime);
-			where.put("convert(varchar(11),"+Singleton.ROOMDATABASE+
-					".[dbo].[PreMessage].OptDate ,120 ) <= ", endTime);
-		}
-		
+				
 		if(search!=null&&!search.equals("")){
 			where.put(Singleton.ROOMDATABASE+
 					".[dbo].[PreMessage].PhoneWho like ","%"+search+"%");
@@ -486,14 +456,81 @@ public class UserController {
 		
         userlist=userService.getAllFullUser(campusId,limit,offset,sort,order,place,search);
 
+        Iterator<com.ycglj.manage.model.Users> iterator=userlist.iterator();
+        
+        int i=0;
+        
+        while (iterator.hasNext()) {
+        	
+        	com.ycglj.manage.model.Users users=iterator.next();
+        	
+        	if (users.getPlace()>0) {
+				
+        		Map serarchMap=new HashMap<>();
+        		
+        		serarchMap.put("phone=", users.getPhone());
+        		
+        		List<Check_Person> list=(List) licenseDAO.getAllCheckPerson(1, 0, "id", "", serarchMap).get("data");
+        		
+        		try{
+        			
+        			Check_Person check_Person=list.get(0);
+        			if(check_Person!=null){
+        				users.setName(check_Person.getName());
+        				users.setDepartment(check_Person.getDepartment());
+        				users.setDuty(check_Person.getDuty());
+        				users.setCard_number(check_Person.getCard_number());
+        				userlist.set(i, users);
+        			}
+        			
+        		}catch (Exception e) {
+					// TODO: handle exception
+        			e.printStackTrace();
+				}
+        		
+			}
+			
+        	i++;
+        	
+		}
+        
 		map.put("code", "0");
 		
 		map.put("data", userlist);
 		
-		map.put("count", userService.getUserFullCount(campusId,search));
+		map.put("count", userService.getUserFullCount(campusId,place,search));
 		
 		return map;
 	}
+	
+	@RequestMapping("/getAllCheckPerson")
+	public @ResponseBody Map<String, Object> getAllCheckPerson(@RequestParam Integer limit,
+			Integer page,String sort,String order,String search,HttpServletRequest request){
+		
+		if(sort!=null&&!sort.equals("")){
+			
+		}else{
+			sort="id";
+		}
+		
+		if(order!=null&&order.equals("")){
+			
+		}else{
+			order="asc";
+		}
+		
+		Map searchMap=new HashMap<>();
+		
+		if(search!=null&&!search.equals("")){
+			searchMap.put(" name like ", "%"+search+"%");
+		}
+		
+		int offset=(page-1)*limit;
+		
+		return licenseDAO.getAllCheckPerson(limit, offset, sort, order, searchMap);
+	
+	}
+	
 	
 	@RequestMapping(value="/upAtionFormatter")
 	public @ResponseBody Integer upAtionFormatter(HttpServletRequest request,@RequestParam String openId,

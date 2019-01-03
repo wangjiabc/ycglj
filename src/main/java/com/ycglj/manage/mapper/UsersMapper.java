@@ -61,7 +61,7 @@ public interface UsersMapper {
 	
 	Integer getUserCount(@Param(value="campusAdmin")String campusAdmin,@Param(value="campusId")Integer campusId,@Param(value="search")String search);
 	
-	Integer getUserFullCount(@Param(value="campusId")Integer campusId,@Param(value="search")String search);
+	Integer getUserFullCount(@Param(value="campusId")Integer campusId,@Param(value="place")Integer place,@Param(value="search")String search);
 
 	Integer setUserAdmin(@Param(value="phone")String phone, @Param(value="campusId")Integer campusId);
 

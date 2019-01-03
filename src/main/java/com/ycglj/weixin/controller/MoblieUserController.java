@@ -241,6 +241,14 @@ public class MoblieUserController {
 
 			map.put("fileBytes", fileBytes);
 
+			Map lawSearchMap=new HashMap<>();
+			
+			lawSearchMap.put("[Crimal_Record].license = ",users_License_Position_Join.getLicense());
+			
+			List lawCases=(List) licenseDAO.getAllCrimalRecordJoin(1000, 0, "criminal_time", "desc",lawSearchMap).get("data");
+			
+			map.put("lawCases", lawCases);
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -515,4 +523,31 @@ public class MoblieUserController {
 
 	}
 	
+	
+	@RequestMapping("/getAllCheckPerson")
+	public @ResponseBody Map<String, Object> getAllCheckPerson(@RequestParam Integer limit,@RequestParam Integer offset,
+			String sort,String order,String search,HttpServletRequest request){
+		
+		if(sort!=null&&!sort.equals("")){
+			
+		}else{
+			sort="id";
+		}
+		
+		if(order!=null&&order.equals("")){
+			
+		}else{
+			order="asc";
+		}
+		
+		Map searchMap=new HashMap<>();
+		
+		if(search!=null&&!search.equals("")){
+			searchMap.put(" name like ", "%"+search+"%");
+		}
+		
+		return licenseDAO.getAllCheckPerson(limit, offset, sort, order, searchMap);
+		
+		
+	}
 }

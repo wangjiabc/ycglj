@@ -314,6 +314,9 @@
 				usersinfo.name like
 				#{search,jdbcType=VARCHAR} or usersinfo.address like #{search,jdbcType=VARCHAR})
 			</if>
+			<if test="place != null and place !='' ">
+				and place >= #{place,jdbcType=INTEGER}
+			</if>
 		</where>
 	</select>
 

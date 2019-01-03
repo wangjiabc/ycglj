@@ -9,15 +9,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="../layui/css/layui.css" media="all">
 </head>
+<style>
+    .layui-inline{
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+</style>
 
 <body>
+  <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-top: 15px;">
+    <div class="layui-form-item">
     <div class="layui-inline">
         <input type="text" id="search" lay-verify="search" autocomplete="off" placeholder="请输入微信昵称" class="layui-input">
     </div>
     <div class="layui-inline">
+        <label class="layui-form-label">用户类型</label>
+        <div class="layui-input-block">
+          <select lay-filter="type" name="status">
+            <option value="0">全部</option>
+            <option value="1">通过认证</option>
+          </select>
+        </div>
+      </div>
+    <div class="layui-inline">
         <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="search">
             <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
         </button>
+    </div>
+    </div>
     </div>
     <table class="layui-hide" id="test" lay-filter="test"></table>
     <script type="text/html" id="barDemo">
@@ -49,8 +68,10 @@
                     , { field: 'headImgUrl', title: '微信头像', templet: '#wechatHead' }
                     , { field: 'nickname', edit: 'text', title: '微信昵称' }
                     , { field: 'phone', edit: 'text', title: '电话' }
-                    , { field: 'city', edit: 'text', title: '微信所在地' }
-                    , { field: 'openId', title: 'openId' }
+                    , { field: 'name', edit: 'text', title: '姓名' }
+                    , { field: 'department', title: '部门' }
+                    , { field: 'duty', title: '职务' }
+                    , { field: 'card_number', title: '执法证编号' }
                     , { field: 'subscribeTime', title: '关注时间', align: 'center', templet: function (d) { return util.toDateString(d.subscribeTime, 'yyyy-MM-dd HH:mm') } }
                     , { title: '操作', toolbar: '#barDemo' }
                 ]]
@@ -104,8 +125,20 @@
                     url: '/ycglj/user/getAllWeixinUser.do?search='+search,
                 });
             });
-
+            var type = '';
+            //监听下拉框
+            layui.form.on('select(type)', function (data) {
+             type = data.value;
+             var search = $('#search').val();
+             table.reload('test', {
+             	url: '/ycglj/user/getAllWeixinUser.do?place='+type+'&search='+search,
+             });
+           })
+           
         })
+       
+
+      
         function setStatus(openId, place) {
 
         }

@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
 	
 
 
-	public Integer getUserFullCount(Integer campusId,String search) {
-		return usersMapper.getUserFullCount(campusId,search);
+	public Integer getUserFullCount(Integer campusId,Integer place,String search) {
+		return usersMapper.getUserFullCount(campusId,place,search);
 	}
 
 

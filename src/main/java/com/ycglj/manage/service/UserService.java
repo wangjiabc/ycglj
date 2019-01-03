@@ -28,7 +28,7 @@ public interface UserService {
 	
 	Integer getUserCount(String campusAdmin,Integer campusId,String search);
 	
-	Integer getUserFullCount(Integer campusId,String search);
+	Integer getUserFullCount(Integer campusId,Integer place,String search);
 	
 	Integer getOpenId(Integer campusId,String openId);
 	

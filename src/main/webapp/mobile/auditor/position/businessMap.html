@@ -100,6 +100,7 @@
 <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 <script type="text/javascript">
 	querySearch();
+	keyboard();
 	//百度地图API功能
 	var top_left_control = new BMap.ScaleControl({ anchor: BMAP_ANCHOR_TOP_LEFT });// 左上角，添加比例尺
 	var top_left_navigation = new BMap.NavigationControl();  //左上角，添加默认缩放平移控件
@@ -259,20 +260,6 @@
 		location.href = "../case/case_entry.html?longitude=" + lng + "&latitude=" + lat;
 	})
 	map.addOverlay(marker);    //增加点
-
-
-	$.ajax({
-		url: "../../../baiduMap/getAllLicensePositionJoin.do",
-		async: false,
-		type: "GET",
-		success: function (data) {
-
-		}, error: function (e) {
-
-		}
-	})
-
-
 	addDeck("", startTime, endTime, yit, any);
 
 	//切换样式
@@ -318,7 +305,15 @@
 		var r = window.location.search.substr(1).match(reg);
 		if (r != null) return unescape(r[2]); return null;
 	}
-
+	function keyboard() {
+		var screenHeight;
+		if (window.innerHeight) {
+			screenHeight = window.innerHeight;
+		} else if ((document.body) && (document.body.clientHeight)) {
+			screenHeight = document.body.clientHeight;
+		}
+		$("html,body").height(screenHeight);
+	}
 
 	function addDeck(name, startTime, endTime, yit, any) {
 		var condition = "?name=" + name + "&startTime=" + startTime + "&endTime=" + endTime + "&yit=" + yit + "&any=" + any;
@@ -336,9 +331,13 @@
 		map.addControl(myZoomCtrl);
 
 	}
-	
+
 	function setColor(ticket) {
 		var points = []; // 添加海量点数据
+		var points1 = [];
+		var points2 = [];
+		var pointCollection, pointCollection1, pointCollection2;
+
 		//默认颜色
 		var options1 = {
 			size: BMAP_POINT_SIZE_SMALL,
@@ -355,49 +354,93 @@
 		var options3 = {
 			size: BMAP_POINT_SIZE_SMALL,
 			shape: BMAP_POINT_SHAPE_STAR,
-			color: '#c62828'
+			color: '#FF9933'
 		}
-		//案由和业态并存颜色
+		//两个以上颜色
 		var options4 = {
 			size: BMAP_POINT_SIZE_SMALL,
 			shape: BMAP_POINT_SHAPE_STAR,
-			color: '#f4511e'
+			color: '#FF0000'
 		}
 		for (var i = 0; i < ticket.length; i++) {
-			console.log(ticket[i]);
-			points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
-			if (yit.length > 0 && any.length == 0) {
-				var pointCollection = new BMap.PointCollection(points, options2); // 初始化PointCollection
+			if (ticket[i].criminal_number == 0) {
+				points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+				pointCollection = new BMap.PointCollection(points, options1);
+			} else if (ticket[i].criminal_number == 1) {
+				points1.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+				pointCollection1 = new BMap.PointCollection(points1, options3);
+			} else if (ticket[i].criminal_number > 1) {
+				points2.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+				pointCollection2 = new BMap.PointCollection(points2, options4);
 			}
-			else if (any.length > 0 && yit.length == 0) {
-				var pointCollection = new BMap.PointCollection(points, options3); // 初始化PointCollection
-			}
-			else if (any.length > 0 && yit.length > 0) {
-				var pointCollection = new BMap.PointCollection(points, options4); // 初始化PointCollection
-			} else {
-				var pointCollection = new BMap.PointCollection(points, options1); // 初始化PointCollection
-			}
+			// if (yit.length > 0 && any.length == 0) {
+			// 	var pointCollection = new BMap.PointCollection(points, options2); // 初始化PointCollection
+			// }
+			// else if (any.length > 0 && yit.length == 0) {
+			// 	var pointCollection = new BMap.PointCollection(points, options3); // 初始化PointCollection
+			// }
+			// else if (any.length > 0 && yit.length > 0) {
+			// 	var pointCollection = new BMap.PointCollection(points, options4); // 初始化PointCollection
+			// } else {
+			// 	var pointCollection = new BMap.PointCollection(points, options1); // 初始化PointCollection
+			// }
 			//自定义属性存放license
 			// pointCollection.customData = { license: ticket[i].license };
 
 			// console.log("数据:" + pointCollection.customData.license);
 		}
-		pointCollection.addEventListener('click', function (e) {
-			// alert(e.point.lng + " " + e.point.lat + "  " + e.target.customData.license)
+		if (pointCollection != null) {
 
-			$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
-				lng: e.point.lng,
-				lat: e.point.lat
-			}, function (text) {
-				var data = JSON.parse(text);
-				location.href = "../case/caseDetail.html?license=" + data.license + "&longitude=" + e.point.lng + "&latitude=" + e.point.lat;
-			});
+			pointCollection.addEventListener('click', function (e) {
+				$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
+					lng: e.point.lng,
+					lat: e.point.lat
+				}, function (text) {
+					var data = JSON.parse(text);
+					location.href = "../case/caseDetail.html?license="
+						+ data.license + "&longitude=" + e.point.lng
+						+ "&latitude=" + e.point.lat;
+				});
 
-		})
+			})
+		}
+
+
+		if (pointCollection1 != null) {
+			pointCollection1.addEventListener('click', function (e) {
+				$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
+					lng: e.point.lng,
+					lat: e.point.lat
+				}, function (text) {
+					var data = JSON.parse(text);
+					location.href = "../case/caseDetail.html?license="
+						+ data.license + "&longitude=" + e.point.lng
+						+ "&latitude=" + e.point.lat;
+				});
+			})
+		}
+
+
+		if (pointCollection2 != null) {
+			pointCollection2.addEventListener('click', function (e) {
+				$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
+					lng: e.point.lng,
+					lat: e.point.lat
+				}, function (text) {
+					var data = JSON.parse(text);
+					location.href = "../case/caseDetail.html?license="
+						+ data.license + "&longitude=" + e.point.lng
+						+ "&latitude=" + e.point.lat;
+				});
+			})
+		}
 
 		map.addOverlay(pointCollection); // 添加Overlay
+		map.addOverlay(pointCollection1); // 添加Overlay
+		map.addOverlay(pointCollection2); // 添加Overlay
 
 	}
+
 	//获取覆盖物位置
 	function attribute(e) {
 		var p = e.target;

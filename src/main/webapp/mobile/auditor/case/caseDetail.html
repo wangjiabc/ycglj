@@ -12,6 +12,7 @@
 	<link rel="stylesheet" href="css/weui.css" />
 	<link rel="stylesheet" href="css/example.css" />
 	<link rel="stylesheet" href="css/jquery-weui.css">
+	<link rel="stylesheet" href="../../asset/css/icon.css">
 	<style type="text/css">
 		body,
 		html,
@@ -20,6 +21,71 @@
 			height: 70%;
 			margin: 0;
 			font-family: "微软雅黑";
+		}
+
+		.current {
+			opacity: 0.4;
+		}
+
+		.weui-flex {
+			padding: 10px;
+		}
+
+		.page-bd li {
+			background-color: #fff;
+			border-radius: 2px;
+			cursor: pointer;
+			margin: 10px 0;
+			overflow: hidden;
+			vertical-align: bottom;
+			display: block;
+		}
+
+		.page-bd li.js-show .weui-flex {
+			opacity: 0.4;
+		}
+
+		.page-bd li.js-show .page-category {
+			height: auto;
+		}
+
+		.page-bd li.js-show .page-category-content {
+			opacity: 1;
+			transform: translateY(0px);
+		}
+
+		.page-bd li:first-child {
+			margin-top: 0;
+		}
+
+		.page-bd .page-category {
+			height: 0;
+			overflow: hidden;
+		}
+
+		.page-bd .page-category-content {
+			opacity: 0;
+			transform: translateY(-50%);
+			transition: 0.3s;
+		}
+
+		.page-bd .weui-flex {
+
+			align-items: center;
+			padding: 10px;
+			transition: all 0.3s ease 0s;
+			display: -webkit-flex;
+			display: -webkit-box;
+			display: flex;
+		}
+
+		.page-bd .weui-flex--item {
+			-webkit-flex: 1 1 0;
+			flex: 1 1 0;
+		}
+
+		.page-bd .weui-cells {
+			margin-top: 0;
 		}
 	</style>
 
@@ -70,10 +136,16 @@
 			</div>
 		</div>
 
-		<div class="weui-cells weui-cells_form">
-			<div id="crimal" class="weui-cell weui-cell_access">
+		<div class="weui-cells weui-cells_form menu_list">
+			<!-- <div id="crimal" class="weui-cell weui-cell_access"> -->
+			<div class="weui-flex current">
+				<div class="weui-flex__item">案由</div>
+				<i class="icon icon-74"></i>
 			</div>
+
+			<!-- </div> -->
 		</div>
+
 
 		<div class="weui-cells weui-cells_form">
 			<div class="weui-cell weui-cell_access" onclick="clickEvent();">
@@ -176,19 +248,33 @@
 		$('#address').html(data.roomInfo.address);
 		$('#name').html(data.roomInfo.name);
 		if (data.crimal != null && data.crimal != "") {
-			var hidden1 = document.createElement("div");
-			hidden1.setAttribute("class", "weui-cell__bd");
-			var span1 = document.createElement("span");
-			span1.setAttribute("style", "vertical-align: middle");
-			span1.innerHTML = "案由";
-			var span2 = document.createElement("span");
-			span2.setAttribute("style", "margin-left: 25px;");
-			span2.innerHTML = "<font color='#FF0000'>" + data.crimal + "</font>";
-			hidden1.appendChild(span1);
-			hidden1.appendChild(span2);
-			$("#crimal").append(hidden1);
-			var hidden2 = document.createElement("div");
-			$("#crimal").append(hidden2);
+			for (let index = 0; index < data.lawCases.length; index++) {
+				var html = ' <div style="display:block weui-cells" class="weui-panel menu_body">' +
+					'<div class="weui-panel__bd">' +
+					'<div class="weui-media-box weui-media-box_text">' +
+					'<h4 class="weui-media-box__title">' + data.lawCases[index].name + '</h4>' +
+					'<p class="weui-media-box__desc">' + data.lawCases[index].criminal_content + '</p>' +
+					'<ul class="weui-media-box__info">' +
+					'<li class="weui-media-box__info__meta">' + actionTime(data.lawCases[index].criminal_time) + '</li>' +
+					'</ul>' +
+					'</div>' +
+					'</div>'
+			$('.menu_list').append(html);
+			}
+
+			// var hidden1 = document.createElement("div");
+			// hidden1.setAttribute("class", "weui-cell__bd");
+			// var span1 = document.createElement("span");
+			// span1.setAttribute("style", "vertical-align: middle");
+			// span1.innerHTML = "案由";
+			// var span2 = document.createElement("span");
+			// span2.setAttribute("style", "margin-left: 25px;");
+			// span2.innerHTML = "<font color='#FF0000'>" + data.crimal + "</font>";
+			// hidden1.appendChild(span1);
+			// hidden1.appendChild(span2);
+			// $("#crimal").append(hidden1);
+			// var hidden2 = document.createElement("div");
+			// $("#crimal").append(hidden2);
 		} else {
 			var hidden = document.createElement("div");
 			hidden.setAttribute("class", "weui-cell__bd");
@@ -202,6 +288,19 @@
 			hidden.appendChild(span2);
 			$("#crimal").append(hidden);
 		}
+		$("div.weui-flex").click(function () {
+			$("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
+			if ($(this).hasClass('current')) {
+				$(this).removeClass('current');
+				$(this).children('i').removeClass('icon-74').addClass('icon-35');
+			} else {
+				$(this).siblings().removeClass('current');
+				$(this).addClass('current');
+				$(this).children('i').removeClass('icon-35').addClass('icon-74');
+				$(this).siblings().find('i').removeClass('icon-74').addClass('icon-35');
+			}
+
+		});
 		if (data.roomInfo.phone != null && data.roomInfo.phone != "") {
 			var phone = document.createElement("a");
 			phone.setAttribute("href", "tel:" + data.roomInfo.phone);
