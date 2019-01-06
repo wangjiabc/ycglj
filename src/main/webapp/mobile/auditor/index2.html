@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
   <link rel="stylesheet" href="../asset/css/icon.css">
   <link rel="stylesheet" href="../asset/css/weuix.css">
+  <link rel="stylesheet" href="layui/css/layui.css" media="all">
   <script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
 
   <script type="text/javascript">
@@ -224,6 +225,43 @@
         </div>
       </div>
       <div id="tab2" class="weui-tab__bd-item">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>姓名</p>
+          </div>
+          <div id="name" class="weui-cell__ft">null</div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>单位</p>
+          </div>
+          <div id="unit" class="weui-cell__ft">null</div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>部门</p>
+          </div>
+          <div id="department" class="weui-cell__ft">null</div>
+        </div>
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>职务</p>
+          </div>
+          <div id="duty" class="weui-cell__ft">null</div>
+        </div>
+        
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+              <p>手机号</p>
+            </div>
+            <a id="phone" class="weui-cell__ft">null</a>
+          </div>
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>执法证编号</p>
+          </div>
+          <div id="card_number" class="weui-cell__ft">null</div>
+        </div>
         <div class="weui-search-bar" id="searchBar">
           <form class="weui-search-bar__form">
             <div class="weui-search-bar__box">
@@ -238,6 +276,7 @@
           </form>
           <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
         </div>
+        <table class="layui-hide" id="test" lay-filter="test"></table>
         <div id="firstpane" class="menu_list">
         </div>
       </div>
@@ -259,6 +298,7 @@
       </a>
     </div>
   </div>
+  <script type="text/javascript" src="layui/layui.js"></script>
   <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
   <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.js"></script>
@@ -268,6 +308,106 @@
     });
   </script>
   <script>
+  	
+  $.ajax({
+      type: "get",
+      url: "/ycglj/mobile/user/getCheckPerson.do?",
+      contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+      data: {},
+      dataType: "json",
+      success: function (data) {
+    	  $('#name').text(data.name);
+          $('#unit').text(data.unit);
+          $('#department').text(data.department);
+          $('#duty').text(data.duty);
+          $('#card_number').text(data.card_number);
+          $('#phone').text(data.phone).attr('href','tel:'+data.phone);
+      }
+  });
+  
+    $(document).ready(function () {
+      init();
+      layui.use(['table', 'laytpl', 'layer', 'util'], function () {
+        var table = layui.table,
+          layer = layui.layer,
+          laytpl = layui.laytpl,
+          util = layui.util;
+        table.render({
+          elem: '#test'
+          , url: '/ycglj/mobile/user/getAllCheckPerson.do?'
+          , title: '稽查人员信息表'
+          , page: true
+          , cols: [[
+            { field: 'id', title: 'ID', sort: true }
+            , { field: 'name', title: '姓名', edit: 'text' }
+            , { field: 'unit', edit: 'text', title: '单位' }
+            , { field: 'department', edit: 'text', title: '部门' }
+            , { field: 'duty', edit: 'text', title: '职务' }
+            , { field: 'phone', title: '手机号', edit: 'text' }
+            , { field: 'card_number', title: '执法证编号', edit: 'text' }
+          ]]
+        });
+        //监听行单击事件
+        table.on('row(test)', function (obj) {
+          console.log(obj.tr) //得到当前行元素对象
+          console.log(obj.data) //得到当前行数据
+          console.log(obj.data.duty) //得到当前行数据
+          $('#name').text(obj.data.name);
+          $('#unit').text(obj.data.unit);
+          $('#department').text(obj.data.department);
+          $('#duty').text(obj.data.duty);
+          $('#card_number').text(obj.data.card_number);
+          $('#phone').text(obj.data.phone).attr('href','tel:'+obj.data.phone);
+          //obj.del(); //删除当前行
+          //obj.update(fields) //修改当前行数据
+        });
+        //搜索栏绑定事件
+        $("#searchInput").bind('input propertychange', function () {
+          var val = $(this).val();
+          console.log(val);
+          $.ajax({
+            type: "get",
+            url: "/ycglj/mobile/user/getAllCheckPerson.do?offset=0&limit=10&search=" + val,
+            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+            dataType: "json",
+            success: function (data) {
+              //执行重载
+              table.reload('test', {
+                where: data,
+                url: '/ycglj/mobile/user/getAllCheckPerson.do?search=' + val,
+              });
+              $('#searchCancel').click(function () {
+                table.reload('test', {
+                  where: data,
+                  url: '/ycglj/mobile/user/getAllCheckPerson.do?',
+                });
+              })
+            },
+            error: function (e) {
+              console.log(e);
+            }
+          })
+        });
+
+
+      })
+    })
+
+    //界面初始化渲染
+    function init() {
+      $('#position').css("background-color", "#904343");
+      $('#case').css("background-color", "#925f39");
+      $('#echart').css("background-color", "#304c68");
+      $('#b4').css("background-color", "#77a3ad");
+      $('#echart').click(function () {
+        window.location.href = "echart.html";
+      });
+    }
+    function setuserInfo(data) {
+
+    }
+  </script>
+  <!-- <script>
     $(document).ready(function () {
       var html;
       $("#name0 .menu_body:eq(0)").show();
@@ -326,7 +466,7 @@
     }
     //界面渲染
     function setuserInfo(data) {
-    	console.log(data);
+      console.log(data);
       for (let index = 0; index < data.data.length; index++) {
         html = '<div class="weui-flex">' +
           '<div id="name' + index + '" class="weui-flex__item">赵晓丹</div>' +
@@ -371,7 +511,7 @@
         }
       });
     }
-  </script>
+  </script> -->
 </body>
 
 </html>

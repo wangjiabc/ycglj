@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
 import com.ycglj.manage.daoModel.FileSelfBelong;
@@ -35,6 +36,7 @@ import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 import com.ycglj.manage.service.PhotoService;
@@ -525,7 +527,7 @@ public class MoblieUserController {
 	
 	
 	@RequestMapping("/getAllCheckPerson")
-	public @ResponseBody Map<String, Object> getAllCheckPerson(@RequestParam Integer limit,@RequestParam Integer offset,
+	public @ResponseBody Map<String, Object> getAllCheckPerson(@RequestParam Integer limit,@RequestParam Integer page,
 			String sort,String order,String search,HttpServletRequest request){
 		
 		if(sort!=null&&!sort.equals("")){
@@ -546,8 +548,43 @@ public class MoblieUserController {
 			searchMap.put(" name like ", "%"+search+"%");
 		}
 		
+		int offset=(page-1)*limit;
+		
 		return licenseDAO.getAllCheckPerson(limit, offset, sort, order, searchMap);
 		
 		
 	}
+	
+	@RequestMapping("/getCheckPerson")
+	public @ResponseBody Check_Person getCheckPerson(HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		WeiXin_User weiXin_User=orderDao.selectWeiXinUser(openId);
+		
+		Check_Person check_Person=new Check_Person();
+		
+		if (weiXin_User.getPhone() != null && !weiXin_User.getPhone().equals("")) {
+			
+			Map search = new HashMap<>();
+
+			search.put("phone=", weiXin_User.getPhone());
+
+			Map map = licenseDAO.getAllCheckPerson(1, 0, "id", "asc", search);
+
+			List list=(List) map.get("data");
+			
+			try{
+				check_Person=(Check_Person) list.get(0);
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		
+		return check_Person;
+	}
+	
+	
 }

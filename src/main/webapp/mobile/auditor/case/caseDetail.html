@@ -140,6 +140,7 @@
 			<!-- <div id="crimal" class="weui-cell weui-cell_access"> -->
 			<div class="weui-flex current">
 				<div class="weui-flex__item">案由</div>
+				<p style="display:none">暂无</p>
 				<i class="icon icon-74"></i>
 			</div>
 
@@ -249,47 +250,35 @@
 		$('#name').html(data.roomInfo.name);
 		if (data.crimal != null && data.crimal != "") {
 			for (let index = 0; index < data.lawCases.length; index++) {
-				var html = ' <div style="display:block weui-cells" class="weui-panel menu_body">' +
+				var html = ' <div style="display:none weui-cells" class="weui-panel menu_body">' +
 					'<div class="weui-panel__bd">' +
 					'<div class="weui-media-box weui-media-box_text">' +
-					'<h4 class="weui-media-box__title">' + data.lawCases[index].name + '</h4>' +
-					'<p class="weui-media-box__desc">' + data.lawCases[index].criminal_content + '</p>' +
+					'<h4 class="weui-media-box__title">' + "录入人 : "+data.lawCases[index].name + '</h4>' +
+					'<p class="weui-media-box__desc" style="color:red">' + data.lawCases[index].criminal_content + '</p>' +
 					'<ul class="weui-media-box__info">' +
-					'<li class="weui-media-box__info__meta">' + actionTime(data.lawCases[index].criminal_time) + '</li>' +
+					'<li class="weui-media-box__info__meta">' +"录入时间 : "+ actionTime(data.lawCases[index].criminal_time) + '</li>' +
 					'</ul>' +
 					'</div>' +
 					'</div>'
-			$('.menu_list').append(html);
+				$('.menu_list').append(html);
 			}
-
-			// var hidden1 = document.createElement("div");
-			// hidden1.setAttribute("class", "weui-cell__bd");
+		} else {
+			$('.weui-flex p').css('display','block');
+			// var hidden = document.createElement("div");
+			// hidden.setAttribute("class", "weui-cell__bd");
 			// var span1 = document.createElement("span");
 			// span1.setAttribute("style", "vertical-align: middle");
 			// span1.innerHTML = "案由";
 			// var span2 = document.createElement("span");
-			// span2.setAttribute("style", "margin-left: 25px;");
-			// span2.innerHTML = "<font color='#FF0000'>" + data.crimal + "</font>";
-			// hidden1.appendChild(span1);
-			// hidden1.appendChild(span2);
-			// $("#crimal").append(hidden1);
-			// var hidden2 = document.createElement("div");
-			// $("#crimal").append(hidden2);
-		} else {
-			var hidden = document.createElement("div");
-			hidden.setAttribute("class", "weui-cell__bd");
-			var span1 = document.createElement("span");
-			span1.setAttribute("style", "vertical-align: middle");
-			span1.innerHTML = "案由";
-			var span2 = document.createElement("span");
-			span2.setAttribute("style", "margin-left: 15px;");
-			span2.innerHTML = "无";
-			hidden.appendChild(span1);
-			hidden.appendChild(span2);
-			$("#crimal").append(hidden);
+			// span2.setAttribute("style", "margin-left: 15px;");
+			// span2.innerHTML = "无";
+			// hidden.appendChild(span1);
+			// hidden.appendChild(span2);
+			// $("#crimal").append(hidden);
 		}
 		$("div.weui-flex").click(function () {
-			$("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
+			// $("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
+			$(this).siblings('div.menu_body').slideToggle(300);
 			if ($(this).hasClass('current')) {
 				$(this).removeClass('current');
 				$(this).children('i').removeClass('icon-74').addClass('icon-35');

@@ -35,5 +35,7 @@ public interface OrderDAO {
 	
 	public Integer selectCountWeiXinUser(WeiXin_User weiXin_User);
 	
+	public WeiXin_User selectWeiXinUser(String openId);
+	
 	public Map<String,Object> getAllUser_Order_Join(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
 }

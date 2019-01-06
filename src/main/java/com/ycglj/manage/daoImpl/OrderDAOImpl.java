@@ -666,6 +666,35 @@ public class OrderDAOImpl extends JdbcDaoSupport implements OrderDAO{
 		return count;
 	}
 
+	
+	@Override
+	public WeiXin_User selectWeiXinUser(String openId) {
+		// TODO Auto-generated method stub
+
+		WeiXin_User weiXin_User=new WeiXin_User();
+		
+		weiXin_User.setLimit(1);
+		weiXin_User.setOffset(0);
+		weiXin_User.setNotIn("open_id");
+		
+		String[] where={"[WeiXin_User].campusAdmin=",openId};
+		
+		weiXin_User.setWhere(where);
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), weiXin_User);
+		
+		try{
+			weiXin_User=(WeiXin_User) list.get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return weiXin_User;
+		
+	}
+	
+	
 	@Override
 	public Map<String, Object> getAllUser_Order_Join(Integer limit, Integer offset, String sort, String order,
 			Map<String, String> search) {

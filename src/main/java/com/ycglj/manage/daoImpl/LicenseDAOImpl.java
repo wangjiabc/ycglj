@@ -78,12 +78,12 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		String sql01 = "SELECT  [User_License].phone,"
 				+ "[User_License].license,[User_License].business_state,[Position].is_license,[Position].lng," 
 				+"[Position].lat ,[Position].wgs84_lng,[Position].wgs84_lat, criminal_number FROM [User_License] left join ("
-				+"SELECT [license],COUNT(*) as criminal_number "
+				+"SELECT [license],sum(criminal_number) as criminal_number "
 				+"FROM [YC].[dbo].[Law_Case] ";
 		
 		String sql201 = "SELECT count(*) "
 				+ " FROM [User_License] left join ("
-				+"SELECT [license],COUNT(*) as criminal_number "
+				+"SELECT [license],sum(criminal_number) as criminal_number "
 				+"FROM [YC].[dbo].[Law_Case] ";
 		
 		if(anyStrings==null||anyStrings.equals("")){
