@@ -79,7 +79,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">到期日期</label>
             <div class="layui-input-inline">
-                <input type="text" class="layui-input" lay-verify="required" id="license_end_time" lay-filter="license_end_time" placeholder="许可证到期日期">
+                <input type="text" class="layui-input" lay-verify="required" id="license_end_time" lay-filter="license_end_time"
+                    placeholder="许可证到期日期">
             </div>
         </div>
         <div class="layui-form-item">
@@ -98,15 +99,22 @@
             var layer = layui.layer,
                 form = layer.form,
                 laydate = layui.laydate;
+            var license_end_time;
             //常规用法
             laydate.render({
                 elem: '#license_end_time'
+                , done: function (value, date, endDate) {
+                    console.log(value); //得到日期生成的值，如：2017-08-18
+                    license_end_time = value;
+                }
+
             });
             layui.form.on('submit(save)', function (data) {
                 console.log(data.field);
+                console.log("in"+license_end_time);
                 $.ajax({
                     type: "get",
-                    url: "/ycglj/user/insertUser.do?name=" + data.field.name + "&idNumber=" + data.field.number + "&phone=" + data.field.phone + "&license=" + data.field.license + "&address=" + data.field.address + "&region=" + data.field.region + "&business_status=" + data.field.business_status + "&license_end_time=" + data.field.license_end_time,
+                    url: "/ycglj/user/insertUser.do?name=" + data.field.name + "&idNumber=" + data.field.number + "&phone=" + data.field.phone + "&license=" + data.field.license + "&address=" + data.field.address + "&region=" + data.field.region + "&business_state=" + data.field.business_status + "&license_end_date=" + license_end_time,
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     dataType: "json",
@@ -115,14 +123,14 @@
                             //提示成功 刷新界面
                             layer.alert('添加成功', { icon: 1 });
                             parent.layui.layer.closeAll('iframe');
-                        }else if(data==-1){
-                        	layer.msg('error', { icon: 2 });
-                        	parent.layui.layer.closeAll('iframe');
-                        }else if(data==-2){
-                        	layer.msg('许可证已存在', { icon: 2 });
-                        	parent.layui.layer.closeAll('iframe');
+                        } else if (data == -1) {
+                            layer.msg('error', { icon: 2 });
+                            parent.layui.layer.closeAll('iframe');
+                        } else if (data == -2) {
+                            layer.msg('许可证已存在', { icon: 2 });
+                            parent.layui.layer.closeAll('iframe');
                         }
-                        
+
                         // window.parent.location.reload();
                     },
                     error: function (e) {

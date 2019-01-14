@@ -10,6 +10,7 @@ import com.ycglj.manage.daoModel.Crimal_Record;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Law_Case;
 import com.ycglj.manage.daoModel.Position;
+import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 
 public interface LicenseDAO {
@@ -41,4 +42,6 @@ public interface LicenseDAO {
 	public String findRoomInfoPositionByLatLng(Double lat, Double lng);
 	
 	public Map getAllCheckPerson(Integer limit, Integer offset, String sort,String order,Map search);
+	
+	public Integer updateWeight(Weight_Log weight_Log);
 }

@@ -43,7 +43,7 @@
 </head>
 
 <body>
-	<div class="layui-form layui-card-header layuiadmin-card-header-auto">
+	<div class="layui-form layui-card-header layuiadmin-card-header-auto" style="padding: 10px;">
 		<div class="layui-form-item">
 			<div class="layui-inline">
 				<label class="layui-form-label" id="total"></label>
@@ -71,6 +71,12 @@
 				<button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="search">
 					<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
 				</button>
+			</div>
+			<div class="layui-inline" style="float:right">
+				<span class="layui-badge layui-bg-green">默认</span>
+				<span class="layui-badge layui-bg-blue">业态</span>
+				<span class="layui-badge layui-bg-orange">案由</span>
+				<span class="layui-badge">多案由</span>
 			</div>
 		</div>
 	</div>
@@ -189,7 +195,9 @@
 		var ticket = data.rows;
 		total = data.total;
 		$('#total').text("位置个数:" + total);
-		setColor(ticket);
+		if (ticket.length > 0) {
+			setColor(ticket);
+		}
 		//移除控件后再添加控件
 		// map.removeControl(myZoomCtrl);
 		// map.addControl(myZoomCtrl);
@@ -198,7 +206,8 @@
 		var points = []; // 添加海量点数据
 		var points1 = [];
 		var points2 = [];
-		var pointCollection, pointCollection1, pointCollection2;
+		var points0 = [];
+		var pointCollection, pointCollection1, pointCollection2, pointCollection0;
 
 		//默认颜色
 		var options1 = {
@@ -210,7 +219,7 @@
 		var options2 = {
 			size: BMAP_POINT_SIZE_SMALL,
 			shape: BMAP_POINT_SHAPE_STAR,
-			color: '#1e88e5'
+			color: '#2962ff'
 		}
 		//案由点位颜色
 		var options3 = {
@@ -218,45 +227,62 @@
 			shape: BMAP_POINT_SHAPE_STAR,
 			color: '#FF9933'
 		}
-		//两个以上颜色
+		//多案由颜色
 		var options4 = {
 			size: BMAP_POINT_SIZE_SMALL,
 			shape: BMAP_POINT_SHAPE_STAR,
 			color: '#FF0000'
 		}
+		//重点检查颜色
+		var options5 = {
+			size: BMAP_POINT_SIZE_SMALL,
+			shape: BMAP_POINT_SHAPE_STAR,
+			color: '#0000FF'
+		}
 		for (var i = 0; i < ticket.length; i++) {
-			if (ticket[i].criminal_number == 0) {
-				points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
-				pointCollection = new BMap.PointCollection(points, options1);
-			} else if (ticket[i].criminal_number == 1) {
-				points1.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
-				pointCollection1 = new BMap.PointCollection(points1, options3);
-			} else if (ticket[i].criminal_number > 1) {
-				points2.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
-				pointCollection2 = new BMap.PointCollection(points2, options4);
+			if(ticket[i].weight==1){
+				points0.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+				pointCollection0 = new BMap.PointCollection(points0, options5);
+			}else{
+				if (ticket[i].criminal_number == 0) {
+					points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+					pointCollection = new BMap.PointCollection(points, options1);
+				} else if (ticket[i].criminal_number == 1) {
+					points1.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+					pointCollection1 = new BMap.PointCollection(points1,options3);
+				} else if (ticket[i].criminal_number > 1) {
+					points2.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+					pointCollection2 = new BMap.PointCollection(points2,options4);
+				}
 			}
 		}
 		if (pointCollection != null) {
 			pointCollection.addEventListener('click', function (e) {
-				openwindow(e.point.lng,e.point.lat);
+				openwindow(e.point.lng, e.point.lat);
 			});
 		}
 		if (pointCollection1 != null) {
 			pointCollection1.addEventListener('click', function (e) {
-				openwindow(e.point.lng,e.point.lat);
+				openwindow(e.point.lng, e.point.lat);
 			});
 		}
 		if (pointCollection2 != null) {
 			pointCollection2.addEventListener('click', function (e) {
-				openwindow(e.point.lng,e.point.lat);
+				openwindow(e.point.lng, e.point.lat);
+			});
+		}
+		if (pointCollection0 != null) {
+			pointCollection0.addEventListener('click', function (e) {
+				openwindow(e.point.lng, e.point.lat);
 			});
 		}
 		map.addOverlay(pointCollection); // 添加Overlay
 		map.addOverlay(pointCollection1); // 添加Overlay
 		map.addOverlay(pointCollection2); // 添加Overlay
+		map.addOverlay(pointCollection0); // 添加Overlay
 
 	}
-	function openwindow(lng,lat) {
+	function openwindow(lng, lat) {
 		var xhm = new XMLHttpRequest();
 		xhm.open("GET",
 			"../../baiduMap/getLicenseGUIDByPosition.do?lng="

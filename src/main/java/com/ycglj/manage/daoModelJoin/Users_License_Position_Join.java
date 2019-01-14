@@ -63,6 +63,9 @@ public class Users_License_Position_Join implements Serializable{
     @SQLString(name="business_state")
 	private String business_state;
     
+    @SQLInteger(name="weight")
+	private Integer weight;
+    
     @SQLInteger(name="id")
 	private Integer id;
 
@@ -268,6 +271,14 @@ public class Users_License_Position_Join implements Serializable{
 
 	public Double getLat(){
 		return lat;
+	}
+	
+	public void setWeight(Integer weight){
+		this.weight = weight;
+	}
+
+	public Integer getWeight(){
+		return weight;
 	}
 	
 	public void setId(Integer id){

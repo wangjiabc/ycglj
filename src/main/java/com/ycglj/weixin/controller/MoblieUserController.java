@@ -37,6 +37,7 @@ import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModel.WeiXin_User;
+import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 import com.ycglj.manage.service.PhotoService;
@@ -589,5 +590,26 @@ public class MoblieUserController {
 		return check_Person;
 	}
 	
+	@RequestMapping("/updateWeight")
+	public @ResponseBody Integer updateWeight(@RequestParam String license,
+			@RequestParam Integer state,@RequestParam Double lng,
+			@RequestParam Double lat,HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		Weight_Log weight_Log=new Weight_Log();
+		
+		weight_Log.setLicense(license);
+		weight_Log.setState(state);
+		weight_Log.setLng(lng);
+		weight_Log.setLat(lat);
+		weight_Log.setCampusAdmin(openId);
+		weight_Log.setDate(new Date());
+		
+		return licenseDAO.updateWeight(weight_Log);
+		
+	}
 	
 }

@@ -47,6 +47,9 @@ public class User_License implements Serializable{
     @SQLDateTime(name="business_date")
 	private Date business_date;
 
+    @SQLInteger(name="weight")
+	private Integer weight;
+
 	public void setOpen_id(String open_id){
 		this.open_id = open_id;
 	}
@@ -141,6 +144,14 @@ public class User_License implements Serializable{
 
 	public Date getBusiness_date(){
 		return business_date;
+	}
+
+	public void setWeight(Integer weight){
+		this.weight = weight;
+	}
+
+	public Integer getWeight(){
+		return weight;
 	}
 
 

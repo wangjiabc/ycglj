@@ -30,6 +30,7 @@ import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModel.WeiXin_User;
+import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.Crimal_Record_Join;
 import com.ycglj.manage.daoModelJoin.License_Position_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
@@ -76,7 +77,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	public Map getAllLicensePositionJoin(String name,String startDate,String endDate,String[] yitStrings,String[] anyStrings) {
 		// TODO Auto-generated method stub
 		String sql01 = "SELECT  [User_License].phone,"
-				+ "[User_License].license,[User_License].business_state,[Position].is_license,[Position].lng," 
+				+ "[User_License].license,[User_License].business_state,[User_License].weight,"
+				+ "[Position].is_license,[Position].lng," 
 				+"[Position].lat ,[Position].wgs84_lng,[Position].wgs84_lat, criminal_number FROM [User_License] left join ("
 				+"SELECT [license],sum(criminal_number) as criminal_number "
 				+"FROM [YC].[dbo].[Law_Case] ";
@@ -242,6 +244,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			Integer criminal_number=rs.getInt("criminal_number");
 			
+			Integer weight=rs.getInt("weight");
+			
 			Map map=new HashMap<>();
 			
 			map.put("lng", lng);
@@ -249,6 +253,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			map.put("lat", lat);
 			
 			map.put("criminal_number", criminal_number);
+			
+			map.put("weight", weight);
 			
 			return map;
 		}
@@ -261,7 +267,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		// TODO Auto-generated method stub
 		String sql0 = "SELECT TOP " + limit + " * from " 
 				+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
-				+ "[User_License].license ,[User_License].open_id,[User_License].phone,[User_License].address " 
+				+ "[User_License].license ,[User_License].open_id,[User_License].phone,[User_License].address,[User_License].weight " 
 				+ " FROM [User_License] left join  [Users]"
 				+ "on  [User_License].open_id = [Users].open_id "
 				+ "left join [Position] "
@@ -824,6 +830,33 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		map.put("count", total);
 		
 		return map;
+	}
+
+	@Override
+	public Integer updateWeight(Weight_Log weight_Log) {
+		// TODO Auto-generated method stub
+		User_License user_License=new User_License();
+		
+		String[] where={"[license]=",weight_Log.getLicense()};
+		
+		user_License.setWeight(weight_Log.getState());
+		user_License.setWhere(where);
+		
+		int i=0;
+		
+		i=UpdateExe.get(this.getJdbcTemplate(), user_License);
+		
+		if(i<1){
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		i=InsertExe.get(this.getJdbcTemplate(), weight_Log);
+		
+		if(i<1){
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		return i;
 	}
 	
 }

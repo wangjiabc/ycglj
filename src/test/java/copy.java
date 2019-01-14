@@ -56,7 +56,7 @@ public class copy {
 					users3.setUp_date(new Date());
 
 					// if(u<10)
-					userDao.insertUser(users3);
+					//userDao.insertUser(users3);
 
 					u++;
 				}

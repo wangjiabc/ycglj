@@ -250,8 +250,13 @@
                         if (obj.lng != "" && obj.lat != "") {
                             distance = getDistance(longitude, latitude, obj.lng, obj.lat);
                         }
-
-                        var html1 = '<li class="weui-cell" license="' + obj.license + '" onclick="clickEvent(this);">' +
+                        
+                        var style="background-color:#FFFFFF";
+                        
+                        if(obj.weight==1)
+                        	style="background-color:#1E90FF";
+                        
+                        var html1 = '<li class="weui-cell" style='+style+' license="' + obj.license + '" onclick="clickEvent(this);">' +
                             '<div class="img-left">' +
                             '<img src="' + img + '" class="img">' +
                             ' </div>' +
