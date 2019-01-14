@@ -60,6 +60,9 @@ public class Users_License_Position_Join implements Serializable{
     @SQLDateTime(name="date")
 	private Date date;
 
+    @SQLString(name="business_state")
+	private String business_state;
+    
     @SQLInteger(name="id")
 	private Integer id;
 
@@ -179,6 +182,14 @@ public class Users_License_Position_Join implements Serializable{
 		return date;
 	}
 
+	public void setBusiness_state(String business_state){
+		this.business_state = business_state;
+	}
+
+	public String getBusiness_state(){
+		return business_state;
+	}
+	
 	public void setIs_license(Integer is_license){
 		this.is_license = is_license;
 	}

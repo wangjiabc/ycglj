@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.ycglj.manage.daoModel.Change_License_Note;
+import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Order_User;
+import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.PreMessage;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
@@ -22,6 +25,10 @@ import com.ycglj.manage.daoSQL.SelectExe;
 import com.ycglj.manage.daoSQL.SelectJoinExe;
 import com.ycglj.manage.daoSQL.UpdateExe;
 import com.ycglj.manage.tools.TransMapToString;
+
+import aaa.java.Test1;
+import aaa.java.Test2;
+
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
 import com.ycglj.manage.tools.MyTestUtil;
@@ -60,7 +67,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	}
 
 	@Override
-	public Integer insertUser(Users users) {
+	public Integer insertUser(Users users,User_License user_License) {
 		// TODO Auto-generated method stub
 		
 		String[] where={"phone=",users.getPhone()};
@@ -77,38 +84,70 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+
+		int i=0;
 		
-		if(repeat==0){
-			int i;
-			
-			i=InsertExe.get(this.getJdbcTemplate(), users);
-			
-			String openId=users.getOpen_id();
-		    String phone=users.getPhone();
-			
-		    User_License user_License=new User_License();
+		if (repeat == 0) {
 
-		    user_License.setOpen_id(openId);
-		    
-		    String[] where2 = { "open_id = ", phone };
-			
-		    user_License.setWhere(where2);
-		    
-		    UpdateExe.get(this.getJdbcTemplate(), user_License);
+			i = InsertExe.get(this.getJdbcTemplate(), users);
 
-		    User_Data user_Data=new User_Data();
-
-		    user_Data.setOpen_id(openId);
-		    
-		    user_Data.setWhere(where2);
-		    
-		    UpdateExe.get(this.getJdbcTemplate(), user_Data);
-			
-		    return i;
-		    
-		}else{
-			return -1;
 		}
+
+		String openId = users.getOpen_id();
+		String phone = users.getPhone();
+
+		User_License user_License2 = new User_License();
+
+		user_License2.setOpen_id(openId);
+
+		String[] where1 = { "open_id = ", phone };
+
+		user_License2.setWhere(where1);
+
+		UpdateExe.get(this.getJdbcTemplate(), user_License2);
+
+		User_Data user_Data = new User_Data();
+
+		user_Data.setOpen_id(openId);
+
+		user_Data.setWhere(where1);
+
+		UpdateExe.get(this.getJdbcTemplate(), user_Data);
+
+		String[] where2 = { "license=", user_License.getLicense() };
+
+		User_License user_License3 = new User_License();
+
+		user_License3.setWhere(where2);
+
+		try {
+			repeat = (int) SelectExe.getCount(this.getJdbcTemplate(), user_License3).get("");
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		if (repeat > 0) {
+
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+			return -2;
+		} else {
+
+			i = InsertExe.get(this.getJdbcTemplate(), user_License);
+
+			if (i < 1) {
+
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+				return -1;
+			}
+
+		}
+
+		return 1;
+		    
+		
 	}
 
 	@Override
@@ -161,27 +200,31 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 
 	//后台修改电话号码
 	@Override
-	public Integer updateUserPhone(Users users) {
+	public Integer updateUserPhone(Users users,User_License user_License) {
 		// TODO Auto-generated method stub
-		int i;
+		int i=0;
 		
 		String openId=users.getOpen_id();
 	    String phone=users.getPhone();
 		
 	    System.out.println("openId="+openId+"     phone="+phone);
 	    
-	    User_License user_License=new User_License();
+	    User_License user_License1=new User_License();
 
-	    user_License.setLimit(1);
-	    user_License.setOffset(0);
-	    user_License.setNotIn("open_id");
-	    user_License.setOpen_id(openId);
+	    user_License1.setLimit(1);
+	    user_License1.setOffset(0);
+	    user_License1.setNotIn("open_id");
+	    user_License1.setOpen_id(openId);
 	    
 	    String[] where = { "open_id = ", openId };
 		
-	    user_License.setWhere(where);
+	    user_License1.setWhere(where);
 	    
-	    List list=SelectExe.get(this.getJdbcTemplate(), user_License);
+	    List list=SelectExe.get(this.getJdbcTemplate(), user_License1);
+	    
+	    User_License user_License2=(User_License) list.get(0);
+	    
+	    String oldLicense=user_License2.getLicense();
 	    
 	    if(users.getPhone()!=null&&!users.getPhone().equals("")){
 	    	
@@ -204,9 +247,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	    			return 2;
 	    			
 	    		}
-	    		
-	    		User_License user_License2=(User_License) list.get(0);
-	    		
+
 	    		if(!user_License2.getPhone().equals(phone)){
 	    			
 	    			User_License user_License3=new User_License();
@@ -235,14 +276,112 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	    		e.printStackTrace();
 			}
 	    	
+			i=UpdateExe.get(this.getJdbcTemplate(), users);
+			
+			if(i<1){
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+			}
+	    	
 	    }
+
+	    String license=user_License.getLicense();
 	    
-		i=UpdateExe.get(this.getJdbcTemplate(), users);
+		if(license!=null&&!license.equals("")){
+			
+			String[] where4={"license=",oldLicense};
+			
+			User_License user_License4=new User_License();
+			
+			user_License4.setLicense(license);
+			
+			user_License4.setWhere(where4);
+			
+			User_License user_License5=new User_License();
+
+			String[] where5={"license=",license};
+			
+			user_License5.setWhere(where5);
+			
+			int count=(int) SelectExe.getCount(this.getJdbcTemplate(), user_License5).get("");
+			
+			if(count>0){
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+    			
+    			return 3;
+				
+			}
+			
+			i=UpdateExe.get(this.getJdbcTemplate(), user_License4);
+			
+			if(i<1){
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+			}
+			
+			User_Data user_Data=new User_Data();
+			
+			user_Data.setLicense(license);
+			
+			user_Data.setWhere(where4);
+			
+			UpdateExe.get(this.getJdbcTemplate(), user_Data);
+			
+			Position position=new Position();
+			
+			position.setLicense(license);
+			
+			position.setWhere(where4);
+			
+			UpdateExe.get(this.getJdbcTemplate(), position);
+			
+			FileSelfBelong fileSelfBelong=new FileSelfBelong();
+			
+			fileSelfBelong.setLicense(license);
+			
+			fileSelfBelong.setWhere(where4);
+			
+			UpdateExe.get(this.getJdbcTemplate(), fileSelfBelong);
+			
+			Change_License_Note change_License_Note=new Change_License_Note();
+			
+			change_License_Note.setOld_license(oldLicense);
+			
+			change_License_Note.setNew_license(license);
+			
+			change_License_Note.setDate(new Date());
+			
+			i=InsertExe.get(this.getJdbcTemplate(), change_License_Note);
+			
+			if(i<1){
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+			}
+			
+		}
 		
-		if(i<1){
+		if (user_License.getAddress() != null || user_License.getRegion() != null
+				|| user_License.getBusiness_state() != null || user_License.getLicense_end_date() != null) {
+
+			if(license!=null&&!license.equals("")){
+				String[] where6 = { "license=", license };
+				user_License.setWhere(where6);
+			}else{
+				String[] where6 = { "license=", oldLicense };
+				user_License.setWhere(where6);
+			}
+
+			i=UpdateExe.get(this.getJdbcTemplate(), user_License);
 			
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			
+			if(i<1){
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+			}
 		}
 
 	    return i;
@@ -758,6 +897,74 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	public List getUserLicenseById(User_License user_License) {
 		// TODO Auto-generated method stub
 		return SelectExe.get(this.getJdbcTemplate(), user_License);
+	}
+
+	@Override
+	public List getTest1() {
+		// TODO Auto-generated method stub
+		aaa.java.Test1 test1=new Test1();
+		test1.setLimit(1000000000);
+		test1.setOffset(0);
+		test1.setNotIn("open_id");
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), test1);
+		
+		return list;
+	}
+
+	@Override
+	public List getTest2() {
+		// TODO Auto-generated method stub
+		aaa.java.Test2 test2=new Test2();
+		test2.setLimit(10000000);
+		test2.setOffset(0);
+		test2.setNotIn("open_id");
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), test2);
+		
+		return list;
+	}
+
+	@Override
+	public Integer updateOnlyUsers(Users users) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), users);
+	}
+
+	@Override
+	public Integer updateOnlyLicense(User_License user_License) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), user_License);
+	}
+
+	@Override
+	public Integer updateOnlyUserData(User_Data user_Data) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), user_Data);
+	}
+
+	@Override
+	public Integer updateOnlyPosition(Position position) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), position);
+	}
+
+	@Override
+	public Integer updateOnlyFlieSelf(FileSelfBelong fileSelfBelong) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), fileSelfBelong);
+	}
+
+	@Override
+	public Integer updateOnlyUserLicense(User_License user_License) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(),user_License);
+	}
+
+	@Override
+	public Integer insertOnlyUsers(Users users) {
+		// TODO Auto-generated method stub
+		return InsertExe.get(this.getJdbcTemplate(), users);
 	}
 
 

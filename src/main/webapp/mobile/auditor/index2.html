@@ -155,7 +155,7 @@
   }
 
   .weui-btn_mini {
-    padding: 0 2.32em;
+    padding: 0 1.32em;
   }
 
   .footer a {
@@ -249,20 +249,26 @@
           </div>
           <div id="duty" class="weui-cell__ft">null</div>
         </div>
-        
+
         <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>手机号</p>
-            </div>
-            <a id="phone" class="weui-cell__ft">null</a>
+          <div class="weui-cell__bd">
+            <p>手机号</p>
           </div>
+          <a id="phone" class="weui-cell__ft">null</a>
+        </div>
         <div class="weui-cell">
           <div class="weui-cell__bd">
             <p>执法证编号</p>
           </div>
           <div id="card_number" class="weui-cell__ft">null</div>
         </div>
-        <div class="weui-search-bar" id="searchBar">
+        <div class="weui-cell">
+          <div class="weui-cell__bd weui_cell_primary name">
+            <input id="input" class="weui-input" type="text" placeholder="请输入稽查人员姓名">
+          </div>
+          <a href="javascript:;" id="search" class="weui-btn weui-btn_mini weui-btn_primary">查 询</a>
+        </div>
+        <!-- <div class="weui-search-bar" id="searchBar">
           <form class="weui-search-bar__form">
             <div class="weui-search-bar__box">
               <i class="weui-icon-search"></i>
@@ -275,7 +281,7 @@
             </label>
           </form>
           <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
-        </div>
+        </div> -->
         <table class="layui-hide" id="test" lay-filter="test"></table>
         <div id="firstpane" class="menu_list">
         </div>
@@ -308,23 +314,23 @@
     });
   </script>
   <script>
-  	
-  $.ajax({
+
+    $.ajax({
       type: "get",
       url: "/ycglj/mobile/user/getCheckPerson.do?",
       contentType: 'application/x-www-form-urlencoded;charset=utf-8',
       data: {},
       dataType: "json",
       success: function (data) {
-    	  $('#name').text(data.name);
-          $('#unit').text(data.unit);
-          $('#department').text(data.department);
-          $('#duty').text(data.duty);
-          $('#card_number').text(data.card_number);
-          $('#phone').text(data.phone).attr('href','tel:'+data.phone);
+        $('#name').text(data.name);
+        $('#unit').text(data.unit);
+        $('#department').text(data.department);
+        $('#duty').text(data.duty);
+        $('#card_number').text(data.card_number);
+        $('#phone').text(data.phone).attr('href', 'tel:' + data.phone);
       }
-  });
-  
+    });
+
     $(document).ready(function () {
       init();
       layui.use(['table', 'laytpl', 'layer', 'util'], function () {
@@ -338,14 +344,14 @@
           , title: '稽查人员信息表'
           , page: true
           , cols: [[
-            { field: 'id', title: 'ID', sort: true }
+            { field: 'id', title: 'ID', sort: true, width: 12 }
             , { field: 'name', title: '姓名', edit: 'text' }
             , { field: 'unit', edit: 'text', title: '单位' }
             , { field: 'department', edit: 'text', title: '部门' }
             , { field: 'duty', edit: 'text', title: '职务' }
-            , { field: 'phone', title: '手机号', edit: 'text' }
-            , { field: 'card_number', title: '执法证编号', edit: 'text' }
-          ]]
+            , { field: 'phone', title: '手机号', edit: 'text', hide: true }
+            , { field: 'card_number', title: '执法证编号', edit: 'text', hide: true }
+          ]],
         });
         //监听行单击事件
         table.on('row(test)', function (obj) {
@@ -357,17 +363,16 @@
           $('#department').text(obj.data.department);
           $('#duty').text(obj.data.duty);
           $('#card_number').text(obj.data.card_number);
-          $('#phone').text(obj.data.phone).attr('href','tel:'+obj.data.phone);
+          $('#phone').text(obj.data.phone).attr('href', 'tel:' + obj.data.phone);
+          $('#phone').css('color', "red");
           //obj.del(); //删除当前行
           //obj.update(fields) //修改当前行数据
         });
-        //搜索栏绑定事件
-        $("#searchInput").bind('input propertychange', function () {
-          var val = $(this).val();
-          console.log(val);
+        $('#search').click(function () {
+          var val = $('#input').val();
           $.ajax({
             type: "get",
-            url: "/ycglj/mobile/user/getAllCheckPerson.do?offset=0&limit=10&search=" + val,
+            url: "/ycglj/mobile/user/getAllCheckPerson.do?page=0&limit=10&search=" + val,
             contentType: 'application/x-www-form-urlencoded;charset=utf-8',
             dataType: "json",
             success: function (data) {
@@ -376,6 +381,28 @@
                 where: data,
                 url: '/ycglj/mobile/user/getAllCheckPerson.do?search=' + val,
               });
+            },
+            error: function (e) {
+              console.log(e);
+            }
+          })
+        })
+        //搜索栏绑定事件
+        $("#searchInput").bind('input propertychange', function () {
+          var val = $(this).val();
+          console.log(val);
+          $.ajax({
+            type: "get",
+            url: "/ycglj/mobile/user/getAllCheckPerson.do?page=0&limit=10&search=" + val,
+            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+            dataType: "json",
+            success: function (data) {
+              //执行重载
+              table.reload('test', {
+                where: data,
+                url: '/ycglj/mobile/user/getAllCheckPerson.do?search=' + val,
+              });
+              //点击取消后加载所有内容
               $('#searchCancel').click(function () {
                 table.reload('test', {
                   where: data,
@@ -388,8 +415,6 @@
             }
           })
         });
-
-
       })
     })
 

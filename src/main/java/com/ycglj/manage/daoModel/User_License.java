@@ -44,6 +44,9 @@ public class User_License implements Serializable{
     @SQLString(name="business_state")
 	private String business_state;
 
+    @SQLDateTime(name="business_date")
+	private Date business_date;
+
 	public void setOpen_id(String open_id){
 		this.open_id = open_id;
 	}
@@ -130,6 +133,14 @@ public class User_License implements Serializable{
 
 	public String getBusiness_state(){
 		return business_state;
+	}
+
+	public void setBusiness_date(Date business_date){
+		this.business_date = business_date;
+	}
+
+	public Date getBusiness_date(){
+		return business_date;
 	}
 
 

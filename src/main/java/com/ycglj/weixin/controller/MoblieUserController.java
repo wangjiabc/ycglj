@@ -550,6 +550,9 @@ public class MoblieUserController {
 		
 		int offset=(page-1)*limit;
 		
+		if(offset<0)
+			offset=0;
+		
 		return licenseDAO.getAllCheckPerson(limit, offset, sort, order, searchMap);
 		
 		

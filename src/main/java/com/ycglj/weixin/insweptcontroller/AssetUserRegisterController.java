@@ -327,7 +327,7 @@ public class AssetUserRegisterController {
 
 			} else {
 
-				userDao.insertUser(users2);
+				userDao.insertOnlyUsers(users2);
 
 			}
 

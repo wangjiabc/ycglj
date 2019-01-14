@@ -123,6 +123,20 @@
 		</div>
 		<div class="weui-cells weui-cells_form">
 			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">身份证号</label></div>
+				<div id="idcard" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">所属中队</label></div>
+				<div id="region" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
 				<div class="weui-cell__hd"><label class="weui-label">日期</label></div>
 				<div id="datetime" class="weui-cell__bd">
 				</div>
@@ -140,7 +154,7 @@
 			<!-- <div id="crimal" class="weui-cell weui-cell_access"> -->
 			<div class="weui-flex current">
 				<div class="weui-flex__item">案由</div>
-				<p style="display:none">暂无</p>
+				<p style="display:none;margin-right: 10px">暂无</p>
 				<i class="icon icon-74"></i>
 			</div>
 
@@ -253,7 +267,7 @@
 				var html = ' <div style="display:none weui-cells" class="weui-panel menu_body">' +
 					'<div class="weui-panel__bd">' +
 					'<div class="weui-media-box weui-media-box_text">' +
-					'<h4 class="weui-media-box__title">' + "录入人 : "+data.lawCases[index].name + '</h4>' +
+					'<h4 class="weui-media-box__title">' + "录入人 : "+data.lawCases[index].user_name + '</h4>' +
 					'<p class="weui-media-box__desc" style="color:red">' + data.lawCases[index].criminal_content + '</p>' +
 					'<ul class="weui-media-box__info">' +
 					'<li class="weui-media-box__info__meta">' +"录入时间 : "+ actionTime(data.lawCases[index].criminal_time) + '</li>' +
@@ -302,6 +316,8 @@
 		$('#license').html(data.roomInfo.license);
 		$('#datetime').html(actionTime(data.roomInfo.date));
 		$('#business_status').html(data.roomInfo.business_state);
+		$('#idcard').html(data.roomInfo.id_number);
+		$('#region').html(data.roomInfo.region);
 		if (data.fileBytes != null) {
 			var imgs = data.fileBytes;
 			var i = 0;

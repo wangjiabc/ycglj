@@ -1,6 +1,8 @@
 package com.ycglj.manage.controller;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -109,7 +111,7 @@ public class UserController {
 	
     @RequestMapping("insertUser")
 	public @ResponseBody Integer insertUser(@RequestParam String license,@RequestParam String name,String idNumber,
-			@RequestParam String phone,HttpServletRequest request) {
+			@RequestParam String phone,String address,String region,String business_status,String license_end_time,HttpServletRequest request) {
     	
     	Users users = new Users();
     	
@@ -126,17 +128,34 @@ public class UserController {
     	user_License.setLicense(license);
     	user_License.setOpen_id(phone);
     	user_License.setPhone(phone);
-
-    	userDao.insertUser(users);
+    	user_License.setAddress(address);
+    	user_License.setRegion(region);
     	
-    	return userDao.insertUserLicense(user_License);
+    	//SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+    	DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+    	
+    	if(business_status!=null&&!business_status.equals("")){
+    		user_License.setBusiness_state(business_status);
+    		user_License.setBusiness_date(new Date());
+    	}
+    	
+    	if(license_end_time!=null&&!license_end_time.equals("")&&license_end_time.equals("undefined")){
+    		try {
+				user_License.setLicense_end_date(fmt.parse(license_end_time));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
+    	return userDao.insertUser(users, user_License);
     	
     }
 	
 	
 	@RequestMapping("updateUser")
 	public @ResponseBody Integer updateUser(@RequestParam String openId,String name,String idNumber,
-			String phone,HttpServletRequest request) {
+			String phone,String license,String address,String region,String business_status,String license_end_time,HttpServletRequest request) {
 		// TODO Auto-generated method stub
 
 		System.out.println("openId="+openId);
@@ -160,10 +179,37 @@ public class UserController {
 		if(phone!=null&&!phone.equals("")){
 			users.setPhone(phone);
 		}
-
+		
 		users.setUp_date(new Date());
 		
-		return userDao.updateUserPhone(users);
+		System.out.println("license="+license);
+		
+		User_License user_License=new User_License();
+		
+		if(license!=null&&!license.equals("")){
+			user_License.setLicense(license);
+		}
+		
+		if(address!=null&&!address.equals(""))
+			user_License.setAddress(address);
+		
+		if(region!=null&&!region.equals(""))
+			user_License.setRegion(region);
+		
+		if(business_status!=null&&!business_status.equals(""))
+			user_License.setBusiness_state(business_status);
+		
+		if(license_end_time!=null&&!license_end_time.equals("")){
+			DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				user_License.setLicense_end_date(fmt.parse(license_end_time));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return userDao.updateUserPhone(users,user_License);
 		
 	}
 	
