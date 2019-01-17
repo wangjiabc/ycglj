@@ -20,6 +20,7 @@ import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.PreMessage;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
+import com.ycglj.manage.daoSQL.DeleteExe;
 import com.ycglj.manage.daoSQL.InsertExe;
 import com.ycglj.manage.daoSQL.SelectExe;
 import com.ycglj.manage.daoSQL.SelectJoinExe;
@@ -965,6 +966,26 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	public Integer insertOnlyUsers(Users users) {
 		// TODO Auto-generated method stub
 		return InsertExe.get(this.getJdbcTemplate(), users);
+	}
+
+	@Override
+	public Integer deleteUserData(String uri) {
+		// TODO Auto-generated method stub
+		User_Data user_Data=new User_Data();
+		String[] where={"uri=",uri};
+		user_Data.setWhere(where);
+				
+		return DeleteExe.get(this.getJdbcTemplate(), user_Data);
+	}
+
+	@Override
+	public Integer deleteFileSelfBelong(String upFileFullName) {
+		// TODO Auto-generated method stub
+		FileSelfBelong fileSelfBelong=new FileSelfBelong();
+		String[] where={"UpFileFullName=",upFileFullName};
+		fileSelfBelong.setWhere(where);
+		
+		return DeleteExe.get(this.getJdbcTemplate(), fileSelfBelong);
 	}
 
 

@@ -371,80 +371,47 @@
 		}
 
 		console.log(ticket);
-		
+
 		for (var i = 0; i < ticket.length; i++) {
-			if(ticket[i].weight==1){
+			if (ticket[i].weight == 1) {
 				points0.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
 				pointCollection0 = new BMap.PointCollection(points0, options5);
-			}else{
-				if (ticket[i].criminal_number == 0) {
+			} else {
+				if (ticket[i].case_count == 0) {
 					points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
 					pointCollection = new BMap.PointCollection(points, options1);
-				} else if (ticket[i].criminal_number == 1) {
+				} else if (ticket[i].case_count == 1&&ticket[i].fake_number<50&&ticket[i].not_channel_number<5000) {
 					points1.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
-					pointCollection1 = new BMap.PointCollection(points1,options3);
-				} else if (ticket[i].criminal_number > 1) {
+					pointCollection1 = new BMap.PointCollection(points1, options3);
+				} else if (ticket[i].case_count > 1||ticket[i].fake_number>=50||ticket[i].not_channel_number>=5000) {
 					points2.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
-					pointCollection2 = new BMap.PointCollection(points2,options4);
+					pointCollection2 = new BMap.PointCollection(points2, options4);
 				}
 			}
 
 		}
 
 		if (pointCollection != null) {
-			pointCollection.addEventListener('click', function(e) {
-				$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
-					lng : e.point.lng,
-					lat : e.point.lat
-				}, function(text) {
-					var data = JSON.parse(text);
-					location.href = "../case/caseDetail.html?license="
-							+ data.license + "&longitude=" + lng + "&latitude="
-							+ lat;
-				});
-
+			pointCollection.addEventListener('click', function (e) {
+				openwindow(e.point.lng, e.point.lat);
 			})
 		}
 
 		if (pointCollection1 != null) {
-			pointCollection1.addEventListener('click', function(e) {
-				$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
-					lng : e.point.lng,
-					lat : e.point.lat
-				}, function(text) {
-					var data = JSON.parse(text);
-					location.href = "../case/caseDetail.html?license="
-							+ data.license + "&longitude=" + lng + "&latitude="
-							+ lat;
-				});
+			pointCollection1.addEventListener('click', function (e) {
+				openwindow(e.point.lng, e.point.lat);
 			})
 		}
 
 		if (pointCollection2 != null) {
-			pointCollection2.addEventListener('click', function(e) {
-				$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
-					lng : e.point.lng,
-					lat : e.point.lat
-				}, function(text) {
-					var data = JSON.parse(text);
-					location.href = "../case/caseDetail.html?license="
-							+ data.license + "&longitude=" + lng + "&latitude="
-							+ lat;
-				});
+			pointCollection2.addEventListener('click', function (e) {
+				openwindow(e.point.lng, e.point.lat);
 			})
 		}
 
 		if (pointCollection0 != null) {
-			pointCollection0.addEventListener('click', function(e) {
-				$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
-					lng : e.point.lng,
-					lat : e.point.lat
-				}, function(text) {
-					var data = JSON.parse(text);
-					location.href = "../case/caseDetail.html?license="
-							+ data.license + "&longitude=" + lng + "&latitude="
-							+ lat;
-				});
+			pointCollection0.addEventListener('click', function (e) {
+				openwindow(e.point.lng, e.point.lat);
 			})
 		}
 
@@ -455,7 +422,99 @@
 
 	}
 
+	//打开覆盖物窗体
+	function openwindow(lng, lat) {
+		var xhm = new XMLHttpRequest();
+		xhm.open("GET",
+			"../../../baiduMap/getLicenseGUIDByPosition.do?lng="
+			+ lng + "&lat="
+			+ lat, false);
+		xhm.setRequestHeader("Content-type",
+			"application/x-www-form-urlencoded");
+		xhm.send();
+		var data = JSON.parse(xhm.responseText);
+		var license = data.license;
+		$.ajax({
+			type: "POST",
+			url: "../../../mobile/user/getRoomInfoByGUID.do",
+			data: {
+				"license": license
+			},
+			dataType: "json",
+			error: function (request) {
+				console.log(request);
+			},
+			success: function (result) {
+				// 复杂的自定义覆盖物
+				function ComplexCustomOverlay(point, text) {
+					this._point = point;
+					this._text = text;
+				}
+				ComplexCustomOverlay.prototype = new BMap.Overlay();
+				ComplexCustomOverlay.prototype.initialize = function (map) {
+					this._map = map;
+					var div = this._div = document.createElement("div");
+					div.style.position = "absolute";
+					div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+					div.style.backgroundColor = "#EE5D5B";
+					div.style.border = "1px solid #BC3B3A";
+					div.style.color = "white";
+					div.style.height = "18px";
+					div.style.padding = "2px";
+					div.style.lineHeight = "18px";
+					div.style.whiteSpace = "nowrap";
+					div.style.MozUserSelect = "none";
+					div.style.fontSize = "12px"
+					var span = this._span = document.createElement("span");
+					div.appendChild(span);
+					span.appendChild(document.createTextNode(this._text));
+					var that = this;
 
+					var arrow = this._arrow = document.createElement("div");
+					arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
+					arrow.style.position = "absolute";
+					arrow.style.width = "11px";
+					arrow.style.height = "10px";
+					arrow.style.top = "22px";
+					arrow.style.left = "10px";
+					arrow.style.overflow = "hidden";
+					div.appendChild(arrow);
+					//禁用地图拖拽功能才能实现点击事件
+					div.addEventListener("touchstart", function () {
+						map.disableDragging();  //禁用地图拖拽功能
+					});
+
+					div.addEventListener("click", function () {
+						$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
+							lng: lng,
+							lat: lat
+						}, function (text) {
+							var data = JSON.parse(text);
+							location.href = "../case/caseDetail.html?license="
+								+ data.license + "&longitude=" + lng + "&latitude="
+								+ lat;
+						});
+					});
+					div.addEventListener("touchmove", function () {
+						map.enableDragging();  //启用地图拖拽功能
+					});
+					map.getPanes().labelPane.appendChild(div);
+
+					return div;
+				}
+				ComplexCustomOverlay.prototype.draw = function () {
+					var map = this._map;
+					var pixel = map.pointToOverlayPixel(this._point);
+					this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+					this._div.style.top = pixel.y - 30 + "px";
+				}
+				txt = result.roomInfo.name;
+				var myCompOverlay = new ComplexCustomOverlay(new BMap.Point(lng, lat), txt);
+
+				map.addOverlay(myCompOverlay);
+			}
+		})
+	}
 	function getDistance(lng, lat) {
 		var pointA = new BMap.Point(longitude, latitude); // 创建点坐标A--大渡口区
 		var pointB = new BMap.Point(lng, lat); // 创建点坐标B--江北区

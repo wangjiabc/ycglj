@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
 import com.ycglj.manage.daoModel.FileSelfBelong;
@@ -33,6 +35,8 @@ public interface LicenseDAO {
 	
 	public Integer insertIntoCrimalCase(List<Crimal_Case> crimalCaseList,Crimal_Record crimal_Record);
 	
+	public Integer updateCrimalCase(String crimal_id,List<Crimal_Case> crimalCaseList,Crimal_Record crimal_Record);
+		
 	public List getAllCaseByLicense(String license);
 	
 	public List findPosition(Position position);
@@ -44,4 +48,6 @@ public interface LicenseDAO {
 	public Map getAllCheckPerson(Integer limit, Integer offset, String sort,String order,Map search);
 	
 	public Integer updateWeight(Weight_Log weight_Log);
+	
+	public List<Crimal_Case> getCrimalCase(String crimal_id);
 }

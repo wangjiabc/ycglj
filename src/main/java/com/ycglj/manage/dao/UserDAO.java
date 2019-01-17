@@ -70,4 +70,7 @@ public interface UserDAO {
 	
 	public Integer updateOnlyFlieSelf(FileSelfBelong fileSelfBelong);
 	
+	public Integer deleteUserData(String uri);
+	
+	public Integer deleteFileSelfBelong(String upFileFullName);
 }

@@ -87,6 +87,10 @@
 		.page-bd .weui-cells {
 			margin-top: 0;
 		}
+
+		.weui-swiped-btn {
+			padding: 22px 1em;
+		}
 	</style>
 
 </head>
@@ -219,6 +223,7 @@
 <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
 <script src="../../../js/jquery-weui.js"></script>
 <script type="text/javascript">
+	//$('.weui-cell_swiped').swipeout()
 	function getQueryString(name) {
 		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
 		var r = window.location.search.substr(1).match(reg);
@@ -235,6 +240,7 @@
 	var point = new BMap.Point(longitude, latitude);
 
 	var pointStart = point;
+	// alert(license + "|" + latitude + "|" + longitude);
 
 	var str = "我的位置";
 	var opts = {
@@ -264,38 +270,43 @@
 		var state;
 		if ($('#check').prop('checked')) {
 			console.log('1');
-			state=1;
+			state = 1;
 		} else {
 			console.log('2');
-			state=0;
+			state = 0;
 		}
-		
+
 		$.get("../../user/updateWeight.do", {
 			license: license,
-			state : state,
+			state: state,
 			lng: longitude,
 			lat: latitude
 		}, function (data) {
-		
-			if(data<1){
+
+			if (data < 1) {
 				alert("操作失败");
 			}
-			
+
 		});
-		
+
 	})
-	
+
 	function init(data) {
 		console.log(data);
 		$('#address').html(data.roomInfo.address);
 		$('#name').html(data.roomInfo.name);
+		$('#license').html(data.roomInfo.license);
+		$('#datetime').html(actionTime(data.roomInfo.date));
+		$('#business_status').html(data.roomInfo.business_state);
+		$('#idcard').html(data.roomInfo.id_number);
+		$('#region').html(data.roomInfo.region);
 		if (data.roomInfo.weight == 1) {
-			 $('#check').prop("checked", "true");			
+			$('#check').prop("checked", "true");
 		}
 
 		if (data.crimal != null && data.crimal != "") {
 			for (let index = 0; index < data.lawCases.length; index++) {
-				var html = ' <div style="display:none weui-cells" class="weui-panel menu_body">' +
+				var html = ' <div id="' + data.lawCases[index].crimal_id + '" style="display:none weui-cells" class="weui-panel menu_body">' +
 					'<div class="weui-panel__bd">' +
 					'<div class="weui-media-box weui-media-box_text">' +
 					'<h4 class="weui-media-box__title">' + "录入人 : " + data.lawCases[index].user_name + '</h4>' +
@@ -309,18 +320,10 @@
 			}
 		} else {
 			$('.weui-flex p').css('display', 'block');
-			// var hidden = document.createElement("div");
-			// hidden.setAttribute("class", "weui-cell__bd");
-			// var span1 = document.createElement("span");
-			// span1.setAttribute("style", "vertical-align: middle");
-			// span1.innerHTML = "案由";
-			// var span2 = document.createElement("span");
-			// span2.setAttribute("style", "margin-left: 15px;");
-			// span2.innerHTML = "无";
-			// hidden.appendChild(span1);
-			// hidden.appendChild(span2);
-			// $("#crimal").append(hidden);
 		}
+		$('.menu_body').click(function () {
+			alert(this.id);
+		})
 		$("div.weui-flex").click(function () {
 			// $("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
 			$(this).siblings('div.menu_body').slideToggle(300);
@@ -344,11 +347,7 @@
 			$("#phone_div").hide();
 		}
 
-		$('#license').html(data.roomInfo.license);
-		$('#datetime').html(actionTime(data.roomInfo.date));
-		$('#business_status').html(data.roomInfo.business_state);
-		$('#idcard').html(data.roomInfo.id_number);
-		$('#region').html(data.roomInfo.region);
+
 		if (data.fileBytes != null) {
 			var imgs = data.fileBytes;
 			var i = 0;
@@ -356,39 +355,40 @@
 				var text = imgs[i];
 				var name = text.fileBelong;
 				var uri = text.compressUri;
-				var panel = document.createElement("div");
-				panel.setAttribute("class", "weui-panel__bd");
-				var a = document.createElement("a");
-				a.setAttribute("class", "weui_grid");
-				var a = document.createElement("a");
-				a.setAttribute("href", "javascript:void(0);");
-				a.setAttribute("class", "weui-media-box weui-media-box_appmsg");
-				var div = document.createElement("div");
-				div.setAttribute("class", "weui-media-box__hd");
-
 				src = "/ycglj/" + uri;
-				var img = document.createElement("img");
-				img.setAttribute("class", "weui-media-box__thumb");
-				img.setAttribute("src", src);
-
-				div.appendChild(img);
-
-				div2 = document.createElement("div");
-				div2.setAttribute("class", "weui-media-box__bd");
-				h4 = document.createElement("h4");
-				h4.setAttribute("class", "weui-media-box__title");
-				p = document.createElement("p");
-				p.setAttribute("class", "weui-media-box__desc");
-				p.innerHTML = name;
-				div2.appendChild(h4);
-				div2.appendChild(p);
-				a.appendChild(div);
-				a.appendChild(div2);
-				panel.appendChild(a);
-				$("#img").append(panel);
+				var html = '<div class="weui-cell weui-cell_swiped">' +
+					'<div class="weui-cell__bd">' +
+					'<div class="weui-cell">' +
+					'<div class="weui-cell__hd"><img src="' + src + '" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>' +
+					'<div class="weui-cell__bd"><p></p></div>' +
+					'<div class="weui-cell__ft">向左滑动删除</div>' +
+					'</div>' +
+					'</div>' +
+					'<div class="weui-cell__ft">' +
+					'<a id="' + uri + '" class="weui-swiped-btn weui-swiped-btn_warn delete-swipeout" href="javascript:">删除图片</a>' +
+					'</div>' +
+					'</div>'
+				$("#img").append(html);
+				$('.weui-cell_swiped').swipeout();
 			}
-
+			$('.delete-swipeout').click(function () {
+				var uri = this.id;
+				$.confirm("确认删除当前照片吗?", function () {
+					$.get("/ycglj/mobile/user/deleteImgById.do", {
+						imgName: uri.split("\\")[5]
+					}, function (data) {
+						if (data == 1) {
+							window.location.href = window.location.href + "?" + Math.random();
+						} else {
+							alert("删除失败");
+						}
+					});
+				}, function () {
+					//点击取消后的回调函数
+				});
+			})
 		}
+
 
 		if (data.fileBytes2 != null) {
 			var imgs = data.fileBytes2;
@@ -397,42 +397,41 @@
 				var text = imgs[i];
 				var name = showdataType(text.dataType);
 				var uri = text.compressUri;
-				var panel = document.createElement("div");
-				panel.setAttribute("class", "weui-panel__bd");
-				var a = document.createElement("a");
-				a.setAttribute("class", "weui_grid");
-				var a = document.createElement("a");
-				a.setAttribute("href", "javascript:void(0);");
-				a.setAttribute("class", "weui-media-box weui-media-box_appmsg");
-				var div = document.createElement("div");
-				div.setAttribute("class", "weui-media-box__hd");
-
 				src = "/ycglj/" + uri;
-				var img = document.createElement("img");
-				img.setAttribute("class", "weui-media-box__thumb");
-				img.setAttribute("src", src);
-
-				div.appendChild(img);
-
-				div2 = document.createElement("div");
-				div2.setAttribute("class", "weui-media-box__bd");
-				h4 = document.createElement("h4");
-				h4.setAttribute("class", "weui-media-box__title");
-				p = document.createElement("p");
-				p.setAttribute("class", "weui-media-box__desc");
-				p.innerHTML = name;
-				div2.appendChild(h4);
-				div2.appendChild(p);
-				a.appendChild(div);
-				a.appendChild(div2);
-				panel.appendChild(a);
-				$("#img2").append(panel);
+				var html = '<div class="weui-cell weui-cell_swiped">' +
+					'<div class="weui-cell__bd">' +
+					'<div class="weui-cell">' +
+					'<div class="weui-cell__hd"><img src="' + src + '" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>' +
+					'<div class="weui-cell__bd"><p></p></div>' +
+					'<div class="weui-cell__ft">向左滑动删除</div>' +
+					'</div>' +
+					'</div>' +
+					'<div class="weui-cell__ft">' +
+					'<a id="' + uri + '" class="weui-swiped-btn weui-swiped-btn_warn delete-swipeout" href="javascript:">删除图片</a>' +
+					'</div>' +
+					'</div>'
+				$("#img2").append(html);
+				//$('.weui-cell_swiped').swipeout();
 			}
-
+			$('.delete-swipeout').click(function () {
+				var uri = this.id;
+				$.confirm("确认删除当前照片吗?", function () {
+					$.get("/ycglj/mobile/user/deleteImgById.do", {
+						imgName: uri.split("\\")[5]
+					}, function (data) {
+						if (data == 1) {
+							window.location.href = window.location.href + "?" + Math.random();
+						} else {
+							alert("删除失败");
+						}
+					});
+				}, function () {
+					//点击取消后的回调函数
+				});
+			})
 		}
 
 	}
-
 
 	function clickEvent() {
 		location.href = "case_entry.html?license=" + license + "&latitude=" + latitude + "&longitude=" + longitude;

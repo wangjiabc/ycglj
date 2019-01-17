@@ -526,6 +526,90 @@ public class MoblieUserController {
 
 	}
 	
+	@RequestMapping("/getCrimalCase")
+	public @ResponseBody List getCrimalCase(@RequestParam String crimal_id){
+		return licenseDAO.getCrimalCase(crimal_id);
+	}
+	
+	@RequestMapping("/updateCrimalCase")
+	public @ResponseBody Integer updateCrimalCase(@RequestParam String crimal_id,@RequestParam String license,
+			@RequestParam String ay,String remark,Double lng,Double lat,HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		UUID uuid=UUID.randomUUID();
+		
+		Date date=new Date();
+		
+		SimpleDateFormat sdf  =   new  SimpleDateFormat("yyyy-MM-dd"); 
+		Date time = new Date();
+
+		ay=ay.substring(1,ay.length()-1);
+		
+		String[] ayStrings = ay.split(",");
+		
+		int i=0;
+		
+		Crimal_Case crimal_Case=new Crimal_Case();
+		
+		List<Crimal_Case> crimalCaseList=new ArrayList<>();
+		
+		String content="";
+		
+		if (ay != null && !ay.equals("")) {
+			for (String ayString : ayStrings) {
+				
+				ayString=ayString.substring(1, ayString.length() - 1);
+				
+				if (i % 2 == 0) {
+					crimal_Case.setCriminal_type(ayString);
+					content = content + "," + ayString;
+				} else if (i != 0 && i % 2 != 0) {
+					content = content + ayString + "条";
+					int number = Integer.parseInt(ayString);
+					crimal_Case.setLicense(license);
+					crimal_Case.setCrimal_id(uuid.toString());
+					crimal_Case.setOpen_id(openId);
+					crimal_Case.setCriminal_number(number);
+					crimal_Case.setCriminal_time(time);
+					crimal_Case.setDate(date);
+					crimalCaseList.add(crimal_Case);
+					crimal_Case = new Crimal_Case();
+				}
+
+				i++;
+			}
+		}else{
+			return -1;
+		}
+		
+		content=content.substring(1,content.length());
+		
+		Crimal_Record crimal_Record=new Crimal_Record();
+		crimal_Record.setLicense(license);
+		crimal_Record.setCrimal_id(uuid.toString());
+		crimal_Record.setCriminal_content(content);
+		crimal_Record.setCriminal_time(time);
+		crimal_Record.setOpen_id(openId);
+		crimal_Record.setDate(date);
+		
+		System.out.println("remark="+remark);
+		
+		if(remark!=null&&!remark.equals("")){
+			crimal_Record.setRemark(remark);
+			System.out.println("remark="+remark);
+		}
+		
+		if(lat!=null&&lng!=null){
+			//crimal_Record.setLat(lat);
+			//crimal_Record.setLng(lng);
+		}
+		
+		return licenseDAO.updateCrimalCase(crimal_id, crimalCaseList, crimal_Record);
+
+	}
 	
 	@RequestMapping("/getAllCheckPerson")
 	public @ResponseBody Map<String, Object> getAllCheckPerson(@RequestParam Integer limit,@RequestParam Integer page,
@@ -610,6 +694,19 @@ public class MoblieUserController {
 		
 		return licenseDAO.updateWeight(weight_Log);
 		
+	}
+	
+	@RequestMapping("/deleteImgById")
+	public @ResponseBody Integer deleteImgById(@RequestParam String imgName){
+		
+		int i=0;
+		
+		i=userDao.deleteFileSelfBelong(imgName);
+		
+		if(i<1)
+			i=userDao.deleteUserData(imgName);
+		
+		return i;
 	}
 	
 }

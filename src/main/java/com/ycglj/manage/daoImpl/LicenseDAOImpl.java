@@ -79,8 +79,10 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		String sql01 = "SELECT  [User_License].phone,"
 				+ "[User_License].license,[User_License].business_state,[User_License].weight,"
 				+ "[Position].is_license,[Position].lng," 
-				+"[Position].lat ,[Position].wgs84_lng,[Position].wgs84_lat, criminal_number FROM [User_License] left join ("
-				+"SELECT [license],sum(criminal_number) as criminal_number "
+				+"[Position].lat ,[Position].wgs84_lng,[Position].wgs84_lat,"
+				+ "criminal_number,case_count ,fake_number ,not_channel_number "
+				+ " FROM [User_License] left join ("
+				+"SELECT [license],COUNT(*) as case_count,sum(criminal_number) as criminal_number "
 				+"FROM [YC].[dbo].[Law_Case] ";
 		
 		String sql201 = "SELECT count(*) "
@@ -153,7 +155,11 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			sql201=sql201+ay+" group by license )";
 		}
 		
-		sql01=sql01+" as t on [User_License].license = t.license ";
+		sql01=sql01+" as t on [User_License].license = t.license "
+				+ " left join (SELECT [license],sum(criminal_number) as fake_number FROM [YC].[dbo].[Law_Case] where criminal_type='假冒' and criminal_number>=50 group by license) as t2 "
+				+ " on [User_License].license = t2.license "
+				+ " left join (SELECT [license],sum(criminal_number) as not_channel_number FROM [YC].[dbo].[Law_Case] where criminal_type='非渠道' and criminal_number >=5000  group by license) as t3 "
+				+ " on [User_License].license = t3.license ";
 		sql201=sql201+" as t on [User_License].license = t.license ";
 		
 		String sql02 = " left join  [Position]"
@@ -186,14 +192,14 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		if(yitStrings!=null&&!yitStrings.equals("")){
 			StringBuilder sb = new StringBuilder();
 			for(String str : yitStrings){
-				
+					
 			    	sb.append("business_state=");
 			    	sb.append("'"+str+"'");
 			    	sb.append(" OR ");
 			
 			}
 			
-			String yt="("+sb.substring(0, sb.length() - 3)+")";
+			String yt=" and ("+sb.substring(0, sb.length() - 3)+")";
 			
 			sql=sql+yt;
 			sql2=sql2+yt;
@@ -242,7 +248,11 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			Double lat=rs.getDouble("lat");
 			
-			Integer criminal_number=rs.getInt("criminal_number");
+			Integer case_count=rs.getInt("case_count");
+			
+			Integer fake_number=rs.getInt("fake_number");
+			
+			Integer not_channel_number=rs.getInt("not_channel_number");
 			
 			Integer weight=rs.getInt("weight");
 			
@@ -252,7 +262,11 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			map.put("lat", lat);
 			
-			map.put("criminal_number", criminal_number);
+			map.put("case_count", case_count);
+			
+			map.put("fake_number", fake_number);
+			
+			map.put("not_channel_number", not_channel_number);
 			
 			map.put("weight", weight);
 			
@@ -693,6 +707,119 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	}
 
 	@Override
+	public Integer updateCrimalCase(String crimal_id,List<Crimal_Case> crimalCaseList, Crimal_Record crimal_Record) {
+		// TODO Auto-generated method stub
+		int i;
+		
+		Iterator<Crimal_Case> iterator=crimalCaseList.iterator();
+		
+		String[] where0={"crimal_id=",crimal_id};
+		
+		while (iterator.hasNext()) {
+
+			Crimal_Case crimal_Case=iterator.next();
+			
+			crimal_Case.setWhere(where0);
+			
+			i=UpdateExe.get(this.getJdbcTemplate(), crimal_Case);
+			
+			if (i < 1) {
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			}
+			
+		}
+
+		User_License user_License=new User_License();
+		user_License.setLimit(1);
+		user_License.setOffset(0);
+		user_License.setNotIn("license");
+		String[] where1={"license=",crimal_Record.getLicense()};
+		user_License.setWhere(where1);
+		
+		user_License=(User_License) SelectExe.get(this.getJdbcTemplate(), user_License).get(0);
+		
+		crimal_Record.setPhone(user_License.getPhone());
+		
+		crimal_Record.setWhere(where0);
+		
+		i=UpdateExe.get(this.getJdbcTemplate(), crimal_Record);
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		
+		iterator=crimalCaseList.iterator();
+		
+		while (iterator.hasNext()) {
+			
+			Crimal_Case crimal_Case=iterator.next();
+			
+			int case_number=crimal_Case.getCriminal_number();
+			String license=crimal_Case.getLicense();
+			String criminal_type=crimal_Case.getCriminal_type();
+			Date criminal_time=crimal_Case.getCriminal_time();
+			Date date=crimal_Case.getDate();
+			
+			Law_Case law_Case = new Law_Case();
+			law_Case.setLimit(1);
+			law_Case.setOffset(0);
+			law_Case.setNotIn("license");
+
+			String[] where = { "[license]=", crimal_Case.getLicense(), "[criminal_type]=",
+					crimal_Case.getCriminal_type() };
+
+			law_Case.setWhere(where);
+
+			int count = (int) SelectExe.getCount(this.getJdbcTemplate(), law_Case).get("");
+
+			if (count > 0) {
+
+				try {
+
+					List list = SelectExe.get(this.getJdbcTemplate(), law_Case);
+
+					law_Case = (Law_Case) list.get(0);
+
+					Law_Case law_Case2=new Law_Case();
+					
+					law_Case2.setCriminal_number(law_Case.getCriminal_number()+case_number);
+					law_Case2.setDate(date);
+					
+					law_Case2.setWhere(where);
+					
+					i=UpdateExe.get(this.getJdbcTemplate(), law_Case2);
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+					
+					TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+					
+				}
+
+			}else{
+				
+				law_Case.setLicense(license);
+				law_Case.setCriminal_type(criminal_type);
+				law_Case.setCriminal_number(case_number);
+				law_Case.setCriminal_time(criminal_time);
+				law_Case.setDate(date);
+				
+				i=InsertExe.get(this.getJdbcTemplate(), law_Case);
+				
+			}
+			
+			if (i < 1) {
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			}
+			
+		}
+		
+		return i;
+	}
+	
+	@Override
 	public List getAllCaseByLicense(String license) {
 		// TODO Auto-generated method stub
 		
@@ -857,6 +984,21 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		}
 		
 		return i;
+	}
+
+	@Override
+	public List<Crimal_Case> getCrimalCase(String crimal_id) {
+		// TODO Auto-generated method stub
+		Crimal_Case crimal_Case=new Crimal_Case();
+		crimal_Case.setLimit(100);
+		crimal_Case.setOffset(0);
+		crimal_Case.setNotIn("crimal_id");
+		
+		String[] where={"crimal_id=",crimal_id};
+		
+		crimal_Case.setWhere(where);
+		
+		return SelectExe.get(this.getJdbcTemplate(), crimal_Case);
 	}
 	
 }
