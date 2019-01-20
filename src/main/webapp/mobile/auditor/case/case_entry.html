@@ -126,20 +126,20 @@
         </div>
       </div>
       <div class="weui-flex__item">
-          <div class="weui-cell">
-            <div class="weui-cell__bd">
-              <p>超邮</p>
-            </div>
-            <div class="weui-cell__ft">
-              <div class="weui-count">
-                <a class="weui-count__btn weui-count__decrease"></a>
-                <input name="cy" class="weui-count__number" type="number" value="0" />
-                <a class="weui-count__btn weui-count__increase"></a>
-              </div>
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <p>超邮</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="cy" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
             </div>
           </div>
         </div>
-     
+      </div>
+
     </div>
     <div class="weui-flex" id="wz">
       <div class="weui-flex__item">
@@ -187,24 +187,24 @@
         </div>
       </div>
       <div class="weui-flex__item">
-          <div class="weui-cell" id="wz1">
-            <div class="weui-cell__bd">
-              <p>无证批发</p>
-            </div>
-            <div class="weui-cell__ft">
-              <div class="weui-count">
-                <a class="weui-count__btn weui-count__decrease"></a>
-                <input name="wzpf" class="weui-count__number" type="number" value="0" />
-                <a class="weui-count__btn weui-count__increase"></a>
-              </div>
+        <div class="weui-cell" id="wz1">
+          <div class="weui-cell__bd">
+            <p>无证批发</p>
+          </div>
+          <div class="weui-cell__ft">
+            <div class="weui-count">
+              <a class="weui-count__btn weui-count__decrease"></a>
+              <input name="wzpf" class="weui-count__number" type="number" value="0" />
+              <a class="weui-count__btn weui-count__increase"></a>
             </div>
           </div>
         </div>
+      </div>
     </div>
 
   </div>
   <div class="button_sp_area">
-    <a href="javascript:;" onclick="insertCase();" class="weui-btn weui-btn_mini weui-btn_primary">确认录入</a>
+    <a href="javascript:;" id="insert" onclick="insertCase();" class="weui-btn weui-btn_mini weui-btn_primary">确认录入</a>
   </div>
   <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
@@ -275,15 +275,9 @@
         }
       });
     }
-    //录入
+
+    //录入两种人员案由
     function insertCase() {
-      //   $('#name').val()
-      // $('#sex').val()
-      // $('#age').val()
-      // $('#address').val()
-      // $('#idcard').val()
-      // $('#phone').val()
-      // $('#note').val()
       var ay = [];
       var type;
       $("input[type='number']").each(function () {
@@ -296,34 +290,79 @@
       var remark = $("#remark").val();
       var date = $("#date").val();
       console.log(remark + " , " + date + "," + ay);
-
-      $.ajax({
-        type: "POST",
-        url: "../../user/insertIntoCrimalCase.do",
-        data: {
-          "license": license,
-          "dateTime": date,
-          "ay": JSON.stringify(ay),
-          "remark": remark,
-          "lng": longitude,
-          "lat": latitude
-        },
-        dataType: "json",
-        error: function (request) {
-          console.log(request);
-        },
-        success: function (text) {
-          if (text > 0) {
-            alert("新建记录成功!");
-            history.back();
-          } else if (text == -1) {
-            alert("新建记录失败,至少选择一项违法记录!");
-          } else {
-            alert("新建记录失败!");
+      //零售户接口
+      if (license != null) {
+        $.ajax({
+          type: "POST",
+          url: "../../user/insertIntoCrimalCase.do",
+          data: {
+            "license": license,
+            "dateTime": date,
+            "ay": JSON.stringify(ay),
+            "remark": remark,
+            "lng": longitude,
+            "lat": latitude
+          },
+          dataType: "json",
+          error: function (request) {
+            console.log(request);
+          },
+          success: function (text) {
+            if (text > 0) {
+              alert("新建记录成功!");
+              history.back();
+            } else if (text == -1) {
+              alert("新建记录失败,至少选择一项违法记录!");
+            } else {
+              alert("新建记录失败!");
+            }
           }
-        }
-      });
+        });
+        //无证户接口
+      } else {
 
+        if ($('#name').val() != '' && $('#phone').val() != '') {
+        	var name=$('#name').val();
+        	var phone=$('#phone').val();
+        	var sex=$('#sex').val();
+            var age=$('#age').val();
+            var address=$('#address').val();
+            var idcard=$('#idcard').val();
+          $.ajax({
+            type: "POST",
+            url: "../../user/insertNotLicenseCrimalCase.do",
+            data: {
+            	"name": name,
+            	"phone": phone,
+            	"sex": sex,
+            	"age": age,
+            	"address": address,
+              	"id_number": idcard,
+              	"dateTime": date,
+              	"ay": JSON.stringify(ay),
+              	"remark": remark,
+              	"lng": longitude,
+              	"lat": latitude
+            },
+            dataType: "json",
+            error: function (request) {
+              console.log(request);
+            },
+            success: function (text) {
+            	 if (text > 0) {
+                     alert("新建记录成功!");
+                     history.back();
+                   } else if (text == -1) {
+                     alert("新建记录失败,至少选择一项违法记录!");
+                   } else {
+                     alert("新建记录失败!");
+                   }           	
+            }
+          });
+        } else {
+          alert('请填入姓名或手机号码!');
+        }
+      }
     }
 
   </script>

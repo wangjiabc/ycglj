@@ -11,6 +11,7 @@ import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Law_Case;
+import com.ycglj.manage.daoModel.Not_License;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
@@ -35,7 +36,9 @@ public interface LicenseDAO {
 	
 	public Integer insertIntoCrimalCase(List<Crimal_Case> crimalCaseList,Crimal_Record crimal_Record);
 	
-	public Integer updateCrimalCase(String crimal_id,List<Crimal_Case> crimalCaseList,Crimal_Record crimal_Record);
+	public Integer updateCrimalCase(String crimal_id,List<Crimal_Case> crimalCaseList,Crimal_Record crimal_Record,String openId,Double lng,Double lat);
+	
+	public Integer insertNotLicenseCrimalCase(Not_License not_License,List<Crimal_Case> crimalCaseList,Crimal_Record crimal_Record);
 		
 	public List getAllCaseByLicense(String license);
 	
@@ -43,11 +46,28 @@ public interface LicenseDAO {
 	
 	public Map getAllCrimalRecordJoin(Integer limit, Integer offset, String sort,String order,Map search);
 	
-	public String findRoomInfoPositionByLatLng(Double lat, Double lng);
+	public Map findRoomInfoPositionByLatLng(Double lat, Double lng);
 	
 	public Map getAllCheckPerson(Integer limit, Integer offset, String sort,String order,Map search);
 	
 	public Integer updateWeight(Weight_Log weight_Log);
 	
 	public List<Crimal_Case> getCrimalCase(String crimal_id);
+	
+	public String getNotLicense(String phone);
+	
+	public Not_License getNotLicenseById(String phone);
+	
+	public List getBusinessStateType();
+	
+	public Map getBusinessStateByDate(String endTime);
+	
+	public List getLawCaseType();
+	
+	public Map getLawCaseByDate(String startTime,String endTime);
+	
+	public List getThreeLawCaseType();
+	
+	public Map getThreeLawCaseByDate(String startTime,String endTime);
+	
 }

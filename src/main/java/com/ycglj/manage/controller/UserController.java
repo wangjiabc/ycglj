@@ -32,10 +32,12 @@ import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Check_Person;
+import com.ycglj.manage.daoModel.Not_License;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModelJoin.Crimal_Record_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
@@ -627,6 +629,31 @@ public class UserController {
 		
         map=licenseDAO.getAllCrimalRecordJoin(limit, offset, sort, order,searchMap);
 
+        List list=(List) map.get("data");
+        
+        Iterator iterator=list.iterator();
+        
+        int i=0;
+        
+        while (iterator.hasNext()) {
+        	Crimal_Record_Join crimal_Record_Join=(Crimal_Record_Join) iterator.next();
+        	MyTestUtil.print(crimal_Record_Join);
+        	if(crimal_Record_Join.getName()==null||crimal_Record_Join.getName().equals("")){
+        		Not_License not_License=licenseDAO.getNotLicenseById(crimal_Record_Join.getLicense());
+				if (not_License != null) {
+					crimal_Record_Join.setName(not_License.getName());
+					crimal_Record_Join.setPhone(not_License.getPhone());
+					crimal_Record_Join.setAddress(not_License.getAddress());
+					crimal_Record_Join.setLicense("无许可证");
+					list.set(i, crimal_Record_Join);
+				}
+        	}
+        	i++;
+        	System.out.println("i="+i);
+		}
+        
+        map.put("data", list);
+        
         if(map==null){
         	map = new HashMap<String, Object>();
         }else{

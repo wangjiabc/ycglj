@@ -42,12 +42,12 @@
                     { type: 'checkbox' },
                     { field: 'id', title: 'ID', sort: true }
                     , { field: 'address', title: '地址' }
-                    , { field: 'name', edit: 'text', title: '姓名' }
-                    , { field: 'user_name', edit: 'text', title: '录入人员姓名' }
+                    , { field: 'name', edit: 'text', title: '姓名' }                   
                     , { field: 'phone', edit: 'text', title: '电话' }
                     , { field: 'criminal_content', title: '案件内容' }
                     , { field: 'license', title: '许可证号' }
-                    , { field: 'criminal_time', title: '案发时间', align: 'center', templet: function (d) { return util.toDateString(d.subscribeTime, 'yyyy-MM-dd HH:mm') } }
+                    , { field: 'user_name', edit: 'text', title: '录入人员姓名' }
+                    , { field: 'criminal_time', title: '案发时间',templet: function (d) { return util.toDateString(d.criminal_time, 'yyyy-MM-dd HH:mm')}}
                 ]]
             });
             //监听搜索

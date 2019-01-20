@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -172,13 +173,430 @@ public class BaiduMapController {
 	public @ResponseBody Map getLicenseGUIDByPosition(@RequestParam Double lng,
 			@RequestParam Double lat ,HttpServletRequest request){
 		
-		Map map=new HashMap<>();
-		
-		String license=licenseDAO.findRoomInfoPositionByLatLng(lat, lng);
-		
-		map.put("license", license);
+		Map map=licenseDAO.findRoomInfoPositionByLatLng(lat, lng);
 		
 		return map;
+        
+	}
+	
+	
+	@RequestMapping("getBusinessStatistics")
+	public @ResponseBody Map getBusinessStatistics(Integer type,HttpServletRequest request){
+		
+        if(type==null){
+        	type=0;
+        }
+		
+		Calendar cal = Calendar.getInstance();  
+		cal = Calendar.getInstance();
+		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0); 
+		cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+		cal.roll(Calendar.DATE, -1);
+		
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+		
+		String endTime=null;
+		
+		long endTimeLong=cal.getTime().getTime();
+        endTime=sdf.format(cal.getTime());
+		
+        List month=new ArrayList<>();
+
+        List options=new ArrayList<>();
+        
+        int i=0;
+        
+        cal.set(cal.get(Calendar.YEAR), 0, cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+
+        long currentTime=cal.getTime().getTime();
+        
+        while(currentTime<endTimeLong&&i<12){
+        	cal.set(cal.get(Calendar.YEAR), i, cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        	cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+            currentTime=cal.getTime().getTime();
+        	String m=(i+1)+"月";
+        	month.add(m);
+        	System.out.println("i="+i);
+        	System.out.println(sdf.format(currentTime)+"  "+sdf.format(endTimeLong));
+        	String currentEndTime=sdf.format(currentTime);
+        	Map businessMap=licenseDAO.getBusinessStateByDate(currentEndTime);
+        	Map title=new HashMap<>();
+        	title.put("text", currentEndTime+"业态饼状图");
+        	List series=new ArrayList<>();
+        	List seriesData=(List) businessMap.get("data");
+        	Map data=new HashMap<>();
+        	data.put("data", seriesData);
+        	series.add(data);
+        	Map optionMap=new HashMap<>();
+        	optionMap.put("title", title);
+        	optionMap.put("series", series);
+        	options.add(optionMap);
+        	i++;
+        }
+        
+        Map map=new HashMap<>();
+        
+        Map baseOption=new HashMap<>();
+        
+        Map timeline=new HashMap<>();
+        
+        timeline.put("axisType","category");
+        timeline.put("data", month);
+        timeline.put("left", 0);
+        timeline.put("right", 0);
+        timeline.put("show", true);
+        
+        if(type!=1){
+        	timeline.put("bottom", 60);
+        }else{
+        	timeline.put("autoPlay", true);
+            timeline.put("playInterval", 2000);
+        }
+        
+        List series=new ArrayList<>();
+        
+        Map seriesMap=new HashMap<>();
+        
+        seriesMap.put("name", "业态统计");
+        seriesMap.put("type", "pie");
+        seriesMap.put("radius", "55%");
+        List center=new ArrayList<>();
+        center.add("50%");
+        center.add("50%");
+        seriesMap.put("center", center);
+        
+        if(type==1){
+        	Map seriesMap2=new HashMap<>();
+        	seriesMap2.put("name", "业态");
+        	seriesMap2.put("type", "bar");
+        	series.add(seriesMap2);
+        }else{
+        	series.add(seriesMap);
+        }
+        
+        Map legend=new HashMap<>();
+        
+        legend.put("x", "left");
+        legend.put("top", 30);
+        List legendData=licenseDAO.getBusinessStateType();
+        legend.put("data", legendData);
+        
+        Map tooltip=new HashMap<>();
+        
+        tooltip.put("trigger", "item");
+        tooltip.put("formatter", "");
+        
+        baseOption.put("timeline", timeline);
+        baseOption.put("series", series);        
+        baseOption.put("tooltip", tooltip);
+        if(type==1){
+        	Map grid=new HashMap<>();
+        	grid.put("containLabel", true);
+        	baseOption.put("grid", grid);
+        	List yAxis=new ArrayList<>();
+        	Map yMap=new HashMap<>();
+        	yMap.put("name", "单位/条");
+        	yAxis.add(yMap);
+        	List xAxis=new ArrayList<>();
+        	Map xMap=new HashMap<>();
+        	xMap.put("type", "category");
+        	xMap.put("data", legendData);
+        	xAxis.add(xMap);
+        	baseOption.put("yAxis", yAxis);
+        	baseOption.put("xAxis", xAxis);
+        }else{
+        	baseOption.put("legend", legend);
+        	baseOption.put("calculable", true);
+        }
+        
+        map.put("baseOption", baseOption);
+        map.put("options", options);
+        
+        return map;
+        
+	}
+	
+	@RequestMapping("getLawCase")
+	public @ResponseBody Map getLawCase(Integer type,HttpServletRequest request){
+		
+        if(type==null){
+        	type=0;
+        }
+		
+		Calendar cal = Calendar.getInstance();  
+		cal = Calendar.getInstance();
+		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0); 
+		cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+		cal.roll(Calendar.DATE, -1);
+		
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+		
+		String endTime=null;
+		
+		long endTimeLong=cal.getTime().getTime();
+        endTime=sdf.format(cal.getTime());
+		
+        List month=new ArrayList<>();
+
+        List options=new ArrayList<>();
+        
+        int i=0;
+        
+        cal.set(cal.get(Calendar.YEAR), 0, cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+
+        long currentTime=cal.getTime().getTime();
+        
+        while(currentTime<endTimeLong&&i<12){
+        	cal.set(cal.get(Calendar.YEAR), i, cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        	cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+            currentTime=cal.getTime().getTime();
+        	String m=(i+1)+"月";
+        	month.add(m);
+        	System.out.println("i="+i);
+        	System.out.println(sdf.format(currentTime)+"  "+sdf.format(endTimeLong));
+        	String currentStartTime=sdf.format(currentTime);
+        	cal.set(cal.get(Calendar.YEAR), i+1, cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        	cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+            long currentETime=cal.getTime().getTime();
+            String currentEndTime=sdf.format(currentETime);
+        	Map businessMap=licenseDAO.getLawCaseByDate(currentStartTime, currentEndTime);
+        	Map title=new HashMap<>();
+        	title.put("text", currentStartTime+"案由饼状图");
+        	List series=new ArrayList<>();
+        	List seriesData=(List) businessMap.get("data");
+        	Map data=new HashMap<>();
+        	data.put("data", seriesData);
+        	series.add(data);
+        	Map optionMap=new HashMap<>();
+        	optionMap.put("title", title);
+        	optionMap.put("series", series);
+        	options.add(optionMap);
+        	i++;
+        }
+        
+        Map map=new HashMap<>();
+        
+        Map baseOption=new HashMap<>();
+        
+        Map timeline=new HashMap<>();
+        
+        timeline.put("axisType","category");
+        timeline.put("data", month);
+        timeline.put("left", 0);
+        timeline.put("right", 0);
+        timeline.put("show", true);
+
+        if(type!=1){
+        	timeline.put("bottom", 60);
+        }else{
+            timeline.put("autoPlay", true);
+            timeline.put("playInterval", 2000);
+        }
+        
+        List series=new ArrayList<>();
+        
+        Map seriesMap=new HashMap<>();
+        
+        seriesMap.put("name", "案由统计");
+        seriesMap.put("type", "pie");
+        seriesMap.put("radius", "55%");
+        List center=new ArrayList<>();
+        center.add("50%");
+        center.add("50%");
+        seriesMap.put("center", center);
+        
+        if(type==1){
+        	Map seriesMap2=new HashMap<>();
+        	seriesMap2.put("name", "案由");
+        	seriesMap2.put("type", "bar");
+        	series.add(seriesMap2);
+        }else{
+        	series.add(seriesMap);
+        }
+        
+        Map legend=new HashMap<>();
+        
+        legend.put("x", "left");
+        legend.put("top", 30);
+        List legendData=licenseDAO.getLawCaseType();
+        legend.put("data", legendData);
+        
+        Map tooltip=new HashMap<>();
+        
+        tooltip.put("trigger", "item");
+        tooltip.put("formatter", "");
+        
+        baseOption.put("timeline", timeline);
+        baseOption.put("series", series);        
+        baseOption.put("tooltip", tooltip);
+        if(type==1){
+        	Map grid=new HashMap<>();
+        	grid.put("containLabel", true);
+        	baseOption.put("grid", grid);
+        	List yAxis=new ArrayList<>();
+        	Map yMap=new HashMap<>();
+        	yMap.put("name", "单位/条");
+        	yAxis.add(yMap);
+        	List xAxis=new ArrayList<>();
+        	Map xMap=new HashMap<>();
+        	xMap.put("type", "category");
+        	xMap.put("data", legendData);
+        	xAxis.add(xMap);
+        	baseOption.put("yAxis", yAxis);
+        	baseOption.put("xAxis", xAxis);
+        }else{
+        	baseOption.put("legend", legend);
+        	baseOption.put("calculable", true);
+        }
+        
+        map.put("baseOption", baseOption);
+        map.put("options", options);
+        
+        return map;
+        
+	}
+
+	
+	@RequestMapping("getThreeLawCase")
+	public @ResponseBody Map getThreeLawCase(Integer type,HttpServletRequest request){
+		
+        if(type==null){
+        	type=0;
+        }
+		
+		Calendar cal = Calendar.getInstance();  
+		cal = Calendar.getInstance();
+		cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0); 
+		cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+		cal.roll(Calendar.DATE, -1);
+		
+		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+		
+		String endTime=null;
+		
+		long endTimeLong=cal.getTime().getTime();
+        endTime=sdf.format(cal.getTime());
+		
+        List month=new ArrayList<>();
+
+        List options=new ArrayList<>();
+        
+        int i=0;
+        
+        cal.set(cal.get(Calendar.YEAR), 0, cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+
+        long currentTime=cal.getTime().getTime();
+        
+        while(currentTime<endTimeLong&&i<12){
+        	cal.set(cal.get(Calendar.YEAR), i, cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        	cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+            currentTime=cal.getTime().getTime();
+        	String m=(i+1)+"月";
+        	month.add(m);
+        	System.out.println("i="+i);
+        	System.out.println(sdf.format(currentTime)+"  "+sdf.format(endTimeLong));
+        	String currentStartTime=sdf.format(currentTime);
+        	cal.set(cal.get(Calendar.YEAR), i+1, cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        	cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+            long currentETime=cal.getTime().getTime();
+            String currentEndTime=sdf.format(currentETime);
+        	Map businessMap=licenseDAO.getThreeLawCaseByDate(currentStartTime, currentEndTime);
+        	Map title=new HashMap<>();
+        	title.put("text", currentStartTime+"案由饼状图");
+        	List series=new ArrayList<>();
+        	List seriesData=(List) businessMap.get("data");
+        	Map data=new HashMap<>();
+        	data.put("data", seriesData);
+        	series.add(data);
+        	Map optionMap=new HashMap<>();
+        	optionMap.put("title", title);
+        	optionMap.put("series", series);
+        	options.add(optionMap);
+        	i++;
+        }
+        
+        Map map=new HashMap<>();
+        
+        Map baseOption=new HashMap<>();
+        
+        Map timeline=new HashMap<>();
+        
+        timeline.put("axisType","category");
+        timeline.put("data", month);
+        timeline.put("left", 0);
+        timeline.put("right", 0);
+        timeline.put("show", true);
+
+        if(type!=1){
+        	timeline.put("bottom", 60);
+        }else{
+            timeline.put("autoPlay", true);
+            timeline.put("playInterval", 2000);
+        }
+        
+        List series=new ArrayList<>();
+        
+        Map seriesMap=new HashMap<>();
+        
+        seriesMap.put("name", "案由统计");
+        seriesMap.put("type", "pie");
+        seriesMap.put("radius", "55%");
+        List center=new ArrayList<>();
+        center.add("50%");
+        center.add("50%");
+        seriesMap.put("center", center);
+        
+        if(type==1){
+        	Map seriesMap2=new HashMap<>();
+        	seriesMap2.put("name", "案由");
+        	seriesMap2.put("type", "bar");
+        	series.add(seriesMap2);
+        }else{
+        	series.add(seriesMap);
+        }
+        
+        Map legend=new HashMap<>();
+        
+        legend.put("x", "left");
+        legend.put("top", 30);
+        List legendData=licenseDAO.getThreeLawCaseType();
+        legend.put("data", legendData);
+        
+        Map tooltip=new HashMap<>();
+        
+        tooltip.put("trigger", "item");
+        tooltip.put("formatter", "");
+        
+        baseOption.put("timeline", timeline);
+        baseOption.put("series", series);        
+        baseOption.put("tooltip", tooltip);
+        if(type==1){
+        	Map grid=new HashMap<>();
+        	grid.put("containLabel", true);
+        	baseOption.put("grid", grid);
+        	List yAxis=new ArrayList<>();
+        	Map yMap=new HashMap<>();
+        	yMap.put("name", "单位/条");
+        	yAxis.add(yMap);
+        	List xAxis=new ArrayList<>();
+        	Map xMap=new HashMap<>();
+        	xMap.put("type", "category");
+        	xMap.put("data", legendData);
+        	xAxis.add(xMap);
+        	baseOption.put("yAxis", yAxis);
+        	baseOption.put("xAxis", xAxis);
+        }else{
+        	baseOption.put("legend", legend);
+        	baseOption.put("calculable", true);
+        }
+        
+        map.put("baseOption", baseOption);
+        map.put("options", options);
+        
+        return map;
         
 	}
 	

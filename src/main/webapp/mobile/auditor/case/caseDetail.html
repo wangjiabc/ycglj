@@ -91,6 +91,10 @@
 		.weui-swiped-btn {
 			padding: 22px 1em;
 		}
+
+		.ayName {
+			margin-right: 10px;
+		}
 	</style>
 
 </head>
@@ -322,7 +326,59 @@
 			$('.weui-flex p').css('display', 'block');
 		}
 		$('.menu_body').click(function () {
-			alert(this.id);
+			var id = this.id;
+			$.get("/ycglj/mobile/user/getCrimalCase.do", {
+				crimal_id: id
+			}, function (data) {
+				// var data =JSON.stringify(data);
+				var data = JSON.parse(data);
+				var html = "";
+				for (let index = 0; index < data.length; index++) {
+					html += ' <div class="weui-cell">' +
+						'<label id="ayName' + index + '" class="weui-label">' + data[index].criminal_type + '</label>' +
+						'<div class="weui-cell__bd">' +
+						'<input id="ayNum' + index + '" class="weui-input" type="number" value="' + data[index].criminal_number + '">' +
+						'</div>' +
+						'</div>'
+				}
+				// ay.push($(".anyou").html(), $(".weui-input").val());
+
+				$.modal({
+					title: '修改案由',
+					text: html,
+					buttons: [
+						{
+							text: "确定", onClick: function () {
+								//点击确认
+								var anyou = [];
+								for (let index = 0; index < data.length; index++) {
+									console.log($("label.ayName").text());
+									anyou.push($("#ayName" + index).text(), $("#ayNum" + index).val());
+								}
+								console.log(anyou);
+								$.get("../../../../ycglj/mobile/user/updateCrimalCase.do?ay=" + anyou, {
+									crimal_id: id,
+									license: license,
+									lng: longitude,
+									lat: latitude,
+									remark: ""
+								}, function (text) {
+										if(text>0){
+											location.reload();
+										}else if(text==-2){
+											alert("没有修改权限");
+										}else{
+											alert("修改失败");
+										}
+								});
+							}
+						},
+						{ text: "取消", className: "default", onClick: function () { console.log(3) } },
+					]
+
+				});
+			});
+
 		})
 		$("div.weui-flex").click(function () {
 			// $("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");

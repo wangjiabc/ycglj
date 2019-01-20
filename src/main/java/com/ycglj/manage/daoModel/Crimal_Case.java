@@ -32,6 +32,9 @@ public class Crimal_Case implements Serializable{
     @SQLDateTime(name="date")
 	private Date date;
 
+    @SQLDateTime(name="up_date")
+	private Date up_date;
+
 	public void setCrimal_id(String crimal_id){
 		this.crimal_id = crimal_id;
 	}
@@ -86,6 +89,14 @@ public class Crimal_Case implements Serializable{
 
 	public Date getDate(){
 		return date;
+	}
+
+	public void setUp_date(Date up_date){
+		this.up_date = up_date;
+	}
+
+	public Date getUp_date(){
+		return up_date;
 	}
 
 

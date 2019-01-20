@@ -19,13 +19,16 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.alibaba.druid.sql.ast.statement.SQLIfStatement.Else;
 import com.google.common.collect.Lists;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
+import com.ycglj.manage.daoModel.Crimal_Record_UpLog;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Law_Case;
+import com.ycglj.manage.daoModel.Not_License;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
@@ -34,6 +37,7 @@ import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.Crimal_Record_Join;
 import com.ycglj.manage.daoModelJoin.License_Position_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
+import com.ycglj.manage.daoSQL.DeleteExe;
 import com.ycglj.manage.daoSQL.InsertExe;
 import com.ycglj.manage.daoSQL.SelectExe;
 import com.ycglj.manage.daoSQL.SelectJoinExe;
@@ -80,15 +84,25 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 				+ "[User_License].license,[User_License].business_state,[User_License].weight,"
 				+ "[Position].is_license,[Position].lng," 
 				+"[Position].lat ,[Position].wgs84_lng,[Position].wgs84_lat,"
-				+ "criminal_number,case_count ,fake_number ,not_channel_number "
+				+ "criminal_number,fake_number,case_count,not_channel_number "
 				+ " FROM [User_License] left join ("
-				+"SELECT [license],COUNT(*) as case_count,sum(criminal_number) as criminal_number "
+				+"SELECT [license],count(license) as case_count "
+				+"FROM [YC].[dbo].[Crimal_Record] group by license) as t0 "
+				+"on [User_License].license = t0.license "
+				+ "left join ("
+				+"SELECT [license],sum(criminal_number) as criminal_number "
 				+"FROM [YC].[dbo].[Law_Case] ";
 		
 		String sql201 = "SELECT count(*) "
 				+ " FROM [User_License] left join ("
 				+"SELECT [license],sum(criminal_number) as criminal_number "
 				+"FROM [YC].[dbo].[Law_Case] ";
+		
+		int notDeal=0;
+		
+		int notTransit=0;
+		
+		int notBatch=0;
 		
 		if(anyStrings==null||anyStrings.equals("")){
 			if((startDate!=null&&!startDate.equals(""))||(endDate!=null&&!endDate.equals(""))){
@@ -122,6 +136,13 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			    	sb.append("'"+str+"'");
 			    	sb.append(" OR ");
 			
+			    	if(str.equals("无证经营")){
+			    		notDeal=1;
+			    	}else if(str.equals("无证运输")){
+			    		notTransit=1;
+			    	}else if(str.equals("无证批发")){
+			    		notBatch=1;
+			    	}
 			}
 			
 			String ay="("+sb.substring(0, sb.length() - 3)+")";
@@ -224,10 +245,47 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	
 		License_Position_Join license_Position_Join=new License_Position_Join();
 		
+		String lawCaseSql;
+		
+		if ((anyStrings==null||anyStrings.equals(""))&&(yitStrings==null||yitStrings.equals(""))) {
+			lawCaseSql = "(SELECT license FROM [YC].[dbo].[Law_Case] where criminal_type='无证运输' or criminal_type='无证经营' or criminal_type='无证批发' group by license)";
+		} else {
+			lawCaseSql = "(SELECT license FROM [YC].[dbo].[Law_Case] where ";
+			if (notDeal == 1) {
+				lawCaseSql = lawCaseSql+"criminal_type='无证运输' or ";
+			} else if (notTransit == 1) {
+				lawCaseSql = lawCaseSql+"criminal_type='无证经营' or ";
+			} else if (notBatch == 1) {
+				lawCaseSql = lawCaseSql+"criminal_type='无证批发' or";
+			}
+			if(notDeal == 1||notTransit == 1||notBatch == 1){
+				lawCaseSql=lawCaseSql.substring(0, lawCaseSql.length() - 3)+"group by license)";
+			}else{
+				lawCaseSql="(SELECT license FROM [YC].[dbo].[Law_Case] group by license)";
+			}
+		}
+		
+		String notLicense="SELECT * FROM [Not_License] left join "+lawCaseSql+
+				"as t on [Not_License].phone=t.license where t.license is not null";
+		
+		String notLicenseCount="SELECT count(*) FROM [Not_License] left join "+lawCaseSql+
+				"as t on [Not_License].phone=t.license where t.license is not null";
+		
+		Not_License not_License=new Not_License();
+		
+		allPositionNotLicense allPositionNotLicense=new allPositionNotLicense();
+
 		try{
 			//List list=SelectSqlJoinExe.get(this.getJdbcTemplate(), sql, objects,license_Position_Join);
 			List list=this.getJdbcTemplate().query(sql,new allPositionCriminal());
 			int total=(int) SelectSqlJoinExe.getCount(this.getJdbcTemplate(), sql2, objects).get("");
+			
+			List notLicenseList=this.getJdbcTemplate().query(notLicense, allPositionNotLicense);	
+			int notLicenseTotal=(int) this.getJdbcTemplate().queryForMap(notLicenseCount).get("");
+			
+			list.addAll(notLicenseList);
+			total=total+notLicenseTotal;
+			
 			map.put("rows", list);
 			map.put("total", total);
 			//MyTestUtil.print(list);
@@ -269,6 +327,35 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			map.put("not_channel_number", not_channel_number);
 			
 			map.put("weight", weight);
+			
+			return map;
+		}
+		
+	}
+	
+	class allPositionNotLicense implements RowMapper<Map> {
+
+		@Override
+		public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
+			// TODO Auto-generated method stub
+			
+			Double lng=rs.getDouble("lng");
+			
+			Double lat=rs.getDouble("lat");
+			
+			Map map=new HashMap<>();
+			
+			map.put("lng", lng);
+			
+			map.put("lat", lat);
+			
+			map.put("case_count", -1);
+			
+			map.put("fake_number", 0);
+			
+			map.put("not_channel_number", 0);
+			
+			map.put("weight", 0);
 			
 			return map;
 		}
@@ -625,9 +712,18 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		String[] where1={"license=",crimal_Record.getLicense()};
 		user_License.setWhere(where1);
 		
-		user_License=(User_License) SelectExe.get(this.getJdbcTemplate(), user_License).get(0);
+		try{
+			user_License=(User_License) SelectExe.get(this.getJdbcTemplate(), user_License).get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 		
-		crimal_Record.setPhone(user_License.getPhone());
+		if(user_License.getPhone()!=null&&!user_License.getPhone().contentEquals("")){
+			crimal_Record.setPhone(user_License.getPhone());
+		}else{
+			crimal_Record.setPhone(crimal_Record.getLicense());
+		}
 		
 		i=InsertExe.get(this.getJdbcTemplate(), crimal_Record);
 		
@@ -707,53 +803,30 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	}
 
 	@Override
-	public Integer updateCrimalCase(String crimal_id,List<Crimal_Case> crimalCaseList, Crimal_Record crimal_Record) {
+	public Integer updateCrimalCase(String crimal_id,List<Crimal_Case> crimalCaseList, Crimal_Record crimal_Record,String openId,Double lng,Double lat) {
 		// TODO Auto-generated method stub
-		int i;
+		int i = 0;
 		
 		Iterator<Crimal_Case> iterator=crimalCaseList.iterator();
-		
-		String[] where0={"crimal_id=",crimal_id};
-		
-		while (iterator.hasNext()) {
-
-			Crimal_Case crimal_Case=iterator.next();
-			
-			crimal_Case.setWhere(where0);
-			
-			i=UpdateExe.get(this.getJdbcTemplate(), crimal_Case);
-			
-			if (i < 1) {
-				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			}
-			
-		}
-
-		User_License user_License=new User_License();
-		user_License.setLimit(1);
-		user_License.setOffset(0);
-		user_License.setNotIn("license");
-		String[] where1={"license=",crimal_Record.getLicense()};
-		user_License.setWhere(where1);
-		
-		user_License=(User_License) SelectExe.get(this.getJdbcTemplate(), user_License).get(0);
-		
-		crimal_Record.setPhone(user_License.getPhone());
-		
-		crimal_Record.setWhere(where0);
-		
-		i=UpdateExe.get(this.getJdbcTemplate(), crimal_Record);
-		
-		if (i < 1) {
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-		}
-		
 		
 		iterator=crimalCaseList.iterator();
 		
 		while (iterator.hasNext()) {
 			
 			Crimal_Case crimal_Case=iterator.next();
+			
+			String[] where1={"crimal_id=",crimal_id,"criminal_type=",crimal_Case.getCriminal_type()};
+			
+			Crimal_Case old_crimal_Case=new Crimal_Case();
+			old_crimal_Case.setLimit(1);
+			old_crimal_Case.setOffset(0);
+			old_crimal_Case.setNotIn("crimal_id");
+			
+			old_crimal_Case.setWhere(where1);
+			
+			List oldList=SelectExe.get(this.getJdbcTemplate(), old_crimal_Case);
+			
+			old_crimal_Case=(Crimal_Case) oldList.get(0);
 			
 			int case_number=crimal_Case.getCriminal_number();
 			String license=crimal_Case.getLicense();
@@ -783,7 +856,9 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 
 					Law_Case law_Case2=new Law_Case();
 					
-					law_Case2.setCriminal_number(law_Case.getCriminal_number()+case_number);
+					int current_number=law_Case.getCriminal_number()+(crimal_Case.getCriminal_number()-old_crimal_Case.getCriminal_number());
+					
+					law_Case2.setCriminal_number(current_number);
 					law_Case2.setDate(date);
 					
 					law_Case2.setWhere(where);
@@ -814,6 +889,112 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			}
 			
+		}
+
+
+		iterator=crimalCaseList.iterator();
+		
+		int criminal_number=0;
+		
+		while (iterator.hasNext()) {
+
+			Crimal_Case crimal_Case=iterator.next();
+
+			String[] where0={"crimal_id=",crimal_id,"criminal_type=",crimal_Case.getCriminal_type()};
+			
+			crimal_Case.setWhere(where0);
+			
+			if(crimal_Case.getCriminal_number()>0){
+				i=UpdateExe.get(this.getJdbcTemplate(), crimal_Case);
+			}else{
+				i=DeleteExe.get(this.getJdbcTemplate(), crimal_Case);
+			}
+			
+			criminal_number=criminal_number+crimal_Case.getCriminal_number();
+			
+			if (i < 1) {
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+			}
+			
+		}
+
+		Crimal_Record crimal_Record2=new Crimal_Record();
+		crimal_Record2.setLimit(1);
+		crimal_Record2.setOffset(0);
+		crimal_Record2.setNotIn("crimal_id");
+		String[] where3={"crimal_id = ",crimal_id};
+		
+		crimal_Record2.setWhere(where3);
+		
+		List oldcrimalList=SelectExe.get(this.getJdbcTemplate(), crimal_Record2);
+		
+		crimal_Record2=(Crimal_Record) oldcrimalList.get(0);
+		
+		User_License user_License=new User_License();
+		user_License.setLimit(1);
+		user_License.setOffset(0);
+		user_License.setNotIn("license");
+		String[] where1={"license=",crimal_Record.getLicense()};
+		user_License.setWhere(where1);
+		
+		user_License=(User_License) SelectExe.get(this.getJdbcTemplate(), user_License).get(0);
+		
+		crimal_Record.setPhone(user_License.getPhone());
+		
+		String[] where0={"crimal_id=",crimal_id};
+		
+		crimal_Record.setWhere(where0);
+		
+		if(criminal_number>0){
+			i=UpdateExe.get(this.getJdbcTemplate(), crimal_Record);
+		}else{
+			i=DeleteExe.get(this.getJdbcTemplate(), crimal_Record);
+		}
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		Crimal_Record_UpLog crimal_Record_UpLog=new Crimal_Record_UpLog();
+		crimal_Record_UpLog.setCrimal_id(crimal_id);
+		crimal_Record_UpLog.setOld_criminal_content(crimal_Record2.getCriminal_content());
+		crimal_Record_UpLog.setCriminal_content(crimal_Record.getCriminal_content());
+		crimal_Record_UpLog.setOld_remark(crimal_Record2.getRemark());
+		crimal_Record_UpLog.setRemark(crimal_Record.getRemark());
+		crimal_Record_UpLog.setOpen_id(crimal_Record2.getOpen_id());
+		crimal_Record_UpLog.setLast_up_open_id(crimal_Record2.getUp_open_id());
+		crimal_Record_UpLog.setUp_open_id(openId);
+		crimal_Record_UpLog.setCriminal_time(crimal_Record.getCriminal_time());
+		crimal_Record_UpLog.setLast_up_time(crimal_Record2.getUp_data());
+		crimal_Record_UpLog.setUp_time(new Date());
+		crimal_Record_UpLog.setLat(lat);
+		crimal_Record_UpLog.setLng(lng);
+		
+		i=InsertExe.get(this.getJdbcTemplate(), crimal_Record_UpLog);
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		return i;
+	}
+	
+	@Override
+	public Integer insertNotLicenseCrimalCase(Not_License not_License, List<Crimal_Case> crimalCaseList,
+			Crimal_Record crimal_Record) {
+		// TODO Auto-generated method stub
+		int i;
+		
+		i=InsertExe.get(this.getJdbcTemplate(), not_License);
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		i=insertIntoCrimalCase(crimalCaseList, crimal_Record);
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 		}
 		
 		return i;
@@ -876,6 +1057,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		weiXin_User.setSort(sort);
 		weiXin_User.setOrder(order);
 		
+		
 		if(search!=null&&!search.isEmpty()&&!search.equals("")){
 			String[] where=TransMapToString.get(search);
 			users.setWhere(where);
@@ -910,7 +1092,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	}
 
 	@Override
-	public String findRoomInfoPositionByLatLng(Double lat, Double lng) {
+	public Map findRoomInfoPositionByLatLng(Double lat, Double lng) {
 		// TODO Auto-generated method stub
 		Position position = new Position();
 		position.setLimit(1);
@@ -923,11 +1105,31 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		
 		List list=SelectExe.get(this.getJdbcTemplate(), position);
 		
-		position=(Position) list.get(0);
+		String license = null;
 		
-		String license=position.getLicense();
+		Map map=new HashMap<>();
 		
-		return license;
+		try {
+			position = (Position) list.get(0);
+			license = position.getLicense();
+			map.put("license", license);
+			map.put("type", 1);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			Not_License not_License=new Not_License();
+			not_License.setLimit(1);
+			not_License.setOffset(0);
+			not_License.setNotIn("phone");
+			not_License.setWhere(where);
+			List list2=SelectExe.get(this.getJdbcTemplate(), not_License);
+			not_License=(Not_License) list2.get(0);
+			license=not_License.getPhone();
+			map.put("license", license);
+			map.put("type", 0);
+		}
+		
+		return map;
 	}
 
 	@Override
@@ -1000,5 +1202,243 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		
 		return SelectExe.get(this.getJdbcTemplate(), crimal_Case);
 	}
+
+	@Override
+	public String getNotLicense(String phone) {
+		// TODO Auto-generated method stub
+		Not_License not_License=new Not_License();
+		not_License.setLimit(1);
+		not_License.setOffset(0);
+		not_License.setNotIn("phone");
+		
+		String[] where={"phone=",phone};
+		
+		not_License.setWhere(where);
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), not_License);
+		
+		not_License=(Not_License) list.get(0);
+		
+		String text;
+		
+		text=not_License.getName();
+		
+		Crimal_Record crimal_Record=new Crimal_Record();
+		crimal_Record.setLimit(100);
+		crimal_Record.setOffset(0);
+		crimal_Record.setNotIn("id");
+		
+		crimal_Record.setWhere(where);
+		
+		List list2=SelectExe.get(this.getJdbcTemplate(), crimal_Record);
+		
+		Iterator iterator=list2.iterator();
+		
+		while(iterator.hasNext()){
+			Crimal_Record crimal_Record2=(Crimal_Record) iterator.next();
+			text=text+","+crimal_Record2.getCriminal_content();
+		}
+		
+		return text;
+	}
+
+	@Override
+	public Not_License getNotLicenseById(String phone) {
+		// TODO Auto-generated method stub
+		Not_License not_License=new Not_License();
+		not_License.setLimit(1);
+		not_License.setOffset(0);
+		not_License.setNotIn("phone");
+		
+		String[] where={"phone=",phone};
+		
+		not_License.setWhere(where);
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), not_License);
+		
+		try{
+			not_License=(Not_License) list.get(0);
+			return not_License;
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+
+	@Override
+	public List getBusinessStateType() {
+		// TODO Auto-generated method stub
+		String sql="SELECT business_state,COUNT(*) as value "+
+					"from  User_License group by business_state ";
+		
+		List list=this.getJdbcTemplate().query(sql, new businessStateType());
+		
+		Iterator iterator=list.iterator();
+		
+		List list2=new ArrayList<>();
+		
+		while(iterator.hasNext()){
+			Map map=(Map) iterator.next();
+			String businessState=(String) map.get("name");
+			list2.add(businessState);
+		}
+		
+		return list2;
+	}
+	
+	@Override
+	public Map getBusinessStateByDate(String endTime) {
+		// TODO Auto-generated method stub
+		String sql="SELECT business_state,COUNT(*) as value "+
+				"from  User_License where convert(varchar(11),business_date,120)<='"+endTime+"'"+
+				" or business_date is null group by business_state ";
+	
+		List list=this.getJdbcTemplate().query(sql, new businessStateType());
+		
+		String sqlCount="SELECT count(*)"+
+				"from  User_License where convert(varchar(11),business_date,120)<='"+endTime+"'"+
+				" or business_date is null ";
+		
+		int total=(int) this.getJdbcTemplate().queryForMap(sqlCount).get("");
+		
+		Map map=new HashMap<>();
+		
+		map.put("data", list);
+		map.put("total", total);
+		
+		return map;
+	}
+	
+	class businessStateType implements RowMapper<Map> {
+
+		@Override
+		public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
+			// TODO Auto-generated method stub
+			
+			Integer value=rs.getInt("value");
+			
+			String name=rs.getString("business_state");
+			
+			Map map=new HashMap<>();
+			
+			map.put("value", value);
+			
+			if(name==null||name.equals("")){
+				name="无";
+			}
+			
+			map.put("name", name);
+			
+			return map;
+		}
+		
+	}
+
+	@Override
+	public List getLawCaseType() {
+		// TODO Auto-generated method stub
+		String sql = "SELECT criminal_type,COUNT(*) as value " + "from  Crimal_Case group by criminal_type ";
+
+		List list = this.getJdbcTemplate().query(sql, new LawCaseType());
+
+		Iterator iterator = list.iterator();
+
+		List list2 = new ArrayList<>();
+
+		while (iterator.hasNext()) {
+			Map map = (Map) iterator.next();
+			String LawCaseType = (String) map.get("name");
+			list2.add(LawCaseType);
+		}
+
+		return list2;
+	}
+
+	@Override
+	public Map getLawCaseByDate(String startTime, String endTime) {
+		// TODO Auto-generated method stub
+		String sql="SELECT criminal_type,sum(criminal_number) as value "+
+				"from  Crimal_Case where convert(varchar(11),criminal_time,120)>='"+startTime+"'"+
+				" and convert(varchar(11),criminal_time,120)<='"+endTime+"'"+
+				"group by criminal_type ";
+	
+		List list=this.getJdbcTemplate().query(sql, new LawCaseType());
+		
+		String sqlCount="SELECT count(*)"+
+				"from  Crimal_Case where convert(varchar(11),criminal_time,120)>='"+startTime+"'"+
+				" and convert(varchar(11),criminal_time,120)<='"+endTime+"'";
+		
+		int total=(int) this.getJdbcTemplate().queryForMap(sqlCount).get("");
+		
+		Map map=new HashMap<>();
+		
+		map.put("data", list);
+		map.put("total", total);
+		
+		return map;
+	}
+
+	@Override
+	public List getThreeLawCaseType() {
+		// TODO Auto-generated method stub
+		List list=new ArrayList<>();
+		
+		list.add("非渠道");
+		list.add("假冒");
+		list.add("走私");
+		
+		return list;
+	}
+
+	@Override
+	public Map getThreeLawCaseByDate(String startTime, String endTime) {
+		// TODO Auto-generated method stub
+		String sql="SELECT criminal_type,sum(criminal_number) as value "+
+				"from  Crimal_Case where convert(varchar(11),criminal_time,120)>='"+startTime+"'"+
+				" and convert(varchar(11),criminal_time,120)<='"+endTime+"'"+
+				" and (criminal_type='非渠道' or criminal_type='假冒' or criminal_type='走私')"+
+				"group by criminal_type ";
+	
+		List list=this.getJdbcTemplate().query(sql, new LawCaseType());
+		
+		String sqlCount="SELECT count(*)"+
+				"from  Crimal_Case where convert(varchar(11),criminal_time,120)>='"+startTime+"'"+
+				" and convert(varchar(11),criminal_time,120)<='"+endTime+"'"+
+				" and (criminal_type='非渠道' or criminal_type='假冒' or criminal_type='走私')";
+		
+		int total=(int) this.getJdbcTemplate().queryForMap(sqlCount).get("");
+		
+		Map map=new HashMap<>();
+		
+		map.put("data", list);
+		map.put("total", total);
+		
+		return map;
+	}
+	
+	class LawCaseType implements RowMapper<Map> {
+
+		@Override
+		public Map mapRow(ResultSet rs, int rowNum) throws SQLException {
+			// TODO Auto-generated method stub
+			
+			Integer value=rs.getInt("value");
+			
+			String name=rs.getString("criminal_type");
+			
+			Map map=new HashMap<>();
+			
+			map.put("value", value);
+						
+			map.put("name", name);
+			
+			return map;
+		}
+		
+	}
+
+
 	
 }

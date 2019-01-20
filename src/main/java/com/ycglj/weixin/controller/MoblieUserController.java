@@ -32,6 +32,7 @@ import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Law_Case;
+import com.ycglj.manage.daoModel.Not_License;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
@@ -42,6 +43,7 @@ import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.SellerService;
+import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.service.WeiXinService;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
@@ -67,6 +69,13 @@ public class MoblieUserController {
 	@Autowired
 	public void setweixinService(WeiXinService weiXinService) {
 		this.weixinService=weiXinService;
+	}
+	
+	private UserService userService;
+
+	@Autowired
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 	
 	private PhotoService photoService;
@@ -303,6 +312,19 @@ public class MoblieUserController {
 		
 	}
 	
+	@RequestMapping("/getNotLicenseByID")
+	public @ResponseBody Map<String, Object> getNotLicenseByID(@RequestParam String license
+			,HttpServletRequest request){
+		Map map=new HashMap<>();
+		
+		String text=licenseDAO.getNotLicense(license);
+		
+		map.put("text", text);
+		
+		return map;
+		
+	}
+	
 	@RequestMapping("/updatePositionByRoomInfo")
 	public @ResponseBody Integer updatePositionByRoomInfo(
 			HttpServletRequest request,ServletResponse response, 
@@ -508,6 +530,7 @@ public class MoblieUserController {
 		crimal_Record.setCriminal_content(content);
 		crimal_Record.setCriminal_time(time);
 		crimal_Record.setOpen_id(openId);
+		crimal_Record.setUp_open_id(openId);
 		crimal_Record.setDate(date);
 		
 		System.out.println("remark="+remark);
@@ -539,13 +562,100 @@ public class MoblieUserController {
 		
 		String openId=session.getAttribute("openId").toString();
 		
+		com.ycglj.manage.model.Users users=userService.getUserByOnlyOpenId(openId);
+		
+		int place=users.getPlace();
+		
+		if(place<3){
+			return -2;
+		}
+		
 		UUID uuid=UUID.randomUUID();
 		
 		Date date=new Date();
 		
 		SimpleDateFormat sdf  =   new  SimpleDateFormat("yyyy-MM-dd"); 
 		Date time = new Date();
+		
+		String[] ayStrings = ay.split(",");
+		
+		int i=0;
+		
+		Crimal_Case crimal_Case=new Crimal_Case();
+		
+		List<Crimal_Case> crimalCaseList=new ArrayList<>();
+		
+		String content="";
+		
+		if (ay != null && !ay.equals("")) {
+			for (String ayString : ayStrings) {
+				System.out.println("ayString="+ayString);
+				//ayString=ayString.substring(1, ayString.length() - 1);
+				
+				if (i % 2 == 0) {
+					crimal_Case.setCriminal_type(ayString);
+					content = content + "," + ayString;
+				} else if (i != 0 && i % 2 != 0) {
+					content = content + ayString + "条";
+					int number = Integer.parseInt(ayString);
+					crimal_Case.setLicense(license);
+					crimal_Case.setCrimal_id(uuid.toString());
+					crimal_Case.setOpen_id(openId);
+					crimal_Case.setCriminal_number(number);
+					crimal_Case.setUp_date(date);
+					crimalCaseList.add(crimal_Case);
+					crimal_Case = new Crimal_Case();
+				}
 
+				i++;
+			}
+		}else{
+			return -1;
+		}
+		
+		content=content.substring(1,content.length());
+		
+		Crimal_Record crimal_Record=new Crimal_Record();
+		crimal_Record.setLicense(license);
+		crimal_Record.setCrimal_id(uuid.toString());
+		crimal_Record.setCriminal_content(content);
+		crimal_Record.setUp_open_id(openId);
+		crimal_Record.setUp_data(date);
+		
+		System.out.println("remark="+remark);
+		
+		if(remark!=null&&!remark.equals("")){
+			crimal_Record.setRemark(remark);
+			System.out.println("remark="+remark);
+		}
+		
+		
+		return licenseDAO.updateCrimalCase(crimal_id, crimalCaseList, crimal_Record,openId,lng,lat);
+
+	}
+	
+	@RequestMapping("/insertNotLicenseCrimalCase")
+	public @ResponseBody Integer insertNotLicenseCrimalCase(@RequestParam String name,@RequestParam String phone,
+			@RequestParam String dateTime,String sex,String age,String address,String id_number,
+			@RequestParam String ay,String remark,Double lng,Double lat,HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		UUID uuid=UUID.randomUUID();
+		
+		Date date=new Date();
+		
+		SimpleDateFormat sdf  =   new  SimpleDateFormat("yyyy-MM-dd"); 
+		Date time = null;
+		try {
+			 time = sdf.parse(dateTime);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		ay=ay.substring(1,ay.length()-1);
 		
 		String[] ayStrings = ay.split(",");
@@ -569,7 +679,7 @@ public class MoblieUserController {
 				} else if (i != 0 && i % 2 != 0) {
 					content = content + ayString + "条";
 					int number = Integer.parseInt(ayString);
-					crimal_Case.setLicense(license);
+					crimal_Case.setLicense(phone);
 					crimal_Case.setCrimal_id(uuid.toString());
 					crimal_Case.setOpen_id(openId);
 					crimal_Case.setCriminal_number(number);
@@ -588,11 +698,12 @@ public class MoblieUserController {
 		content=content.substring(1,content.length());
 		
 		Crimal_Record crimal_Record=new Crimal_Record();
-		crimal_Record.setLicense(license);
+		crimal_Record.setLicense(phone);
 		crimal_Record.setCrimal_id(uuid.toString());
 		crimal_Record.setCriminal_content(content);
 		crimal_Record.setCriminal_time(time);
 		crimal_Record.setOpen_id(openId);
+		crimal_Record.setUp_open_id(openId);
 		crimal_Record.setDate(date);
 		
 		System.out.println("remark="+remark);
@@ -603,11 +714,22 @@ public class MoblieUserController {
 		}
 		
 		if(lat!=null&&lng!=null){
-			//crimal_Record.setLat(lat);
-			//crimal_Record.setLng(lng);
+			crimal_Record.setLat(lat);
+			crimal_Record.setLng(lng);
 		}
 		
-		return licenseDAO.updateCrimalCase(crimal_id, crimalCaseList, crimal_Record);
+		Not_License not_License=new Not_License();
+		
+		not_License.setName(name);
+		not_License.setPhone(phone);
+		not_License.setCard_type("identity");
+		not_License.setId_number(id_number);
+		not_License.setAddress(address);
+		not_License.setLat(lat);
+		not_License.setLng(lng);
+		not_License.setDate(date);
+		
+		return licenseDAO.insertNotLicenseCrimalCase(not_License, crimalCaseList, crimal_Record);
 
 	}
 	

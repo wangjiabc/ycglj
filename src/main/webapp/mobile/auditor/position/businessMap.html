@@ -323,9 +323,13 @@
 		xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xhm.send();
 		var data = JSON.parse(xhm.responseText);
-		var ticket = data.rows;
-		total = data.total;
-		setColor(ticket);
+		if(data.total>0){
+			var ticket = data.rows;
+			total = data.total;
+			setColor(ticket);
+		}else{
+			total = 0;
+		}
 		//移除控件后再添加控件
 		map.removeControl(myZoomCtrl);
 		map.addControl(myZoomCtrl);
@@ -336,8 +340,9 @@
 		var points = []; // 添加海量点数据
 		var points1 = [];
 		var points2 = [];
+		var points3 = [];
 		var points0 = [];
-		var pointCollection, pointCollection1, pointCollection2, pointCollection0;
+		var pointCollection, pointCollection1, pointCollection2,pointCollection3,pointCollection0;
 
 		//默认颜色
 		var options1 = {
@@ -369,7 +374,13 @@
 			shape: BMAP_POINT_SHAPE_STAR,
 			color: '#0000FF'
 		}
-
+		//无证经营颜色
+		var options6 = {
+			size: BMAP_POINT_SIZE_SMALL,
+			shape: BMAP_POINT_SHAPE_STAR,
+			color: '#000000'
+		}
+		
 		console.log(ticket);
 
 		for (var i = 0; i < ticket.length; i++) {
@@ -386,6 +397,9 @@
 				} else if (ticket[i].case_count > 1||ticket[i].fake_number>=50||ticket[i].not_channel_number>=5000) {
 					points2.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
 					pointCollection2 = new BMap.PointCollection(points2, options4);
+				}else if (ticket[i].case_count == -1) {
+					points3.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+					pointCollection3 = new BMap.PointCollection(points3, options6);
 				}
 			}
 
@@ -409,6 +423,12 @@
 			})
 		}
 
+		if (pointCollection3 != null) {
+			pointCollection3.addEventListener('click', function (e) {
+				openwindow(e.point.lng, e.point.lat);
+			})
+		}
+		
 		if (pointCollection0 != null) {
 			pointCollection0.addEventListener('click', function (e) {
 				openwindow(e.point.lng, e.point.lat);
@@ -418,6 +438,7 @@
 		map.addOverlay(pointCollection); // 添加Overlay
 		map.addOverlay(pointCollection1); // 添加Overlay
 		map.addOverlay(pointCollection2); // 添加Overlay
+		map.addOverlay(pointCollection3); // 添加Overlay
 		map.addOverlay(pointCollection0); // 添加Overlay
 
 	}
@@ -434,9 +455,15 @@
 		xhm.send();
 		var data = JSON.parse(xhm.responseText);
 		var license = data.license;
+		var url;
+		if(data.type==1){
+			url="../../../mobile/user/getRoomInfoByGUID.do";
+		}else if(data.type==0){
+			url="../../../mobile/user/getNotLicenseByID.do";
+		}
 		$.ajax({
 			type: "POST",
-			url: "../../../mobile/user/getRoomInfoByGUID.do",
+			url: url,
 			data: {
 				"license": license
 			},
@@ -485,16 +512,18 @@
 					});
 
 					div.addEventListener("click", function () {
-						$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
-							lng: lng,
-							lat: lat
-						}, function (text) {
-							var data = JSON.parse(text);
-							location.href = "../case/caseDetail.html?license="
-								+ data.license + "&longitude=" + lng + "&latitude="
-								+ lat;
-						});
-					});
+						if(data.type=1){
+							$.get("../../../baiduMap/getLicenseGUIDByPosition.do", {
+								lng: lng,
+								lat: lat
+							}, function (text) {
+								var data = JSON.parse(text);
+								location.href = "../case/caseDetail.html?license="
+									+ data.license + "&longitude=" + lng + "&latitude="
+									+ lat;
+							});
+						}
+					  });
 					div.addEventListener("touchmove", function () {
 						map.enableDragging();  //启用地图拖拽功能
 					});
@@ -508,7 +537,11 @@
 					this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
 					this._div.style.top = pixel.y - 30 + "px";
 				}
-				txt = result.roomInfo.name;
+				if(data.type==1){
+					txt = result.roomInfo.name;
+				}else if(data.type==0){
+					txt = result.text;
+				}
 				var myCompOverlay = new ComplexCustomOverlay(new BMap.Point(lng, lat), txt);
 
 				map.addOverlay(myCompOverlay);

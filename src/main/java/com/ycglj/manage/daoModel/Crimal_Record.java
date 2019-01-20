@@ -13,7 +13,7 @@ public class Crimal_Record implements Serializable{
 
     @SQLInteger(name="id")
 	private Integer id;
-    
+
     @SQLString(name="crimal_id")
 	private String crimal_id;
 
@@ -22,7 +22,7 @@ public class Crimal_Record implements Serializable{
 
     @SQLString(name="phone")
 	private String phone;
-    
+
     @SQLDateTime(name="criminal_time")
 	private Date criminal_time;
 
@@ -44,6 +44,12 @@ public class Crimal_Record implements Serializable{
     @SQLDateTime(name="date")
 	private Date date;
 
+    @SQLString(name="up_open_id")
+	private String up_open_id;
+
+    @SQLDateTime(name="up_data")
+	private Date up_data;
+
 	public void setId(Integer id){
 		this.id = id;
 	}
@@ -51,7 +57,7 @@ public class Crimal_Record implements Serializable{
 	public Integer getId(){
 		return id;
 	}
-    
+
 	public void setCrimal_id(String crimal_id){
 		this.crimal_id = crimal_id;
 	}
@@ -75,7 +81,7 @@ public class Crimal_Record implements Serializable{
 	public String getPhone(){
 		return phone;
 	}
-	
+
 	public void setCriminal_time(Date criminal_time){
 		this.criminal_time = criminal_time;
 	}
@@ -130,6 +136,22 @@ public class Crimal_Record implements Serializable{
 
 	public Date getDate(){
 		return date;
+	}
+
+	public void setUp_open_id(String up_open_id){
+		this.up_open_id = up_open_id;
+	}
+
+	public String getUp_open_id(){
+		return up_open_id;
+	}
+
+	public void setUp_data(Date up_data){
+		this.up_data = up_data;
+	}
+
+	public Date getUp_data(){
+		return up_data;
 	}
 
 
