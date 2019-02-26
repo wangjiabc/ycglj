@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -44,6 +46,7 @@ import com.ycglj.manage.daoSQL.SelectJoinExe;
 import com.ycglj.manage.daoSQL.SelectJoinExe2;
 import com.ycglj.manage.daoSQL.SelectSqlJoinExe;
 import com.ycglj.manage.daoSQL.UpdateExe;
+import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
 import com.ycglj.manage.tools.MyTestUtil;
@@ -52,7 +55,7 @@ import com.ycglj.manage.tools.TransMapToString;
 import cn.jpush.api.report.UsersResult.User;
 
 public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
-
+	
 	@Override
 	public Map getAllLicensePosition() {
 		// TODO Auto-generated method stub
@@ -78,7 +81,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	}
 
 	@Override
-	public Map getAllLicensePositionJoin(String name,String startDate,String endDate,String[] yitStrings,String[] anyStrings) {
+	public Map getAllLicensePositionJoin(String name,String startDate,String endDate,String[] yitStrings,String[] anyStrings
+			,Integer type,com.ycglj.manage.model.Users users) {
 		// TODO Auto-generated method stub
 		String sql01 = "SELECT  [User_License].phone,"
 				+ "[User_License].license,[User_License].business_state,[User_License].weight,"
@@ -249,6 +253,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		
 		if ((anyStrings==null||anyStrings.equals(""))&&(yitStrings==null||yitStrings.equals(""))) {
 			lawCaseSql = "(SELECT license FROM [YC].[dbo].[Law_Case] where criminal_type='无证运输' or criminal_type='无证经营' or criminal_type='无证批发' group by license)";
+		}else if ((anyStrings==null||anyStrings.equals(""))&&(yitStrings!=null||!yitStrings.equals(""))) {
+			lawCaseSql = "(SELECT license FROM [YC].[dbo].[Law_Case] where criminal_type='' group by license)";
 		} else {
 			lawCaseSql = "(SELECT license FROM [YC].[dbo].[Law_Case] where ";
 			if (notDeal == 1) {
@@ -277,6 +283,56 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 
 		try{
 			//List list=SelectSqlJoinExe.get(this.getJdbcTemplate(), sql, objects,license_Position_Join);
+			
+			if(type==0){
+											
+				Integer place=users.getPlace();
+				
+				Integer area=users.getArea();
+				
+				Integer business=users.getBusiness();
+				
+				if(place==2){
+					if(business==1){
+						sql=sql+" and area="+area;
+						sql2=sql2+" and area="+area;
+					}else if(business==2){
+						sql=sql+" and area="+area;
+						sql2=sql2+" and area="+area;
+					}else if(business==3||business==4){
+						Check_Person check_Person=new Check_Person();
+						check_Person.setLimit(1);
+						check_Person.setOffset(0);
+						check_Person.setNotIn("id");
+						String[] where={"phone=",users.getPhone()};
+						check_Person.setWhere(where);
+						List list=SelectExe.get(this.getJdbcTemplate(), check_Person);
+						String region="";
+						try{
+							check_Person=(Check_Person) list.get(0);
+							region=check_Person.getUnit();
+						}catch (Exception e) {
+							// TODO: handle exception
+							e.printStackTrace();
+						}
+						sql=sql+" and area="+area+" and region="+region;
+						sql2=sql2+" and area="+area+" and region="+region;
+					}else if(business==5){
+						sql=sql+" and area="+area;
+						sql2=sql2+" and area="+area;
+					}
+				}else if(place==3){
+					if(business==1){
+
+					}else if(business==2){
+						
+					}else if(business==3){
+						
+					}
+				}
+				
+			}
+			
 			List list=this.getJdbcTemplate().query(sql,new allPositionCriminal());
 			int total=(int) SelectSqlJoinExe.getCount(this.getJdbcTemplate(), sql2, objects).get("");
 			
@@ -288,9 +344,11 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			map.put("rows", list);
 			map.put("total", total);
+			//System.out.println("list=");
 			//MyTestUtil.print(list);
 		}catch (Exception e) {
-		// TODO: handle exception
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 
 		return map;
@@ -368,7 +426,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		// TODO Auto-generated method stub
 		String sql0 = "SELECT TOP " + limit + " * from " 
 				+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
-				+ "[User_License].license ,[User_License].open_id,[User_License].phone,[User_License].address,[User_License].weight " 
+				+ "[User_License].license ,[User_License].area, [User_License].open_id,[User_License].phone,[User_License].address,[User_License].weight " 
 				+ " FROM [User_License] left join  [Users]"
 				+ "on  [User_License].open_id = [Users].open_id "
 				+ "left join [Position] "
@@ -424,7 +482,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 					+" "+sql1;
 			sql2="SELECT count(*) from " 
 					+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
-					+ "[User_License].license ,[User_License].open_id,[User_License].phone,[User_License].address " 
+					+ "[User_License].license ,[User_License].area,[User_License].open_id,[User_License].phone,[User_License].address " 
 					+ " FROM [User_License] left join  [Users]"
 					+ "on  [User_License].open_id = [Users].open_id "
 					+ "left join [Position] "

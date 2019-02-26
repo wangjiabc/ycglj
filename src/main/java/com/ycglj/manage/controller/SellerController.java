@@ -114,9 +114,7 @@ public class SellerController {
 				*/
 			
 			Sellers sellers = sellerService.selectByCampusAdmin(campusAdmin);
-			
-			MyTestUtil.print(sellers);
-			
+						
 			if (sellers != null) {
 			 if (sellers.getCampusAdmin().equals("admin")&&sellers.getPassword().equals(Md5.GetMD5Code(password))) {
 					map.put(Constants.STATUS, Constants.SUCCESS);

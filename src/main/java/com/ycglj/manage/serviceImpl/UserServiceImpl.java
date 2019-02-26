@@ -98,6 +98,24 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public int upAtionTransact(Map<String, Object> paramterMap) {
+		// TODO Auto-generated method stub
+		return usersMapper.upAtionTransact(paramterMap);
+	}
+	
+	@Override
+	public int upAtionArea(Map<String, Object> paramterMap) {
+		// TODO Auto-generated method stub
+		return usersMapper.upAtionArea(paramterMap);
+	}
+	
+	@Override
+	public int upAtionBusiness(Map<String, Object> paramterMap) {
+		// TODO Auto-generated method stub
+		return usersMapper.upAtionBusiness(paramterMap);
+	}
+	
+	@Override
 	public int selectRepeatUser(String name) {
 		// TODO Auto-generated method stub
 		return usersMapper.selectRepeatUser(name);

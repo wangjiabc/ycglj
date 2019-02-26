@@ -21,6 +21,11 @@
 
   <script type="text/javascript" src="../asset/js/index.js"></script>
 </head>
+<style>
+  img {
+    width: 100%;
+  }
+</style>
 
 <body>
   <div class="weui-tab">
@@ -34,10 +39,14 @@
     </div>
     <div class="weui-tab__bd">
       <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
-        <img src="../asset/images/caseProcess.jpg" style="width:100%;">
+        <img src="../asset/images/caseProcess.jpg" onclick="jump();">
       </div>
       <div id="tab2" class="weui-tab__bd-item">
-        <button type="button" id="btn">test</button>
+        <!-- <button type="button" id="btn">test</button> -->
+        <!-- <iframe src="PDF.js/web/viewer.html?file=http://lzgfgs.com/ycglj/mobile/auditor/11.pdf" width="100%" height="99%"></iframe> -->
+        <div class="weui-cells__title">法律文书</div>
+        <div class="weui-cells">
+        </div>
       </div>
 
     </div>
@@ -53,10 +62,27 @@
 
   <script>
     $(function () {
-      $('#btn').click(function () {
-        window.open("1.doc");
-      })
+      var pdf = ['1中华人民共和国烟草专卖法（2015年版', '2烟草专卖法实施条例', '3四川省烟草专卖管理条例', '4烟草专卖许可证管理办法（2016年修订）', '5烟草专卖许可证管理办法实施细则(国烟专〔2017〕74号) (1)', '6烟草专卖行政处罚程序规定', '7两高关于办理非法生产、销售烟草专卖品等刑案的解释', '8烟草专卖许可证行政许可文书使用和管理的通知国烟办综〔2017〕423号'];
+      for (let index = 0; index < pdf.length; index++) {
+        var html = '<a id="' + index + '" class="weui-cell weui-cell_access" onclick="openPdf(this);">' +
+          '<div class="weui-cell__bd">' +
+          '<p>' + pdf[index] + '</p>' +
+          '</div>' +
+          '<div class="weui-cell__ft">显示文档</div>' +
+          '</a>';
+        $('.weui-cells').append(html);
+      }
     });
+    function openPdf(a) {
+      // this.id
+      var filename = a.id * 1 + 1;
+      console.log(filename);
+      location.href = "PDF.js/web/viewer.html?file=http://lzgfgs.com/ycglj/mobile/auditor/pdf/" + filename + ".pdf";
+    }
+    function jump() {
+      location.href = "../asset/images/caseProcess.jpg";
+    }
+
   </script>
 
 </body>

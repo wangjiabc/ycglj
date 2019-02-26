@@ -182,15 +182,6 @@
 		   local.search(val);
 	　   }
 	 }     
-  	
-	function keyDown(e) {   		  
-	　   var keycode = e.which;   //取得对应的键值（数字）  	  
-	　   var realkey = String.fromCharCode(e.which); //取得代表改键的真正字符  
-	   var val = document.getElementById("input").value;
-	　   if(keycode==13){
-		   local.search(val);
-	　   }
-	 }     
     
 	$.ajax({
         type: "POST",
@@ -233,11 +224,9 @@
                	  address.innerHTML=obj.address;
                   $("#address").append(address);
                  
-                 <!--
                  var manageRegion=document.createElement("span");
                   manageRegion.innerHTML=obj.manageRegion;
                   $("#manageRegion").append(manageRegion);
-                 -->
                  
                  var num=document.createElement("span");
                  num.innerHTML=obj.num;

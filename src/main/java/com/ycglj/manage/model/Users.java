@@ -63,6 +63,12 @@ public class Users implements Serializable{
 
 	private String card_number;
     
+	private Integer transact;
+	
+	private Integer area;
+	
+	private Integer business;
+	
     public Integer getCampusId() {
 		return campusId;
 	}
@@ -292,7 +298,28 @@ public class Users implements Serializable{
 		this.card_number = card_number;
 	}
 
+	public Integer getTransact() {
+		return transact;
+	}
 
+	public void setTransact(int transact) {
+		this.transact = transact;
+	}
 
+	public Integer getArea() {
+		return area;
+	}
+
+	public void setArea(int area) {
+		this.area = area;
+	}
+
+	public Integer getBusiness() {
+		return business;
+	}
+
+	public void setBusiness(int business) {
+		this.business = business;
+	}
 
 }

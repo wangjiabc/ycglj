@@ -20,7 +20,7 @@ public interface LicenseDAO {
 
 	public Map getAllLicensePosition();
 	
-	public Map getAllLicensePositionJoin(String name,String startDate,String endDate,String[] yitStrings,String[] anyStrings);
+	public Map getAllLicensePositionJoin(String name,String startDate,String endDate,String[] yitStrings,String[] anyStrings,Integer type,com.ycglj.manage.model.Users users);
 	
 	public Map<String, Object> findAllLicense_Position(Integer limit, Integer offset, Double lng, Double lat,String term,Map search);
 	

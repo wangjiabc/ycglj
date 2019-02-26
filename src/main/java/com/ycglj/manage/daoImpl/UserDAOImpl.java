@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.ycglj.manage.daoModel.Change_License_Note;
+import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.Position;
@@ -986,6 +987,12 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		fileSelfBelong.setWhere(where);
 		
 		return DeleteExe.get(this.getJdbcTemplate(), fileSelfBelong);
+	}
+
+	@Override
+	public List getAllCheck_Person(Check_Person check_Person) {
+		// TODO Auto-generated method stub
+		return SelectExe.get(this.getJdbcTemplate(), check_Person);
 	}
 
 

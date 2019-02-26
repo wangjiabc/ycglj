@@ -40,6 +40,12 @@ public interface UserService {
 	
 	int upAtionFormatter(Map<String, Object> paramterMap);
 	
+	int upAtionTransact(Map<String, Object> paramterMap);
+	
+	int upAtionArea(Map<String, Object> paramterMap);
+	
+	int upAtionBusiness(Map<String, Object> paramterMap);
+	
 	int selectRepeatUser(@Param(value="name") String name);
 	
 	int selectRepeatUserByOpenId(@Param(value="openId") String openId);

@@ -363,13 +363,7 @@
 									lat: latitude,
 									remark: ""
 								}, function (text) {
-										if(text>0){
-											location.reload();
-										}else if(text==-2){
-											alert("没有修改权限");
-										}else{
-											alert("修改失败");
-										}
+									
 								});
 							}
 						},
@@ -467,7 +461,7 @@
 					'</div>' +
 					'</div>'
 				$("#img2").append(html);
-				//$('.weui-cell_swiped').swipeout();
+				$('.weui-cell_swiped').swipeout();
 			}
 			$('.delete-swipeout').click(function () {
 				var uri = this.id;

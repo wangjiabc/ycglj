@@ -86,431 +86,370 @@
           </div>
         </div>
 
+      </div>
     </div>
-  </div>
 
 
-  <script src="../layui/layui.js"></script>
-  <script src="../echarts.common.min.js"></script>
-  <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
-  <script>
-    $(document).ready(function () {
-      tab1();
-      tab2();
-      tab3();
-    })
+    <script src="../layui/layui.js"></script>
+    <script src="../echarts.common.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        tab1();
+        tab2();
+        tab3();
+      })
 
-    function tab1() {
-      var myChart = echarts.init(document.getElementById('main'), 'light');
-      var myChart2 = echarts.init(document.getElementById('pie'), 'light');
-      var option = {
-        baseOption: {
-          timeline: {
-            axisType: 'category',//轴类型 value category time
-            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            left: 0,
-            right: 0,
-            bottom: 0
-          },
-          series: [
-            {
-              name: '业态统计',
-              type: 'pie',
-              radius: '45%',
-              center: ['45%', '50%'],
-            }
-          ],
-          legend: {
-            x: 'left',
-            top: 25,
-            left: 25,
-            // y: 'bottom',
-            data: ['食杂店', '便利店', '超市', '商场', '烟酒店', '娱乐服务', '路边摊', '其他']
-          },
-          tooltip: {
-            trigger: 'item',
-            formatter: "{a} <br/>{b} : {c}条 ({d}%)"
-          },
-          calculable: true,
-        },
-        options: [
-          { // 这是'2002-01-01' 对应的 option
-            title: {
-              text: '2018年1月业态饼状图',
+      function tab1() {
+        var myChart = echarts.init(document.getElementById('main'), 'light');
+        var myChart2 = echarts.init(document.getElementById('pie'), 'light');
+        $.get("../../baiduMap/getBusinessStatistics.do", {
+        }, function (data) {
+          var data = JSON.parse(data);
+          var option = {
+            baseOption: {
+              timeline: {
+                axisType: 'category',//轴类型 value category time
+                data: data.baseOption.timeline.data,
+                left: 0,
+                right: 0,
+                bottom: 0
+              },
+              series: [
+                {
+                  name: '业态统计',
+                  type: 'pie',
+                  radius: '45%',
+                  center: ['50%', '50%'],
+                }
+              ],
+              legend: {
+                x: 'left',
+                top: 25,
+                // left: 25,
+                // y: 'bottom',
+                data: data.baseOption.legend.data
+              },
+              tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c}起 ({d}%)"
+              },
+              calculable: true,
+            },
+            options: data.options
+
+          };
+
+          myChart2.setOption(option);
+        });
+        $.get("../../baiduMap/getBusinessStatistics.do?type=1", {
+        }, function (data) {
+          var data = JSON.parse(data);
+          var option = {
+            //固定框架的option
+            baseOption: {
+              timeline: {
+                //loop: false,      
+                axisType: 'category',//轴类型 value category time
+                show: true,//开关
+                autoPlay: true,//是否自动播放
+                playInterval: 2000,//播放时间
+                data: data.baseOption.timeline.data,
+                left: 0,
+                right: 0,
+              },
+              grid: { containLabel: true },
+              yAxis: data.baseOption.yAxis,
+              xAxis: [{
+                data: data.baseOption.xAxis[0].data
+              }],
+              tooltip: {
+                trigger: 'axis',
+                formatter: "{a} <br/>{b} : {c} " + '条'
+              },
+              series: [
+                {
+                  name: '业态',
+                  type: 'bar',
+                },
+              ]
+            },
+            //变化数据
+            options: data.options,
+          }
+          myChart.setOption(option);
+        });
+        var option = {
+          baseOption: {
+            timeline: {
+              axisType: 'category',//轴类型 value category time
+              data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+              left: 0,
+              right: 0,
+              bottom: 0
             },
             series: [
               {
-                data: [{ value: 10, name: '食杂店' },
-                { value: 5, name: '便利店' },
-                { value: 15, name: '超市' },
-                { value: 25, name: '商场' },
-                { value: 20, name: '烟酒店' },
-                { value: 35, name: '娱乐服务' },
-                { value: 30, name: '路边摊' },
-                { value: 40, name: '其他' }]
+                name: '业态统计',
+                type: 'pie',
+                radius: '45%',
+                center: ['45%', '50%'],
+              }
+            ],
+            legend: {
+              x: 'left',
+              top: 25,
+              left: 25,
+              // y: 'bottom',
+              data: ['食杂店', '便利店', '超市', '商场', '烟酒店', '娱乐服务', '路边摊', '其他']
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: "{a} <br/>{b} : {c}条 ({d}%)"
+            },
+            calculable: true,
+          },
+          options: [
+            { // 这是'2002-01-01' 对应的 option
+              title: {
+                text: '2018年1月业态饼状图',
+              },
+              series: [
+                {
+                  data: [{ value: 10, name: '食杂店' },
+                  { value: 5, name: '便利店' },
+                  { value: 15, name: '超市' },
+                  { value: 25, name: '商场' },
+                  { value: 20, name: '烟酒店' },
+                  { value: 35, name: '娱乐服务' },
+                  { value: 30, name: '路边摊' },
+                  { value: 40, name: '其他' }]
+                },
+              ]
+            }, { // 这是'2002-01-01' 对应的 option
+              title: {
+                text: '2018年2月业态饼状图'
+              },
+              series: [
+                {
+                  data: [{ value: 20, name: '食杂店' },
+                  { value: 15, name: '便利店' },
+                  { value: 4, name: '超市' },
+                  { value: 3, name: '商场' },
+                  { value: 22, name: '烟酒店' },
+                  { value: 14, name: '娱乐服务' },
+                  { value: 31, name: '路边摊' },
+                  { value: 40, name: '其他' }]
+                }
+              ]
+            },
+          ],
+
+        };
+      }
+
+      function tab2() {
+        var myChart = echarts.init(document.getElementById('main2'), 'light');
+        var myChart2 = echarts.init(document.getElementById('pie2'), 'light');
+        $.get("../../baiduMap/getLawCase.do", {
+        }, function (data) {
+          var data = JSON.parse(data);
+          var option = {
+            baseOption: {
+              timeline: {
+                axisType: 'category',//轴类型 value category time
+                data: data.baseOption.timeline.data,
+                left: 0,
+                right: 0,
+                bottom: 0
+              },
+              series: [
+                {
+                  name: '案件统计',
+                  type: 'pie',
+                  radius: '45%',
+                  center: ['50%', '50%'],
+                }
+              ],
+              legend: {
+                x: 'left',
+                top: 25,
+                data: data.baseOption.legend.data,
+              },
+              tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c}起 ({d}%)"
+              },
+              calculable: true,
+            },
+            options: data.options,
+
+          };
+          myChart2.setOption(option);
+        });
+        $.get("../../baiduMap/getLawCase.do?type=1", {
+        }, function (data) {
+          var data = JSON.parse(data);
+          var option = {
+            //固定框架的option
+            baseOption: {
+              timeline: {
+                //loop: false,      
+                axisType: 'category',//轴类型 value category time
+                show: true,//开关
+                autoPlay: true,//是否自动播放
+                playInterval: 2000,//播放时间
+                data: data.baseOption.timeline.data,
+                left: 0,
+                right: 0
+              },
+              // legend: {
+              //     data: ['业态', '案件', '三烟']
+              // },
+              grid: { containLabel: true },
+              yAxis: [{
+                name: "单位/起"
+              }],
+              xAxis: [{
+                type: 'category',
+                // inverse: true, 反转
+                data: data.baseOption.xAxis[0].data
+              }],
+              tooltip: {
+                trigger: 'axis',
+                formatter: "{a} <br/>{b} : {c} " + '起'
+              },
+              series: [
+                {
+                  name: '案件',
+                  type: 'bar',
+                },
+              ]
+            },
+            //变化数据
+            options: data.options,
+          }
+          myChart.setOption(option);
+        });
+        // myChart.resize();
+        // myChart2.resize();
+      }
+      function tab3() {
+        var myChart = echarts.init(document.getElementById('main3'), 'light');
+        var myChart2 = echarts.init(document.getElementById('pie3'), 'light');
+        $.get("../../baiduMap/getThreeLawCase.do", {
+        }, function (data) {
+          var data = JSON.parse(data);
+          var option = {
+            baseOption: {
+              timeline: {
+                axisType: 'category',//轴类型 value category time
+                data: data.baseOption.timeline.data,
+                left: 0,
+                right: 0,
+                bottom: 0
+              },
+              series: [
+                {
+                  name: '三烟统计',
+                  type: 'pie',
+                  radius: '45%',
+                  center: ['50%', '50%'],
+                }
+              ],
+              legend: {
+                x: 'left',
+                top: 25,
+                data: data.baseOption.legend.data,
+              },
+              tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c}条 ({d}%)"
+              },
+              calculable: true,
+            },
+            options: data.options
+          };
+
+          myChart2.setOption(option);
+        });
+        $.get("../../baiduMap/getThreeLawCase.do?type=1", {
+        }, function (data) {
+          var option = JSON.parse(data);
+          myChart.setOption(option);
+        });
+
+        var option2 = {
+          //固定框架的option
+          baseOption: {
+            timeline: {
+              //loop: false,      
+              axisType: 'category',//轴类型 value category time
+              show: true,//开关
+              autoPlay: true,//是否自动播放
+              playInterval: 2000,//播放时间
+              data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+              left: 0,
+              right: 0
+            },
+            // legend: {
+            //     data: ['业态', '案件', '三烟']
+            // },
+            grid: { containLabel: true },
+            yAxis: [{
+              // type: 'value',
+              // name: '单位/条',
+              // max: 100
+            }],
+            xAxis: [{
+              type: 'category',
+              // inverse: true, 反转
+              data: ['非渠道', '假冒', '走私']
+            }],
+            tooltip: {
+              trigger: 'axis',
+              formatter: "{a} <br/>{b} : {c} " + '条'
+            },
+            series: [
+              {
+                name: '三烟',
+                type: 'bar',
               },
             ]
-          }, { // 这是'2002-01-01' 对应的 option
-            title: {
-              text: '2018年2月业态饼状图'
-            },
-            series: [
-              {
-                data: [{ value: 20, name: '食杂店' },
-                { value: 15, name: '便利店' },
-                { value: 4, name: '超市' },
-                { value: 3, name: '商场' },
-                { value: 22, name: '烟酒店' },
-                { value: 14, name: '娱乐服务' },
-                { value: 31, name: '路边摊' },
-                { value: 40, name: '其他' }]
-              }
-            ]
           },
-        ],
-
-      };
-
-      var option2 = {
-        //固定框架的option
-        baseOption: {
-          timeline: {
-            //loop: false,      
-            axisType: 'category',//轴类型 value category time
-            show: true,//开关
-            autoPlay: true,//是否自动播放
-            playInterval: 2000,//播放时间
-            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            left: 0,
-            right: 0
-          },
-          // legend: {
-          //     data: ['业态', '案件', '三烟']
-          // },
-          grid: { containLabel: true },
-          yAxis: [{
-            // type: 'value',
-            // name: '单位/条',
-            // max: 100
-          }],
-          xAxis: [{
-            type: 'category',
-            // inverse: true, 反转
-            data: ['食杂店', '便利店', '超市', '商场', '烟酒店', '娱乐场所', '路边摊', '其他']
-          }],
-          tooltip: {
-            trigger: 'axis',
-            formatter: "{a} <br/>{b} : {c} " + '条'
-          },
-          series: [
+          //变化数据
+          options: [
+            //1990
             {
-              name: '业态',
-              type: 'bar',
+              title: {
+                text: '2018年1月三烟统计图'
+              },
+              series: [
+                {
+                  data: [5, 40, 16]
+                },
+
+              ]
+            },
+            //1995
+            {
+              title: {
+                text: '2018年2月三烟统计图'
+              },
+              series: [
+                {
+                  data: [5, 24, 32]
+                },
+              ]
             },
           ]
-        },
-        //变化数据
-        options: [
-          //1990
-          {
-            title: {
-              text: '2018年1月业态统计图'
-            },
-            series: [
-              {
-                data: [5, 40, 16, 10, 10, 20, 10, 10]
-              },
+        }
 
-            ]
-          },
-          //1995
-          {
-            title: {
-              text: '2018年2月业态统计图'
-            },
-            series: [
-              {
-                data: [5, 24, 32, 73, 31, 65, 25, 55]
-              },
-            ]
-          },
-        ]
+        // myChart.resize();
+        // myChart2.resize();
       }
-      myChart.setOption(option2);
-      myChart2.setOption(option);
-    }
-    function tab2() {
-      var myChart = echarts.init(document.getElementById('main2'), 'light');
-      var myChart2 = echarts.init(document.getElementById('pie2'), 'light');
-      var option = {
-        baseOption: {
-          timeline: {
-            axisType: 'category',//轴类型 value category time
-            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            left: 0,
-            right: 0,
-            bottom: 0
-          },
-          series: [
-            {
-              name: '案件统计',
-              type: 'pie',
-              radius: '55%',
-              center: ['50%', '50%'],
-            }
-          ],
-          legend: {
-            x: 'left',
-            top: 25,
-            left: 25,
-            // y: 'bottom',
-            data: ['非渠道', '假冒', '走私', '无证运输', '无证经营', '无证批发', '超邮', '其他']
-          },
-          tooltip: {
-            trigger: 'item',
-            formatter: "{a} <br/>{b} : {c}起 ({d}%)"
-          },
-          calculable: true,
-        },
-        options: [
-          { // 这是'2002-01-01' 对应的 option
-            title: {
-              text: '2018年1月案件饼状图',
-            },
-            series: [
-              {
-                data: [{ value: 10, name: '非渠道' },
-                { value: 5, name: '假冒' },
-                { value: 15, name: '走私' },
-                { value: 25, name: '无证运输' },
-                { value: 20, name: '无证经营' },
-                { value: 35, name: '无证批发' },
-                { value: 30, name: '超邮' },
-                { value: 40, name: '其他' }]
-              },
-            ]
-          }, { // 这是'2002-01-01' 对应的 option
-            title: {
-              text: '2018年2月案件饼状图'
-            },
-            series: [
-              {
-                data: [{ value: 20, name: '非渠道' },
-                { value: 15, name: '假冒' },
-                { value: 4, name: '走私' },
-                { value: 3, name: '无证运输' },
-                { value: 22, name: '无证经营' },
-                { value: 14, name: '无证批发' },
-                { value: 31, name: '超邮' },
-                { value: 40, name: '其他' }]
-              }
-            ]
-          },
-        ],
 
-      };
-      var option2 = {
-        //固定框架的option
-        baseOption: {
-          timeline: {
-            //loop: false,      
-            axisType: 'category',//轴类型 value category time
-            show: true,//开关
-            autoPlay: true,//是否自动播放
-            playInterval: 2000,//播放时间
-            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            left: 0,
-            right: 0
-          },
-          // legend: {
-          //     data: ['业态', '案件', '三烟']
-          // },
-          grid: { containLabel: true },
-          yAxis: [{
-            // type: 'value',
-            // name: '单位/条',
-            // max: 100
-          }],
-          xAxis: [{
-            type: 'category',
-            // inverse: true, 反转
-            data: ['非渠道', '假冒', '走私', '无证运输', '无证经营', '无证批发', '超邮', '其他']
-          }],
-          tooltip: {
-            trigger: 'axis',
-            formatter: "{a} <br/>{b} : {c} " + '起'
-          },
-          series: [
-            {
-              name: '案件',
-              type: 'bar',
-            },
-          ]
-        },
-        //变化数据
-        options: [
-          //1990
-          {
-            title: {
-              text: '2018年1月案件统计图'
-            },
-            series: [
-              {
-                data: [5, 40, 16, 10, 10, 20, 10, 10]
-              },
-
-            ]
-          },
-          //1995
-          {
-            title: {
-              text: '2018年2月案件统计图'
-            },
-            series: [
-              {
-                data: [5, 24, 32, 73, 31, 65, 25, 55]
-              },
-            ]
-          },
-        ]
-      }
-      myChart.setOption(option2);
-      myChart2.setOption(option);
-      // myChart.resize();
-      // myChart2.resize();
-    }
-    function tab3() {
-      var myChart = echarts.init(document.getElementById('main3'), 'light');
-      var myChart2 = echarts.init(document.getElementById('pie3'), 'light');
-      var option = {
-        baseOption: {
-          timeline: {
-            axisType: 'category',//轴类型 value category time
-            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            left: 0,
-            right: 0,
-            bottom: 0
-          },
-          series: [
-            {
-              name: '三烟统计',
-              type: 'pie',
-              radius: '55%',
-              center: ['50%', '50%'],
-            }
-          ],
-          legend: {
-            x: 'left',
-            top: 25,
-            left: 25,
-            // y: 'bottom',
-            data: ['非渠道', '假冒', '走私']
-          },
-          tooltip: {
-            trigger: 'item',
-            formatter: "{a} <br/>{b} : {c}条 ({d}%)"
-          },
-          calculable: true,
-        },
-        options: [
-          { // 这是'2002-01-01' 对应的 option
-            title: {
-              text: '2018年1月三烟饼状图',
-            },
-            series: [
-              {
-                data: [{ value: 10, name: '非渠道' },
-                { value: 5, name: '假冒' },
-                { value: 15, name: '走私' }]
-              },
-            ]
-          }, { // 这是'2002-01-01' 对应的 option
-            title: {
-              text: '2018年2月三烟饼状图'
-            },
-            series: [
-              {
-                data: [{ value: 20, name: '非渠道' },
-                { value: 15, name: '假冒' },
-                { value: 4, name: '走私' }]
-              }
-            ]
-          },
-        ],
-
-      };
-      var option2 = {
-        //固定框架的option
-        baseOption: {
-          timeline: {
-            //loop: false,      
-            axisType: 'category',//轴类型 value category time
-            show: true,//开关
-            autoPlay: true,//是否自动播放
-            playInterval: 2000,//播放时间
-            data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-            left: 0,
-            right: 0
-          },
-          // legend: {
-          //     data: ['业态', '案件', '三烟']
-          // },
-          grid: { containLabel: true },
-          yAxis: [{
-            // type: 'value',
-            // name: '单位/条',
-            // max: 100
-          }],
-          xAxis: [{
-            type: 'category',
-            // inverse: true, 反转
-            data: ['非渠道', '假冒', '走私']
-          }],
-          tooltip: {
-            trigger: 'axis',
-            formatter: "{a} <br/>{b} : {c} " + '条'
-          },
-          series: [
-            {
-              name: '三烟',
-              type: 'bar',
-            },
-          ]
-        },
-        //变化数据
-        options: [
-          //1990
-          {
-            title: {
-              text: '2018年1月三烟统计图'
-            },
-            series: [
-              {
-                data: [5, 40, 16]
-              },
-
-            ]
-          },
-          //1995
-          {
-            title: {
-              text: '2018年2月三烟统计图'
-            },
-            series: [
-              {
-                data: [5, 24, 32]
-              },
-            ]
-          },
-        ]
-      }
-      myChart.setOption(option2);
-      myChart2.setOption(option);
-      // myChart.resize();
-      // myChart2.resize();
-    }
-
-  </script>
+    </script>
 </body>
 
 </html>

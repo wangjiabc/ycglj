@@ -50,6 +50,9 @@ public class User_License implements Serializable{
     @SQLInteger(name="weight")
 	private Integer weight;
 
+    @SQLInteger(name="area")
+	private Integer area;
+
 	public void setOpen_id(String open_id){
 		this.open_id = open_id;
 	}
@@ -152,6 +155,14 @@ public class User_License implements Serializable{
 
 	public Integer getWeight(){
 		return weight;
+	}
+
+	public void setArea(Integer area){
+		this.area = area;
+	}
+
+	public Integer getArea(){
+		return area;
 	}
 
 

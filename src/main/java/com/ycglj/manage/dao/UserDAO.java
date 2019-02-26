@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Position;
@@ -73,4 +74,6 @@ public interface UserDAO {
 	public Integer deleteUserData(String uri);
 	
 	public Integer deleteFileSelfBelong(String upFileFullName);
+	
+	public List getAllCheck_Person(Check_Person check_Person);
 }

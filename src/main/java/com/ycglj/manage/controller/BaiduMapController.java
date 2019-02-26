@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.daoModel.Position;
+import com.ycglj.manage.model.Users;
 import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
@@ -70,16 +72,26 @@ public class BaiduMapController {
 	}
 	
 	@RequestMapping("/getAllLicensePositionJoin")
-	public @ResponseBody Map getAllLicensePositionJoin(String name,Long startTime,Long endTime,
-			String yit,String any){
-		
-		System.out.println(name+" "+startTime+" "+endTime+" "+yit+" "+any);
-		
+	public @ResponseBody Map getAllLicensePositionJoin(@RequestParam Integer type,String name,Long startTime,Long endTime,
+			String yit,String any,HttpServletRequest request){
+				
 		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
 		
 		String startDate = null,endDate = null;
 		
 		String[] yitStrings = null,anyStrings = null;
+		
+		com.ycglj.manage.model.Users users=new Users();
+		
+		if(type==0){
+			
+			HttpSession session = request.getSession();
+			
+			String openId=session.getAttribute("openId").toString();
+			
+			users=userService.getUserByOnlyOpenId(openId);
+			
+		}
 		
 		if(startTime!=null){			
 			startDate=sdf.format(startTime);
@@ -108,9 +120,8 @@ public class BaiduMapController {
 		
 		System.out.println("yitStrings="+yitStrings+"   anyStrings="+anyStrings);
 		
-		
-		
-		Map map=licenseDAO.getAllLicensePositionJoin(name, startDate, endDate, yitStrings, anyStrings);
+				
+		Map map=licenseDAO.getAllLicensePositionJoin(name, startDate, endDate, yitStrings, anyStrings,type,users);
 		
 		MyTestUtil.print(map);
 		

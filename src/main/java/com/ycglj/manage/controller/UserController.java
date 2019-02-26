@@ -594,6 +594,47 @@ public class UserController {
 		return userService.upAtionFormatter(map);
 	}
 	
+	@RequestMapping(value="/upAtionTransact")
+	public @ResponseBody Integer upAtionTransact(HttpServletRequest request,@RequestParam String openId,
+			@RequestParam Integer transact){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Integer campusId=1;
+		
+		map.put("openId", openId);
+		map.put("transact", transact);
+		map.put("campusId", campusId);
+		
+		return userService.upAtionTransact(map);
+	}
+	
+	@RequestMapping(value="/upAtionArea")
+	public @ResponseBody Integer upAtionArea(HttpServletRequest request,@RequestParam String openId,
+			@RequestParam Integer area){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Integer campusId=1;
+		
+		map.put("openId", openId);
+		map.put("area", area);
+		map.put("campusId", campusId);
+		
+		return userService.upAtionArea(map);
+	}
+	
+	@RequestMapping(value="/upAtionBusiness")
+	public @ResponseBody Integer upAtionBusiness(HttpServletRequest request,@RequestParam String openId,
+			@RequestParam Integer business){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Integer campusId=1;
+		
+		map.put("openId", openId);
+		map.put("business", business);
+		map.put("campusId", campusId);
+		
+		return userService.upAtionBusiness(map);
+	}
 	
 	@RequestMapping(value="/getAllCrimalRecord")
 	public @ResponseBody

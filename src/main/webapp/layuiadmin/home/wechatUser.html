@@ -6,45 +6,69 @@
     <title>微信用户</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="../layui/css/layui.css" media="all">
 </head>
 <style>
-    .layui-inline{
+    .layui-inline {
         margin-top: 10px;
         margin-left: 10px;
+    }
+
+    img {
+        width: 25px;
+        height: 24px;
     }
 </style>
 
 <body>
-  <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-top: 15px;">
-    <div class="layui-form-item">
-    <div class="layui-inline">
-        <input type="text" id="search" lay-verify="search" autocomplete="off" placeholder="请输入微信昵称" class="layui-input">
-    </div>
-    <div class="layui-inline">
-        <label class="layui-form-label">用户类型</label>
-        <div class="layui-input-block">
-          <select lay-filter="type" name="status">
-            <option value="0">全部</option>
-            <option value="1">通过认证</option>
-          </select>
+    <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-top: 15px;">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <input type="text" id="search" lay-verify="search" autocomplete="off" placeholder="请输入微信昵称"
+                    class="layui-input">
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">用户类型</label>
+                <div class="layui-input-block">
+                    <select lay-filter="type" name="status">
+                        <option value="0">全部</option>
+                        <option value="1">通过认证</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="search">
+                    <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                </button>
+            </div>
         </div>
-      </div>
-    <div class="layui-inline">
-        <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="search">
-            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
-        </button>
-    </div>
-    </div>
     </div>
     <table class="layui-hide" id="test" lay-filter="test"></table>
     <script type="text/html" id="barDemo">
-        {{#   if(d.place > 0){ }}
-        <i class="layui-icon layui-icon-face-smile" lay-event="dispass" style="color: #FF5722;"></i>  
+        {{#   if(d.place == 1){ }}
+        <img src="../photo/banzheng.png" alt="证件管理员" lay-event="card">
         {{#  } else { }}
-        <i class="layui-icon layui-icon-face-cry" lay-event="pass"></i> 
+        <img src="../photo/banzheng.png" alt="证件管理员" lay-event="card1">
         {{#  } }}  
+        {{#   if(d.place == 2){ }}
+        <img src="../photo/jicha1.png" alt="稽查人员" lay-event="dispass">
+        <!-- <i class="layui-icon layui-icon-face-smile" lay-event="dispass" style="color: #FF5722;"></i>   -->
+        {{#  } else { }}
+        <img src="../photo/jicha.png" alt="稽查人员"  lay-event="pass">
+        <!-- <i class="layui-icon layui-icon-face-cry" lay-event="pass"></i>  -->
+        {{#  } }} 
+        {{#   if(d.place == 3){ }}
+        <img src="../photo/county1.png" alt="县公司人员" lay-event="county">
+        {{#  } else { }}
+        <img src="../photo/county.png" alt="县公司人员" lay-event="county1"> 
+        {{#  } }}  
+        {{#   if(d.place == 4){ }}
+        <img src="../photo/city1.png" alt="市公司人员" lay-event="city"> 
+        {{#  } else { }}
+        <img src="../photo/city.png" alt="市公司人员" lay-event="city1">
+        {{#  } }}   
       </script>
     <script src="../layui/layui.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
@@ -79,39 +103,27 @@
             //监听行工具事件
             table.on('tool(test)', function (obj) {
                 var openId = obj.data.openId;
+                console.log(obj.event);
                 if (obj.event === 'pass') {
-                    place = 2;
-                    $.ajax({
-                        type: "get",
-                        url: "/ycglj/user/upAtionFormatter.do?openId=" + openId + "&place=2",
-                        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                        data: {},
-                        dataType: "json",
-                        success: function (data) {
-                            // layer.msg("设置成功", { icon: 1 });
-                            table.reload('test');
-                        },
-                        error: function (e) {
-                            console.log(e);
-                        }
-                    })
-                } else if (obj.event === 'dispass') {
-                    $.ajax({
-                        type: "get",
-                        url: "/ycglj/user/upAtionFormatter.do?openId=" + openId + "&place=0",
-                        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                        data: {},
-                        dataType: "json",
-                        success: function (data) {
-                            // layer.msg("设置成功", { icon: 1 });
-                            table.reload('test');
-                        },
-                        error: function (e) {
-                            console.log(e);
-                        }
-                    })
+                    setStatus(openId, "设置稽查人员成功", 2);
+                    table.reload('test');
+                } else if (obj.event === 'card1') {
+                    setStatus(openId, "设置证件办理员成功", 1);
+                    table.reload('test');
                 }
-                layer.msg("设置成功", { icon: 1 });
+                else if (obj.event === 'county1') {
+                    setStatus(openId, "设置县区公司人员成功", 3);
+                    table.reload('test');
+                }
+                else if (obj.event === 'city1') {
+                    setStatus(openId, "设置市区公司人员成功", 4);
+                    table.reload('test');
+                }
+                else{
+                    setStatus(openId, "取消成功", 0);
+                    table.reload('test');
+                }
+                // layer.msg("设置成功", { icon: 1 });
             })
             //监听搜索
             layui.form.on('submit(search)', function (data) {
@@ -122,25 +134,37 @@
                 //执行重载
                 table.reload('test', {
                     where: field,
-                    url: '/ycglj/user/getAllWeixinUser.do?search='+search,
+                    url: '/ycglj/user/getAllWeixinUser.do?search=' + search,
                 });
             });
             var type = '';
             //监听下拉框
             layui.form.on('select(type)', function (data) {
-             type = data.value;
-             var search = $('#search').val();
-             table.reload('test', {
-             	url: '/ycglj/user/getAllWeixinUser.do?place='+type+'&search='+search,
-             });
-           })
-           
+                type = data.value;
+                var search = $('#search').val();
+                table.reload('test', {
+                    url: '/ycglj/user/getAllWeixinUser.do?place=' + type + '&search=' + search,
+                });
+            })
+
         })
-       
 
-      
-        function setStatus(openId, place) {
 
+
+        function setStatus(openId, msg, place) {
+            $.ajax({
+                type: "get",
+                url: "/ycglj/user/upAtionFormatter.do?openId=" + openId + "&place=" + place,
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                    layer.msg(msg, { icon: 1 });
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            })
         }
 
     </script>

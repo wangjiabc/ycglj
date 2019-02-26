@@ -41,6 +41,7 @@ import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
+import com.ycglj.manage.daoSQL.SelectExe;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
@@ -97,11 +98,59 @@ public class MoblieUserController {
 	public @ResponseBody Map<String, Object> getAll(@RequestParam Integer position,@RequestParam Integer limit,@RequestParam Integer offset,
 			@RequestParam Double lng, @RequestParam Double lat,String search,HttpServletRequest request) {
 		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		com.ycglj.manage.model.Users users=userService.getUserByOnlyOpenId(openId);
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		String term="OR";
 		
 		Map where=new HashMap<>();
+		
+		Integer place=users.getPlace();
+		
+		Integer area=users.getArea();
+		
+		Integer business=users.getBusiness();
+		
+		if(place==2){
+			if(business==1){
+				where.put("area=",String.valueOf(area));
+			}else if(business==2){
+				where.put("area=",String.valueOf(area));
+			}else if(business==3||business==4){
+				Check_Person check_Person=new Check_Person();
+				check_Person.setLimit(1);
+				check_Person.setOffset(0);
+				check_Person.setNotIn("id");
+				String[] where2={"phone=",users.getPhone()};
+				check_Person.setWhere(where2);
+				List list=userDao.getAllCheck_Person(check_Person);
+				String region="";
+				try{
+					check_Person=(Check_Person) list.get(0);
+					region=check_Person.getUnit();
+				}catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+				where.put("area=",String.valueOf(area));
+				where.put("region=",region);
+			}else if(business==5){
+				where.put("area=",area);
+			}
+		}else if(place==3){
+			if(business==1){
+
+			}else if(business==2){
+				
+			}else if(business==3){
+				
+			}
+		}
 		
 		Map license_Positions;
 		
@@ -127,7 +176,7 @@ public class MoblieUserController {
 		}
 		
 		List licenses=(List) license_Positions.get("rows");
-		int total=(int) license_Positions.get("total");
+		Integer total=(Integer) license_Positions.get("total");
 		
 		map.put("rows", licenses);
 		map.put("total", total);
@@ -260,6 +309,15 @@ public class MoblieUserController {
 			List lawCases=(List) licenseDAO.getAllCrimalRecordJoin(1000, 0, "criminal_time", "desc",lawSearchMap).get("data");
 			
 			map.put("lawCases", lawCases);
+			
+			HttpSession session = request.getSession();
+			
+			String openId=session.getAttribute("openId").toString();
+			
+			com.ycglj.manage.model.Users users=userService.getUserByOnlyOpenId(openId);
+			
+			map .put("place", users.getPlace());
+			map.put("business", users.getBusiness());
 			
 		} catch (Exception e) {
 			// TODO: handle exception

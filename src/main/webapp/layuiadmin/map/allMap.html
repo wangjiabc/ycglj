@@ -184,10 +184,10 @@
 
 	function addDeck(name, startTime, endTime, yit, any) {
 		map.clearOverlays();
-		var condition = "?name=" + name + "&startTime=" + startTime + "&endTime=" + endTime + "&yit=" + yit + "&any=" + any;
+		var condition = "&name=" + name + "&startTime=" + startTime + "&endTime=" + endTime + "&yit=" + yit + "&any=" + any;
 		console.log('url:' + condition);
 		var xhm = new XMLHttpRequest();
-		xhm.open("GET", "../../baiduMap/getAllLicensePositionJoin.do" + condition, false);
+		xhm.open("GET", "../../baiduMap/getAllLicensePositionJoin.do?type=1" + condition, false);
 		xhm.setRequestHeader("Content-type",
 			"application/x-www-form-urlencoded");
 		xhm.send();
