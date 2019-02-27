@@ -31,6 +31,9 @@
 		<result column="charter" property="Charter" jdbcType="VARCHAR" />
 		<result column="IDNo" property="IDNo" jdbcType="VARCHAR" />
 		<result column="hire_phone" jdbcType="VARCHAR" property="hirePhone" />
+		<result column="transact" property="transact" jdbcType="INTEGER" />
+		<result column="area" property="area" jdbcType="INTEGER" />
+		<result column="business" property="business" jdbcType="INTEGER" />
 	</resultMap>
    
    <select id="getUserByOpenId" resultMap="BaseResultMap" useCache="false">
@@ -40,7 +43,7 @@
 		language,province,groupid,country,
 		city,sex,remark,
 		subscribe_time,
-		usersinfo.name,users.place,	
+		usersinfo.name,users.place,	users.transact,users.area,users.business,
 		usersinfo.headship,usersinfo.email,	
 		address ,phone
 		from users
@@ -62,7 +65,7 @@
 		language,province,groupid,country,
 		city,sex,remark,
 		subscribe_time,
-		usersinfo.name,users.place,	
+		usersinfo.name,users.place,	users.transact,users.area,users.business,
 		usersinfo.headship,usersinfo.email,	
 		address ,phone
 		from users
@@ -92,7 +95,7 @@
 		campus_id,subscribe,nickname, headimg_url,
 		language,province,groupid,country,
 		city,sex,remark,
-		usersinfo.name,users.place,
+		usersinfo.name,users.place,users.transact,users.area,users.business,
 		usersinfo.headship,usersinfo.email,	
 		total_amount,
 		subscribe_time,
@@ -132,7 +135,7 @@
 		campus_id,subscribe,nickname, headimg_url,
 		language,province,groupid,country,
 		city,sex,remark,
-		usersinfo.name,users.place,
+		usersinfo.name,users.place,users.transact,users.area,users.business,
 		usersinfo.headship,usersinfo.email,	
 		total_amount,
 		subscribe_time,
@@ -185,7 +188,7 @@
 		campus_id,subscribe,nickname, headimg_url,
 		language,province,groupid,country,
 		city,sex,remark,
-		usersinfo.name,users.place,
+		usersinfo.name,users.place,users.transact,users.area,users.business,
 		usersinfo.headship,usersinfo.email,	
 		total_amount,
 		subscribe_time,
@@ -218,7 +221,7 @@
 		campus_id,subscribe,nickname, headimg_url,
 		language,province,groupid,country,
 		city,sex,remark,
-		usersinfo.name,users.place,
+		usersinfo.name,users.place,users.transact,users.area,users.business,
 		usersinfo.headship,usersinfo.email,	
 		total_amount,
 		subscribe_time,
@@ -248,7 +251,7 @@
 		campus_id,subscribe,nickname, headimg_url,
 		language,province,groupid,country,
 		city,sex,remark,
-		usersinfo.name,users.place,
+		usersinfo.name,users.place,users.transact,users.area,users.business,
 		usersinfo.headship,usersinfo.email,	
 		total_amount,
 		subscribe_time,
@@ -268,7 +271,7 @@
 		campus_id,subscribe,nickname, headimg_url,
 		language,province,groupid,country,
 		city,sex,remark,
-		usersinfo.name,users.place,
+		usersinfo.name,users.place,users.transact,users.area,users.business,
 		usersinfo.headship,usersinfo.email,	
 		total_amount,
 		subscribe_time,
@@ -403,6 +406,44 @@
         </where>
      </update>
      
+     <!-- 修改办理权限 -->
+     <update id="upAtionTransact" parameterType="java.util.Map">
+     update users
+      <set>
+        transact=#{transact,jdbcType=INTEGER}
+        </set>
+        <where>
+         users.campus_id=#{campusId,jdbcType=INTEGER}
+		  and
+		  users.open_id=#{openId,jdbcType=VARCHAR}
+        </where>
+     </update>
+     
+     <!-- 修改办理权限 -->
+     <update id="upAtionArea" parameterType="java.util.Map">
+     update users
+      <set>
+        area=#{area,jdbcType=INTEGER}
+        </set>
+        <where>
+         users.campus_id=#{campusId,jdbcType=INTEGER}
+		  and
+		  users.open_id=#{openId,jdbcType=VARCHAR}
+        </where>
+     </update>
+     
+     <!-- 修改职务 -->
+     <update id="upAtionBusiness" parameterType="java.util.Map">
+     update users
+      <set>
+        business=#{business,jdbcType=INTEGER}
+        </set>
+        <where>
+         users.campus_id=#{campusId,jdbcType=INTEGER}
+		  and
+		  users.open_id=#{openId,jdbcType=VARCHAR}
+        </where>
+     </update>
      
      <!-- 用户信息修改 -->
      

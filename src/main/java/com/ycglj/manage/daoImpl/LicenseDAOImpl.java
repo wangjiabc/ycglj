@@ -292,6 +292,14 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 				
 				Integer business=users.getBusiness();
 				
+				if(area==null){
+					area=1;
+				}
+				
+				if(business==null){
+					business=5;
+				}
+				
 				if(place==2){
 					if(business==1){
 						sql=sql+" and area="+area;

@@ -116,6 +116,14 @@ public class MoblieUserController {
 		
 		Integer business=users.getBusiness();
 		
+		if(area==null){
+			area=1;
+		}
+		
+		if(business==null){
+			business=5;
+		}
+		
 		if(place==2){
 			if(business==1){
 				where.put("area=",String.valueOf(area));
@@ -140,7 +148,7 @@ public class MoblieUserController {
 				where.put("area=",String.valueOf(area));
 				where.put("region=",region);
 			}else if(business==5){
-				where.put("area=",area);
+				where.put("area=",String.valueOf(area));
 			}
 		}else if(place==3){
 			if(business==1){
