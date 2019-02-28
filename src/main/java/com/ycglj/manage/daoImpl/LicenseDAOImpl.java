@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -318,13 +320,13 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 						String region="";
 						try{
 							check_Person=(Check_Person) list.get(0);
-							region=check_Person.getUnit();
+							region=check_Person.getDepartment();
 						}catch (Exception e) {
 							// TODO: handle exception
 							e.printStackTrace();
 						}
-						sql=sql+" and area="+area+" and region="+region;
-						sql2=sql2+" and area="+area+" and region="+region;
+						sql=sql+" and area="+area+" and region='"+region+"'";
+						sql2=sql2+" and area="+area+" and region='"+region+"'";
 					}else if(business==5){
 						sql=sql+" and area="+area;
 						sql2=sql2+" and area="+area;
@@ -434,7 +436,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		// TODO Auto-generated method stub
 		String sql0 = "SELECT TOP " + limit + " * from " 
 				+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
-				+ "[User_License].license ,[User_License].area, [User_License].open_id,[User_License].phone,[User_License].address,[User_License].weight " 
+				+ "[User_License].license ,[User_License].region,[User_License].area, [User_License].open_id,[User_License].phone,[User_License].address,[User_License].weight " 
 				+ " FROM [User_License] left join  [Users]"
 				+ "on  [User_License].open_id = [Users].open_id "
 				+ "left join [Position] "
@@ -470,8 +472,63 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			String[] where=TransMapToString.get(search);
 			
 			int i=0;
+			boolean areaTerm=false; 
+			boolean regionTerm=false;
+			String areawhere=null;
+			String regionwhere=null;
+			
 			for(String str : where){
-			    
+				
+				System.out.println("str="+str);
+				/*
+				String REGEX = "area=";
+				Pattern pattern=Pattern.compile(REGEX);
+				Matcher matcher=pattern.matcher(str);
+				System.out.println("REGEX="+REGEX);
+				System.out.println(matcher.find());
+				if(matcher.find()){
+					areawhere=" "+str+" ";
+					areaTerm=true;
+					continue;
+				}
+				
+				if(areaTerm){
+					areawhere=areawhere+str+" ";
+			    	areaTerm=false;
+			    	continue;
+				}
+				*/
+				String REGEX = "area=";
+				Pattern pattern=Pattern.compile(REGEX);
+				Matcher matcher=pattern.matcher(str);
+				if(matcher.find()){
+					areawhere="("+str+" ";
+					areaTerm=true;
+					continue;
+				}
+				
+				if(areaTerm){
+					areawhere=areawhere+str+")";
+			    	areaTerm=false;
+			    	continue;
+				}
+				
+				
+				String REGEX1 = "region=";
+				Pattern pattern1=Pattern.compile(REGEX1);
+				Matcher matcher1=pattern1.matcher(str);				
+				if(matcher1.find()){
+					regionwhere="("+str+" ";
+					regionTerm=true;
+					continue;
+				}
+				System.out.println("regionwhere="+regionwhere);
+				if(regionTerm){
+					regionwhere=regionwhere+"'"+str+"')";
+			    	regionTerm=false;
+			    	continue;
+				}
+				
 			    if(i%2==0){
 			    	sb.append(str);
 			    }else{
@@ -482,7 +539,29 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			}
 			String s = sb.toString();
 			
-			String serach=s.substring(0,s.length()-4);
+			String serach = null;
+			
+			if(s!=null&&!s.equals("")){
+				serach="("+s.substring(0,s.length()-4)+")";
+			}
+			
+			if(serach!=null){
+				if((areawhere!=null&&regionwhere!=null)){
+					serach=serach+" and ("+areawhere+" and "+regionwhere+")";
+				}else if(areawhere!=null&&regionwhere==null){
+					serach=serach+" and ("+areawhere+")";
+				}else if(areawhere==null&&regionwhere!=null){
+					serach=serach+" and ("+regionwhere+")";
+				}
+			}else{
+				if((areawhere!=null&&regionwhere!=null)){
+					serach=" ("+areawhere+" and "+regionwhere+")";
+				}else if(areawhere!=null&&regionwhere==null){
+					serach="("+areawhere+")";
+				}else if(areawhere==null&&regionwhere!=null){
+					serach="("+regionwhere+")";
+				}
+			}
 			
 			System.out.println("serach="+serach);
 			
@@ -490,7 +569,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 					+" "+sql1;
 			sql2="SELECT count(*) from " 
 					+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
-					+ "[User_License].license ,[User_License].area,[User_License].open_id,[User_License].phone,[User_License].address " 
+					+ "[User_License].license ,[User_License].region,[User_License].area,[User_License].open_id,[User_License].phone,[User_License].address " 
 					+ " FROM [User_License] left join  [Users]"
 					+ "on  [User_License].open_id = [Users].open_id "
 					+ "left join [Position] "

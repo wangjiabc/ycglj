@@ -106,8 +106,6 @@ public class MoblieUserController {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		String term="OR";
-		
 		Map where=new HashMap<>();
 		
 		Integer place=users.getPlace();
@@ -123,7 +121,7 @@ public class MoblieUserController {
 		if(business==null){
 			business=5;
 		}
-		
+		System.out.println("place="+place);
 		if(place==2){
 			if(business==1){
 				where.put("area=",String.valueOf(area));
@@ -140,14 +138,15 @@ public class MoblieUserController {
 				String region="";
 				try{
 					check_Person=(Check_Person) list.get(0);
-					region=check_Person.getUnit();
+					region=check_Person.getDepartment();
 				}catch (Exception e) {
 					// TODO: handle exception
 					e.printStackTrace();
 				}
 				where.put("area=",String.valueOf(area));
-				where.put("region=",region);
-			}else if(business==5){
+				if(region!=null&&!region.equals(""))
+					where.put("region=",region);
+			}else {
 				where.put("area=",String.valueOf(area));
 			}
 		}else if(place==3){
@@ -171,16 +170,13 @@ public class MoblieUserController {
 				where.put("t2.address like ", search);
 			}		
 
-			license_Positions=licenseDAO.findAllLicense_Position(limit, offset, lng, lat, term, where);
+			license_Positions=licenseDAO.findAllLicense_Position(limit, offset, lng, lat, "or", where);
 		}else {
 			if(search!=null&&!search.trim().equals("")){
 				search="%"+search+"%";  
 				where.put("[Users].name like ", search);
-				where.put("[User_License].license like ", search);
-				where.put("[User_License].phone like ", search);
-				where.put("[User_License].address like ", search);
 			}		
-			license_Positions=licenseDAO.getAllLicense_Position(limit, offset, "", "","or", where);
+			license_Positions=licenseDAO.getAllLicense_Position(limit, offset, "", "","and", where);
 		}
 		
 		List licenses=(List) license_Positions.get("rows");

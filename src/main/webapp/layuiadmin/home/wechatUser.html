@@ -47,34 +47,60 @@
     </div>
     <table class="layui-hide" id="test" lay-filter="test"></table>
     <script type="text/html" id="barDemo">
-        {{#   if(d.place == 1){ }}
-        <img src="../photo/banzheng.png" alt="证件管理员" lay-event="card">
+        {{#   if(d.transact == 1){ }}
+        <img src="../photo/banzhen1.png" alt="证件管理员" lay-event="card">
         {{#  } else { }}
-        <img src="../photo/banzheng.png" alt="证件管理员" lay-event="card1">
-        {{#  } }}  
+        <img src="../photo/banzhen.png" alt="证件管理员" lay-event="card1">
+        {{#  } }}
         {{#   if(d.place == 2){ }}
-        <img src="../photo/jicha1.png" alt="稽查人员" lay-event="dispass">
-        <!-- <i class="layui-icon layui-icon-face-smile" lay-event="dispass" style="color: #FF5722;"></i>   -->
-        {{#  } else { }}
-        <img src="../photo/jicha.png" alt="稽查人员"  lay-event="pass">
-        <!-- <i class="layui-icon layui-icon-face-cry" lay-event="pass"></i>  -->
-        {{#  } }} 
-        {{#   if(d.place == 3){ }}
         <img src="../photo/county1.png" alt="县公司人员" lay-event="county">
         {{#  } else { }}
         <img src="../photo/county.png" alt="县公司人员" lay-event="county1"> 
         {{#  } }}  
-        {{#   if(d.place == 4){ }}
+        {{#   if(d.place == 3){ }}
         <img src="../photo/city1.png" alt="市公司人员" lay-event="city"> 
         {{#  } else { }}
         <img src="../photo/city.png" alt="市公司人员" lay-event="city1">
         {{#  } }}   
+      </script>
+    <script type="text/html" id="permission">
+        <!-- transact -->
+        {{# if(d.transact == 1){ }}
+        证件管理员
+        {{# } }}
+        {{# if(d.place != 0){ }}
+            {{# if(d.business == 1){ }}
+            领导
+            {{# } else if(d.business == 2) { }}
+            专卖科人员
+            {{# } else if(d.business == 3) { }}
+            其他科室人员
+            {{# } else if(d.business == 4) { }}
+            稽查人员
+            {{# } else if(d.business == 5) { }}
+            营销人员
+            {{# } }}
+        {{# } else { }}
+        暂无权限
+        {{#  } }}
+      </script>
+      <script type="text/html" id="area">
+        {{#   if(d.area == 1){ }}
+        合江县
+        {{#  } else { }}
+        <select id="gradeitems">
+            <option value="">设置区域</option>
+            <option value="1">合江县</option>
+            <option value="2">其它县</option>
+        </select>
+        {{#  } }} 
       </script>
     <script src="../layui/layui.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
     <script type="text/html" id="wechatHead">
         <img style="height:30px;width:28px" src="{{d.headImgUrl}}">
       </script>
+
     <script>
         layui.use(['table', 'laytpl', 'layer', 'util'], function () {
             var table = layui.table,
@@ -97,6 +123,8 @@
                     , { field: 'duty', title: '职务' }
                     , { field: 'card_number', title: '执法证编号' }
                     , { field: 'subscribeTime', title: '关注时间', align: 'center', templet: function (d) { return util.toDateString(d.subscribeTime, 'yyyy-MM-dd HH:mm') } }
+                    , { field: 'area', title: '所属区域', templet: '#area' }
+                     , { field: 'business', title: '所属权限', templet: '#permission' }
                     , { title: '操作', toolbar: '#barDemo' }
                 ]]
             });
@@ -104,22 +132,64 @@
             table.on('tool(test)', function (obj) {
                 var openId = obj.data.openId;
                 console.log(obj.event);
-                if (obj.event === 'pass') {
-                    setStatus(openId, "设置稽查人员成功", 2);
-                    table.reload('test');
-                } else if (obj.event === 'card1') {
+                if (obj.event === 'card1') {
                     setStatus(openId, "设置证件办理员成功", 1);
-                    table.reload('test');
+                    // openlayer(layer, table);
+                    $.ajax({
+                        type: "get",
+                        url: "/ycglj/user/upAtionTransact.do?openId=" + openId + "&transact=1",
+                        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                        data: {},
+                        dataType: "json",
+                        success: function (data) {
+                            layer.msg("设置证件办理员成功", { icon: 1 });
+                            table.reload('test');
+                        },
+                        error: function (e) {
+                            parent.layui.layer.closeAll('iframe');
+                            console.log(e);
+                        }
+                    })
+                } else if (obj.event === 'card') {
+                    $.ajax({
+                        type: "get",
+                        url: "/ycglj/user/upAtionTransact.do?openId=" + openId + "&transact=0",
+                        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                        data: {},
+                        dataType: "json",
+                        success: function (data) {
+                            layer.msg("取消成功", { icon: 1 });
+                            table.reload('test');
+                        },
+                        error: function (e) {
+                            parent.layui.layer.closeAll('iframe');
+                            console.log(e);
+                        }
+                    })
                 }
                 else if (obj.event === 'county1') {
-                    setStatus(openId, "设置县区公司人员成功", 3);
-                    table.reload('test');
+                    layer.open({
+                        title: '设置县区公司权限',
+                        type: 2,
+                        content: '/ycglj/layuiadmin/home/Dialog/permissionDialog1.html?' + openId,
+                        area: ['440px', '290px'],
+                        end: function () {
+                            table.reload('test');
+                        }
+                    });
                 }
                 else if (obj.event === 'city1') {
-                    setStatus(openId, "设置市区公司人员成功", 4);
-                    table.reload('test');
+                    layer.open({
+                        title: '设置市区公司权限',
+                        type: 2,
+                        content: '/ycglj/layuiadmin/home/Dialog/permissionDialog.html?' + openId,
+                        area: ['440px', '290px'],
+                        end: function () {
+                            table.reload('test');
+                        }
+                    });
                 }
-                else{
+                else {
                     setStatus(openId, "取消成功", 0);
                     table.reload('test');
                 }
@@ -146,11 +216,12 @@
                     url: '/ycglj/user/getAllWeixinUser.do?place=' + type + '&search=' + search,
                 });
             })
+            layui.form.on('select(permission)', function (data) {
+                permission = data.value;
+                console.log(permission);
+            })
 
         })
-
-
-
         function setStatus(openId, msg, place) {
             $.ajax({
                 type: "get",
@@ -169,5 +240,6 @@
 
     </script>
 </body>
+
 
 </html>
