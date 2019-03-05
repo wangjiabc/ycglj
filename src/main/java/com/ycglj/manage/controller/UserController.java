@@ -866,7 +866,23 @@ public class UserController {
     }
 	
     
-    
+    @RequestMapping("/updateCheckPerson")
+	public @ResponseBody Integer updateCheckPerson(@RequestParam String phone,
+			String name,String unit,String department,String duty,String card_number,
+			HttpServletRequest request){
+		
+		   Check_Person check_Person=new Check_Person();
+		   
+		   check_Person.setPhone(phone);
+		   check_Person.setName(name);
+		   check_Person.setUnit(unit);
+		   check_Person.setDepartment(department);
+		   check_Person.setDuty(duty);
+		   check_Person.setCard_number(card_number);
+		   
+		   return userDao.updateCheck_Person(check_Person);
+	
+	}
 
     
 }

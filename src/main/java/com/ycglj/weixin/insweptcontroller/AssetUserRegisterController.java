@@ -24,9 +24,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.PreMessage;
+import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.model.Sellers;
 import com.ycglj.manage.model.Users;
@@ -232,7 +234,8 @@ public class AssetUserRegisterController {
 		
 		return i;
 	}
-	
+
+   //已存在的零售户微信号注册
    @RequestMapping("insert")
    public @ResponseBody Integer
    insert(HttpServletRequest request,@RequestParam String name,
@@ -332,6 +335,134 @@ public class AssetUserRegisterController {
 			}
 
 
+			int count = orderDao.selectCountWeiXinUser(weiXin_User);
+
+			if (count == 0) {
+				orderDao.insertWeiXinUser(weiXin_User);
+			} else {
+				orderDao.updateWeiXinUser(weiXin_User);
+			}
+			
+			
+			return 1;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return 3;
+		}
+   }
+   
+   //新零售户注册
+   @RequestMapping("insertNew")
+   public @ResponseBody Integer
+   insertNew(HttpServletRequest request,@RequestParam String name,
+		   @RequestParam String id_number,@RequestParam String phone,
+		   @RequestParam String arrays,
+		   Double lng,Double lat,
+		   String regtlx){
+	   
+	   HttpSession session = request.getSession();
+       String openId=null;
+
+       try{
+         openId=session.getAttribute("openId").toString();
+         }catch (Exception e) {
+			// TODO: handle exception
+        	 e.printStackTrace();
+		  }
+	  
+		JSONArray jsonArray = JSONArray.parseArray(arrays);
+
+		if (jsonArray != null && jsonArray.size() > 0) {
+			// 组合image名称，“;隔开”
+			int up = 0;
+			System.out.println("length=" + jsonArray.size());
+			try {
+
+				List<String> list = new ArrayList<>();
+
+				for (int i = 0; i < jsonArray.size(); i++) {
+					String uuid = jsonArray.getString(i);
+
+					list.add(uuid);
+				}
+
+				up = userDao.updateUserDataAffirm(openId, list);
+
+				// 上传成功
+				if (up > 0) {
+
+				} else {
+					return 3;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 3;
+			}
+		} else {
+			return 3;
+		}
+       
+       /*
+	   if(regtlx.equals("")){
+		   return 2;
+	   }
+	   */
+	   
+		try {
+
+			/*
+			regtlx = regtlx.toLowerCase();
+			LinkedHashMap<String, Map<String, Object>> linkMap = Singleton.getInstance().getRegisterMap();
+			Map<String, Object> map = linkMap.get(phone);
+			
+			if(map==null||map.isEmpty()){
+				return 3;
+			}
+			
+			String verifyCode = (String) map.get("vcode");
+
+			System.out.println("regtlx=" + regtlx + "      verifyCode=" + verifyCode);
+
+			if (!regtlx.equals(verifyCode)) {
+				verifyCode = null;
+				return 2;
+			}
+			*/
+						
+			Date upTime = new Date();
+
+			Users users = new Users();
+			
+			Temp_Users temp_Users=new Temp_Users();
+			
+			WeiXin_User weiXin_User = new WeiXin_User();
+
+			users.setOpenId(openId);
+			temp_Users.setOpen_id(openId);
+
+			weiXin_User.setOpen_id(openId);
+			weiXin_User.setCampusAdmin(openId);
+
+			if (!phone.equals("")) {
+				users.setPhone(phone);
+				temp_Users.setPhone(phone);
+				weiXin_User.setPhone(phone);
+			}
+			if (!name.equals("")) {
+				users.setName(name);
+				temp_Users.setName(name);
+				weiXin_User.setUser_name(name);
+			}
+
+			users.setUpTime(upTime);			
+			weiXin_User.setUp_time(upTime);
+
+			temp_Users.setDate(upTime);
+
+			userDao.insertTempUser(temp_Users);
+			
 			int count = orderDao.selectCountWeiXinUser(weiXin_User);
 
 			if (count == 0) {

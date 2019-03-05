@@ -19,6 +19,7 @@ import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.PreMessage;
+import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoSQL.DeleteExe;
@@ -36,6 +37,7 @@ import com.ycglj.manage.tools.CopyFile;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Join;
 
@@ -61,6 +63,26 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		}
 		
 	}
+	
+	@Override
+	public WeiXin_User getWeiXinUser(WeiXin_User weiXin_User) {
+		// TODO Auto-generated method stub
+		WeiXin_User weiXin_User2=new WeiXin_User();
+		
+		try{
+			weiXin_User2= (WeiXin_User) SelectExe.get(this.getJdbcTemplate(),weiXin_User).get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		if(weiXin_User2!=null){
+			return weiXin_User2;
+		}else{
+			return null;
+		}
+	}
+
 	
 	@Override
 	public Integer insertPreMessage(PreMessage preMessage) {
@@ -867,12 +889,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 			
 			i=i+j;
 		}
-		
-		if(i<4){
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			return 0;
-		}
-		
+				
 		return i;
 	}
 
@@ -994,6 +1011,62 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		// TODO Auto-generated method stub
 		return SelectExe.get(this.getJdbcTemplate(), check_Person);
 	}
+
+	@Override
+	public Integer insertTempUser(Temp_Users temp_Users) {
+		// TODO Auto-generated method stub
+		
+		Temp_Users temp_Users2=new Temp_Users();
+		
+		temp_Users2.setLimit(1);
+		temp_Users2.setOffset(0);
+		temp_Users.setNotIn("id");
+		
+		String[] where={"open_id=",temp_Users.getOpen_id()};
+		
+		temp_Users2.setWhere(where);
+		
+		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), temp_Users2).get("");
+		
+		int i;
+		
+		if(count>0){
+			temp_Users.setWhere(where);
+			i=UpdateExe.get(this.getJdbcTemplate(), temp_Users);
+		}else{
+			i=InsertExe.get(this.getJdbcTemplate(), temp_Users);
+		}
+		
+		return i;
+	}
+
+	@Override
+	public Integer updateCheck_Person(Check_Person check_Person) {
+		// TODO Auto-generated method stub
+		
+		Check_Person check_Person2=new Check_Person();
+		
+		check_Person2.setLimit(1);
+		check_Person2.setOffset(0);
+		check_Person2.setNotIn("id");
+		
+		String[] where={"phone=",check_Person.getPhone()};
+		check_Person2.setWhere(where);
+		
+		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), check_Person2).get("");
+		
+		int i;
+		
+		if(count>0){
+			check_Person.setWhere(where);
+			i=UpdateExe.get(this.getJdbcTemplate(), check_Person);
+		}else{
+			i=InsertExe.get(this.getJdbcTemplate(), check_Person);
+		}
+		
+		return i;
+	}
+
 
 
     

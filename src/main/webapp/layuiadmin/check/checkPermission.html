@@ -14,6 +14,10 @@
             margin-top: 10px;
             margin-left: 10px;
         }
+        img {
+        width: 25px;
+        height: 24px;
+    }
     </style>
 <body>
     <div class="layui-inline">
@@ -26,11 +30,53 @@
     </div>
     <table class="layui-hide" id="test" lay-filter="test"></table>
     <script type="text/html" id="barDemo">
-        {{#   if(d.place > 0){ }}
-        <i class="layui-icon layui-icon-face-smile" lay-event="dispass" style="color: #FF5722;"></i>  
+        {{#   if(d.transact == 1){ }}
+        <img src="../photo/banzhen1.png" alt="证件管理员" lay-event="card">
         {{#  } else { }}
-        <i class="layui-icon layui-icon-face-cry" lay-event="pass"></i> 
+        <img src="../photo/banzhen.png" alt="证件管理员" lay-event="card1">
+        {{#  } }}
+        {{#   if(d.place == 2){ }}
+        <img src="../photo/county1.png" alt="县公司人员" lay-event="county">
+        {{#  } else { }}
+        <img src="../photo/county.png" alt="县公司人员" lay-event="county1"> 
         {{#  } }}  
+        {{#   if(d.place == 3){ }}
+        <img src="../photo/city1.png" alt="市公司人员" lay-event="city"> 
+        {{#  } else { }}
+        <img src="../photo/city.png" alt="市公司人员" lay-event="city1">
+        {{#  } }}   
+      </script>
+    <script type="text/html" id="permission">
+        <!-- transact -->
+        {{# if(d.transact == 1){ }}
+        证件管理员
+        {{# } }}
+        {{# if(d.place != 0){ }}
+            {{# if(d.business == 1){ }}
+            领导
+            {{# } else if(d.business == 2) { }}
+            专卖科人员
+            {{# } else if(d.business == 3) { }}
+            其他科室人员
+            {{# } else if(d.business == 4) { }}
+            稽查人员
+            {{# } else if(d.business == 5) { }}
+            营销人员
+            {{# } }}
+        {{# } else { }}
+        暂无权限
+        {{#  } }}
+      </script>
+      <script type="text/html" id="area">
+        {{#   if(d.area == 1){ }}
+        合江县
+        {{#  } else { }}
+        <select id="gradeitems">
+            <option value="">设置区域</option>
+            <option value="1">合江县</option>
+            <option value="2">其它县</option>
+        </select>
+        {{#  } }} 
       </script>
     <script src="../layui/layui.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
@@ -59,45 +105,76 @@
                     , { field: 'duty', title: '职务' }
                     , { field: 'card_number', title: '执法证编号' }
                     , { field: 'subscribeTime', title: '关注时间', align: 'center', templet: function (d) { return util.toDateString(d.subscribeTime, 'yyyy-MM-dd HH:mm') } }
+                    , { field: 'business', title: '所属权限', templet: '#permission' }
                     , { title: '操作', toolbar: '#barDemo' }
                 ]]
             });
             //监听行工具事件
             table.on('tool(test)', function (obj) {
                 var openId = obj.data.openId;
-                if (obj.event === 'pass') {
-                    place = 2;
+                console.log(obj.event);
+                if (obj.event === 'card1') {
+                    setStatus(openId, "设置证件办理员成功", 1);
+                    // openlayer(layer, table);
                     $.ajax({
                         type: "get",
-                        url: "/ycglj/user/upAtionFormatter.do?openId=" + openId + "&place=2",
+                        url: "/ycglj/user/upAtionTransact.do?openId=" + openId + "&transact=1",
                         contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                         data: {},
                         dataType: "json",
                         success: function (data) {
-                            // layer.msg("设置成功", { icon: 1 });
+                            layer.msg("设置证件办理员成功", { icon: 1 });
                             table.reload('test');
                         },
                         error: function (e) {
+                            parent.layui.layer.closeAll('iframe');
                             console.log(e);
                         }
                     })
-                } else if (obj.event === 'dispass') {
+                } else if (obj.event === 'card') {
                     $.ajax({
                         type: "get",
-                        url: "/ycglj/user/upAtionFormatter.do?openId=" + openId + "&place=0",
+                        url: "/ycglj/user/upAtionTransact.do?openId=" + openId + "&transact=0",
                         contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                         data: {},
                         dataType: "json",
                         success: function (data) {
-                            // layer.msg("设置成功", { icon: 1 });
+                            layer.msg("取消成功", { icon: 1 });
                             table.reload('test');
                         },
                         error: function (e) {
+                            parent.layui.layer.closeAll('iframe');
                             console.log(e);
                         }
                     })
                 }
-                layer.msg("设置成功", { icon: 1 });
+                else if (obj.event === 'county1') {
+                    layer.open({
+                        title: '设置县区公司权限',
+                        type: 2,
+                        content: '/ycglj/layuiadmin/home/Dialog/permissionDialog1.html?' + openId,
+                        area: ['440px', '290px'],
+                        end: function () {
+                            table.reload('test');
+                        }
+                    });
+                }
+                else if (obj.event === 'city1') {
+                    layer.open({
+                        title: '设置市区公司权限',
+                        type: 2,
+                        content: '/ycglj/layuiadmin/home/Dialog/permissionDialog.html?' + openId,
+                        area: ['440px', '290px'],
+                        end: function () {
+                            table.reload('test');
+                        }
+                    });
+                }
+                else {
+                    setStatus(openId, "取消成功", 0);
+                    table.reload('test');
+                }
+                // layer.msg("设置成功", { icon: 1 });
             })
             //监听搜索
             layui.form.on('submit(search)', function (data) {
@@ -113,8 +190,20 @@
             });
 
         })
-        function setStatus(openId, place) {
-
+        function setStatus(openId, msg, place) {
+            $.ajax({
+                type: "get",
+                url: "/ycglj/user/upAtionFormatter.do?openId=" + openId + "&place=" + place,
+                contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                    layer.msg(msg, { icon: 1 });
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            })
         }
 
     </script>

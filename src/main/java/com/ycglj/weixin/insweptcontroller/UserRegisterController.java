@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ycglj.manage.dao.OrderDAO;
+import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.model.Sellers;
 import com.ycglj.manage.model.Users;
@@ -44,6 +46,8 @@ public class UserRegisterController {
 	ApplicationContext applicationContext=new Connect().get();
 	
 	OrderDAO orderDao=(OrderDAO) applicationContext.getBean("orderdao");
+	
+	UserDAO userDao=(UserDAO) applicationContext.getBean("userdao");
 	
 	/*
 	 * 生成验证码类
@@ -182,7 +186,9 @@ public class UserRegisterController {
 		}
 		return map;
    }
-	
+
+   
+   //管理人员注册
    @RequestMapping("insert")
    public @ResponseBody Integer
    insert(HttpServletRequest request,@RequestParam String name,
@@ -221,6 +227,8 @@ public class UserRegisterController {
                 
                 WeiXin_User weiXin_User=new WeiXin_User();
                 
+                Check_Person check_Person=new Check_Person();
+                
                 users.setOpenId(openId);
                 
                 weiXin_User.setOpen_id(openId);
@@ -229,14 +237,17 @@ public class UserRegisterController {
                 if(!phone.equals("")){
                 	users.setPhone(phone);
                 	weiXin_User.setPhone(phone);
+                	check_Person.setPhone(phone);
                 }
                 if(!name.equals("")){
                 	users.setName(name);
                 	weiXin_User.setUser_name(name);
+                	check_Person.setName(name);
                 }
                 if(!headship.equals("")){
                 	users.setHeadship(headship);
                 	weiXin_User.setHeadship(headship);
+                	check_Person.setDuty(headship);
                 }
                 if(!email.equals("")){
                 	users.setEmail(email);
@@ -268,6 +279,7 @@ public class UserRegisterController {
 					orderDao.updateWeiXinUser(weiXin_User);
 				}
 				
+				userDao.updateCheck_Person(check_Person);
 				
 				return type;
 			

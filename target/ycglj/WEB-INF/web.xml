@@ -86,7 +86,7 @@
 		<filter-class>com.ycglj.manage.filter.IsLoginFilter</filter-class>
 		<init-param>
 			<param-name>loginStrings</param-name><!-- 对登录页面不进行过滤 -->
-			<param-value>/login.html;/seller;/newmsg;/register;version.html;/mobile;/oauth;/wechat;/test;/safety;/guidance;/baiduMap;/baidumap</param-value>
+			<param-value>/login.html;/seller;/newmsg;/register;version.html;/mobile;/oauth;/wechat;/test;/safety;/guidance;/baiduMap;/baidumap;/userSetting.html</param-value>
 		</init-param>
 		<init-param>
 			<param-name>includeStrings</param-name><!-- 只对指定过滤参数后缀进行过滤 -->
@@ -137,7 +137,7 @@
 		<filter-class>com.ycglj.manage.filter.MobileAdminIsLoginFilter</filter-class>
 		<init-param>
 			<param-name>loginStrings</param-name>
-			<param-value>/login.html;.js;.css;restrict.html;index.html;/test</param-value>
+			<param-value>/login.html;.js;.css;restrict.html;index.html;/test;/userSetting.html</param-value>
 		</init-param>
 		<init-param>
 			<param-name>includeStrings</param-name>
@@ -193,7 +193,7 @@
 		<filter-class>com.ycglj.manage.filter.MobileAssetIsLoginFilter</filter-class>
 		<init-param>
 			<param-name>loginStrings</param-name>
-			<param-value>/login.html;.js;.css;restrict.html;index.html;regist.html;/test</param-value>
+			<param-value>/login.html;.js;.css;restrict.html;index.html;regist.html;/test;/userSetting.html</param-value>
 		</init-param>
 		<init-param>
 			<param-name>includeStrings</param-name>

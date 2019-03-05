@@ -10,14 +10,18 @@ import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.PreMessage;
+import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModel.WeiXin_User;
 
 
 public interface UserDAO {
 
 	public Users getUser(Users users);
+	
+	public WeiXin_User getWeiXinUser(WeiXin_User weiXin_User);
 	
 	public Integer insertUser(Users users,User_License user_License);
 	
@@ -76,4 +80,8 @@ public interface UserDAO {
 	public Integer deleteFileSelfBelong(String upFileFullName);
 	
 	public List getAllCheck_Person(Check_Person check_Person);
+
+	public Integer insertTempUser(Temp_Users temp_Users);
+	
+	public Integer updateCheck_Person(Check_Person check_Person);
 }

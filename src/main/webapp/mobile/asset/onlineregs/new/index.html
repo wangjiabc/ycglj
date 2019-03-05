@@ -8,6 +8,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
 	<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+	<link rel="stylesheet" href="../../../asset/css/icon.css">
 	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 	<!--  mobile Safari, FireFox, Opera Mobile  -->
 	<!-- <script src="js/modernizr.js"></script> -->
@@ -19,7 +20,14 @@
 			margin-top: 1em;
 			margin-bottom: 1em;
 		} */
-		body, html,#allmap {width: 100%;height: 70%;margin:0;font-family:"微软雅黑";}
+		body,
+		html,
+		#allmap {
+			width: 100%;
+			height: 70%;
+			margin: 0;
+			font-family: "微软雅黑";
+		}
 
 		input {
 			padding: .5em;
@@ -29,27 +37,6 @@
 		select {
 			padding: .5em;
 			margin: .5em;
-		}
-
-		#signatureparent {
-			color: darkblue;
-			background-color: darkgrey;
-			/*max-width:600px;*/
-			padding: 20px;
-		}
-
-		/*This is the div within which the signature canvas is fitted*/
-		#signature {
-			/*height:250px;*/
-			/*width: 100%;*/
-			/*background-image: url("tianzige.jpg");*/
-			border: 2px dotted black;
-			background-color: lightgrey;
-		}
-
-		/* Drawing the 'gripper' for touch-enabled devices */
-		html.touch #content {
-			width: 100%;
 		}
 
 		html.touch #scrollgrabber {
@@ -75,19 +62,6 @@
 			width: 100%;
 			color: red;
 		}
-
-		.p1 {
-			color: dimgray;
-			width: 100%;
-		}
-
-		.p2 {
-			width: 100%;
-		}
-
-		#displayarea {
-			width: 100%;
-		}
 	</style>
 </head>
 
@@ -101,94 +75,66 @@
 		<p>(四)国家烟草专卖局规定的其他条件。</p>
 	</div>
 	<div class="weui-cells__title">您的基本信息</div>
-	<!-- <form action="" novalidate>
-			<div class="weui-cells weui-cells_form">
-				<div class="weui-cell">
-					<div class="weui-cell__hd"><label class="weui-label">地址</label></div>
-					<input class="weui-input" id="name" type="text" placeholder="请输入您的姓名">
-					</div>
-				</div>
-			</div>
-			<div class="weui-cells weui-cells_form">
-				<div class="weui-cell">
-					<div class="weui-cell__hd"><label class="weui-label">身份证号</label></div>
-					<div id="name" class="weui-cell__bd">
-							<input class="weui-input" id="name" type="text" placeholder="请输入您的姓名">
-					</div>
-				</div>
-			</div>
-			<div class="weui-cells weui-cells_form">
-				<div class="weui-cell">
-					<div class="weui-cell__hd"><label class="weui-label">联系电话</label></div>
-					<div id="phone" class="weui-cell__bd">
-							<input class="weui-input" id="name" type="text" placeholder="请输入您的姓名">
-					</div>
-				</div>
-			</div>
-		</form> -->
-		<div class="weui-cell">
-			<div class="weui-cell__hd"><label for="date" class="weui-label">姓 名</label></div>
-			<div class="weui-cell__bd">
-				<input class="weui-input" id="name" type="text" placeholder="请输入您的姓名">
-			</div>
+	<div class="weui-cell">
+		<div class="weui-cell__hd"><label for="date" class="weui-label">姓 名</label></div>
+		<div class="weui-cell__bd">
+			<input class="weui-input" id="name" type="text" placeholder="请输入您的姓名">
 		</div>
-		<div class="weui-cell">
-			<div class="weui-cell__hd"><label class="weui-label">身份证号</label></div>
-			<div class="weui-cell__bd">
-				<input class="weui-input" id="idcard" type="text" placeholder="请输入您的身份证号">
-			</div>
+	</div>
+	<div class="weui-cell">
+		<div class="weui-cell__hd"><label class="weui-label">身份证号</label></div>
+		<div class="weui-cell__bd">
+			<input class="weui-input" id="idcard" type="text" placeholder="请输入您的身份证号">
 		</div>
-		<div class="weui-cell">
-			<div class="weui-cell__hd"><label class="weui-label">联系电话</label></div>
-			<div class="weui-cell__bd">
-				<input class="weui-input" id="phone" type="text" placeholder="请输入您的联系电话">
-			</div>
+	</div>
+	<div class="weui-cell">
+		<div class="weui-cell__hd"><label class="weui-label">联系电话</label></div>
+		<div class="weui-cell__bd">
+			<input class="weui-input" id="phone" type="text" placeholder="请输入您的联系电话">
 		</div>
+	</div>
 
-		<a class="weui-cell weui-cell_access" onclick="setActionSheet('identity')" href="javascript:;">
-			<div id="img1" name="0" class="weui-panel__bd">
-			</div>
-			<div class="weui-cell__bd">
-				<p>身份证正面照照片</p>
-			</div>
-			<div id="identity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-paizhao"></use>
-				</svg></div>
-		</a>
-		<a class="weui-cell weui-cell_access" onclick="setActionSheet('conIdentity')" href="javascript:;">
-			<div id="img2" name="0" class="weui-panel__bd">
-			</div>
-			<div class="weui-cell__bd">
-				<p>身份证反面照照片</p>
-			</div>
-			<div id="conIdentity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-paizhao"></use>
-				</svg></div>
-		</a>
-		<!-- <span name='more'> -->
-		</span>
-		<a class="weui-cell weui-cell_access" onclick="setActionSheet('other')" href="javascript:;">
-			<div id="other" name="0" class="weui-panel__bd">
-			</div>
-			<div class="weui-cell__bd">
-				<p>工商营业执照照片</p>
-			</div>
-			<div id="otherImg" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-paizhao"></use>
-				</svg></div>
-		</a>
-		<a class="weui-cell weui-cell_access" onclick="setActionSheet('other')" href="javascript:;">
-			<div id="other" name="0" class="weui-panel__bd">
-			</div>
-			<div class="weui-cell__bd">
-				<p>选择经营场所</p>
-			</div>
-
-			<div id="otherImg" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-map"></use>
-				</svg></div>
-		</a>
-		<div id="allmap"></div>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('identity')" href="javascript:;">
+		<div id="img1" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>身份证正面照照片</p>
+		</div>
+		<div id="identity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('conIdentity')" href="javascript:;">
+		<div id="img2" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>身份证反面照照片</p>
+		</div>
+		<div id="conIdentity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<!-- <span name='more'> -->
+	</span>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('other')" href="javascript:;">
+		<div id="other" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>工商营业执照照片</p>
+		</div>
+		<div id="otherImg" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<a id="map" class="weui-cell weui-cell_access menu_list" href="javascript:;">
+		<div class="weui-cell__bd weui-flex__item">
+			<p>选择经营场所</p>
+		</div>
+		<div class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-map"></use>
+			</svg></div>
+	</a>
+	<div id="allmap" style="display: none"></div>
 	</div>
 
 
@@ -207,7 +153,12 @@
 	<script src="../../order/js/iconfont.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+	<script>
+		$('#map').click(function () {
+			$('#allmap').fadeToggle();
+		})
 
+	</script>
 	<script>
 		function getQueryString(name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
@@ -215,15 +166,15 @@
 			if (r != null) return unescape(r[2]); return null;
 		}
 		function getByteLen(val) {    //传入一个字符串
-        var len = 0;
-        for (var i = 0; i < val.length; i++) {
-            if (val[i].match(/[^\x00-\xff]/ig) != null) //全角 
-                len += 2; //如果是全角，占用两个字节  如果mysql中某字段是text, 如果设置编码为utf-8,那么一个中文是占3个字节, gbk是两个字节
-            else
-                len += 1; //半角占用一个字节
-        }
-        return len;
-     }  
+			var len = 0;
+			for (var i = 0; i < val.length; i++) {
+				if (val[i].match(/[^\x00-\xff]/ig) != null) //全角 
+					len += 2; //如果是全角，占用两个字节  如果mysql中某字段是text, 如果设置编码为utf-8,那么一个中文是占3个字节, gbk是两个字节
+				else
+					len += 1; //半角占用一个字节
+			}
+			return len;
+		}
 
 		var license = getQueryString("license");
 		// 百度地图API功能
@@ -231,25 +182,80 @@
 
 		var longitude = getQueryString("longitude");
 		var latitude = getQueryString("latitude");
+		console.log("longitude"+longitude);
 		var point = new BMap.Point(longitude, latitude);
-		var str = "我的位置";
-		var opts = {
-			position: point,    // 指定文本标注所在的地理位置
-			offset: new BMap.Size(-getByteLen(str) * 3, 5)    //设置文本偏移量
-		}
-		var label = new BMap.Label(str, opts);  // 创建文本标注对象
-		label.setStyle({
-			fontSize: "12px",
-			height: "20px",
-			lineHeight: "20px",
-			fontFamily: "微软雅黑"
+		var marker = new BMap.Marker(point); // 创建点
+		map.addOverlay(marker); //增加点
+		var geolocationControl = new BMap.GeolocationControl();//显示当前位置控件
+		map.addControl(geolocationControl);
+		marker.enableDragging(); //标注可拖拽
+		marker.addEventListener("dragend", function (e) {
+
+			var clng = e.point.lng; //经度
+			var clat = e.point.lat; //纬度
+			var bMap = bMapTransWechatMap(clng, clat);
+			var gcj02 = gcj02towgs84(bMap.lng, bMap.lat);
+			var wgs84_lng = gcj02.lng;
+			var wgs84_lat = gcj02.lat;
+			$.confirm({
+				title: '提示',
+				text: '是否将经营地址移动到当前位置?',
+				onOK: function () {
+					//点击确认
+
+					var geoc = new BMap.Geocoder();
+
+					geoc.getLocation(point, function (rs) {
+						var addComp;
+						addComp = rs.addressComponents;
+						var addComp1 = JSON.stringify(addComp);
+						var url = "../../user/manualUpdatePosition.do";
+						$.get(url, {
+							license: license,
+							lng: clng,
+							lat: clat,
+							addComp: addComp1,
+							wgs84_lng: wgs84_lng,
+							wgs84_lat: wgs84_lat
+						}, function (data) {
+							console.log(data);
+							if (data == 1) {
+								$.get("../../user/findPositionByLicense.do", {
+									license: license
+								}, function (text) {
+									var data = JSON.parse(text);
+									map.clearOverlays();
+									addPoint(data.lng, data.lat);
+								});
+							} else {
+
+								alert("修改位置失败");
+								map.clearOverlays();
+								addPoint(lng, lat);
+							}
+						});
+					});
+
+				},
+				onCancel: function () {
+
+					$.get("../../user/findPositionByLicense.do", {
+						license: license
+					}, function (text) {
+						var data = JSON.parse(text);
+						map.clearOverlays();
+						addPoint(data.lng, data.lat);
+					});
+
+				}
+			});
+
 		});
-		map.addOverlay(label);   
 	</script>
 	<script>
 		url = document.location.toString();
 		$.ajax({
-			url: "../../../wechat/sign.do",
+			url: "../../../../wechat/sign.do",
 			data: {
 				campusId: 1,
 				url: url
@@ -378,7 +384,7 @@
 			console.log("serverId=" + serverId);
 			console.log("license=" + license);
 			//将serverId传给wx_upload.php的upload方法
-			var url = "../../file/upload.do";
+			var url = "../../../file/upload.do";
 			$.get(
 				url,
 				{
