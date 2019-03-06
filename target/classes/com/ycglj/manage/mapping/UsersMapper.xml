@@ -265,6 +265,26 @@
 		</where>	
 	</select>
 	
+	<select id="getUserByTransact" resultMap="BaseResultMap" useCache="false">
+		select
+		id,users.open_id,
+		campus_id,subscribe,nickname, headimg_url,
+		language,province,groupid,country,
+		city,sex,remark,
+		usersinfo.name,users.place,users.transact,users.area,users.business,
+		usersinfo.headship,usersinfo.email,	
+		total_amount,
+		subscribe_time,
+		address,phone
+		from users
+		left join usersinfo
+		on
+		users.open_id = usersinfo.open_id
+		<where>
+				users.transact>0
+		</where>	
+	</select>
+	
 	<select id="getUserByPlace" resultMap="BaseResultMap" useCache="false">
 		select
 		id,users.open_id,

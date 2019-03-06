@@ -388,7 +388,7 @@ public class AssetUserRegisterController {
 					list.add(uuid);
 				}
 
-				up = userDao.updateUserDataAffirm(openId, list);
+				up = userDao.updateUserDataAffirm(openId, list,3);
 
 				// 上传成功
 				if (up > 0) {

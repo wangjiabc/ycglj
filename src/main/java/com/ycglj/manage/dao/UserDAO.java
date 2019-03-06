@@ -44,7 +44,7 @@ public interface UserDAO {
 	
     public Integer updateUserData(User_Data user_Data);
     
-    public Integer updateUserDataAffirm(String openId,List list);
+    public Integer updateUserDataAffirm(String openId,List list,Integer authen_type);
     
     public Map<String,Object> getAllUserData(HttpServletRequest request,Integer limit, Integer offset, String sort,String order,Map<String, String> search);
     

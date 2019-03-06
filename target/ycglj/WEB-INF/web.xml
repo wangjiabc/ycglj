@@ -217,6 +217,7 @@
 		<filter-name>MobileAssetIsLoginFilter</filter-name>
 		<url-pattern>/mobile/asset/authentic/*</url-pattern>
 		<url-pattern>/mobile/asset/order/*</url-pattern>
+		<url-pattern>/mobile/asset/onlineregs/*</url-pattern>
 	</filter-mapping>
       
 	  <mime-mapping>

@@ -811,7 +811,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	}
 
 	@Override
-	public Integer updateUserDataAffirm(String openId , List list) {
+	public Integer updateUserDataAffirm(String openId , List list,Integer authen_type) {
 		// TODO Auto-generated method stub
 		
 		Iterator<String> iterator=list.iterator();
@@ -861,7 +861,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 				String[] where2 = { "open_id=", user_Data2.getOpen_id(),"license=", user_Data2.getLicense()};
 
 				User_License user_License = new User_License();
-				user_License.setAuthentication(3);
+				user_License.setAuthentication(authen_type);
 				user_License.setWhere(where2);
 				user_License.setDate(new Date());
 				
