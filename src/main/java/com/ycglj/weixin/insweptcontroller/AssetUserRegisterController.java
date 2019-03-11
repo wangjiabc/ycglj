@@ -1,8 +1,10 @@
 package com.ycglj.weixin.insweptcontroller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -456,12 +458,20 @@ public class AssetUserRegisterController {
 				weiXin_User.setUser_name(name);
 			}
 
+			if(lng!=null){
+				temp_Users.setLng(lng);
+			}
+			
+			if(lat!=null){
+				temp_Users.setLat(lat);
+			}
+			
 			users.setUpTime(upTime);			
 			weiXin_User.setUp_time(upTime);
 
 			temp_Users.setDate(upTime);
 
-			userDao.insertTempUser(temp_Users);
+			int up=userDao.insertTempUser(temp_Users);
 			
 			int count = orderDao.selectCountWeiXinUser(weiXin_User);
 
@@ -471,6 +481,66 @@ public class AssetUserRegisterController {
 				orderDao.updateWeiXinUser(weiXin_User);
 			}
 			
+			try {
+
+				if (up > 0) {
+
+					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+					Map searchMap = new HashMap<>();
+
+					searchMap.put("open_id = ", openId);
+
+					List list2 = (List) userDao.getAllUser(1, 0, "", "", searchMap).get("data");
+
+					com.ycglj.manage.daoModel.Users users2 = (com.ycglj.manage.daoModel.Users) list2.get(0);
+
+					users2.getPhone();
+					
+					List list=userService.getUserByTransact();					
+					
+					Runnable r = new Runnable() {
+
+						@Override
+						public void run() {
+
+							String title="新零售户";
+														
+							Date date=new Date();		
+							SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+							String time = sdf.format(date);
+							
+							WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+							Iterator iterator=list.iterator();
+													
+							while (iterator.hasNext()) {
+								
+								com.ycglj.manage.model.Users users=(com.ycglj.manage.model.Users) iterator.next();
+								
+								String transactOpenId=users.getOpenId();
+								
+								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
+										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
+										title+"申请",
+										"http://lzgfgs.com/ycglj/mobile/asset/",
+										users2.getName(), title, time, "已提交申请", "", "",
+										"");
+
+							}
+							
+						}
+					};
+
+					Thread t = new Thread(r);
+					t.start();
+
+				}
+
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
 			
 			return 1;
 

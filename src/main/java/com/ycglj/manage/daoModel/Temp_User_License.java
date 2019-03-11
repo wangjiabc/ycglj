@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 import com.ycglj.manage.daoSQL.annotations.*;
 
-@DBTable(name="[User_License]")
-public class User_License implements Serializable{
+@DBTable(name="[Temp_User_License]")
+public class Temp_User_License implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
@@ -58,6 +58,12 @@ public class User_License implements Serializable{
 
     @SQLDateTime(name="stop_end_data")
 	private Date stop_end_data;
+
+    @SQLString(name="operate_user")
+	private String operate_user;
+
+    @SQLDateTime(name="operate_date")
+	private Date operate_date;
 
 	public void setOpen_id(String open_id){
 		this.open_id = open_id;
@@ -185,6 +191,22 @@ public class User_License implements Serializable{
 
 	public Date getStop_end_data(){
 		return stop_end_data;
+	}
+
+	public void setOperate_user(String operate_user){
+		this.operate_user = operate_user;
+	}
+
+	public String getOperate_user(){
+		return operate_user;
+	}
+
+	public void setOperate_date(Date operate_date){
+		this.operate_date = operate_date;
+	}
+
+	public Date getOperate_date(){
+		return operate_date;
 	}
 
 

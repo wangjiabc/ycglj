@@ -115,14 +115,14 @@
 			</svg></div>
 	</a>
 	<!-- <span name='more'> -->
-	</span>
-	<a class="weui-cell weui-cell_access" onclick="setActionSheet('other')" href="javascript:;">
-		<div id="other" name="0" class="weui-panel__bd">
+	<!-- </span> -->
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('business')" href="javascript:;">
+		<div id="img3" name="0" class="weui-panel__bd">
 		</div>
 		<div class="weui-cell__bd">
 			<p>工商营业执照照片</p>
 		</div>
-		<div id="otherImg" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+		<div id="business" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 				<use xlink:href="#icon-paizhao"></use>
 			</svg></div>
 	</a>
@@ -134,7 +134,8 @@
 				<use xlink:href="#icon-map"></use>
 			</svg></div>
 	</a>
-	<div id="allmap" style="display: none"></div>
+	<div id="allmap"></div>
+	<!-- style="display: none" -->
 	</div>
 
 
@@ -176,82 +177,107 @@
 			}
 			return len;
 		}
+		//百度地图转换微信地图经纬度
+		function bMapTransWechatMap(lng, lat) {
+			var PI = 3.1415926535897932384626;
+			let x_pi = PI * 3000.0 / 180.0;
+			let x = lng - 0.0065; let y = lat - 0.006;
+			let z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+			let theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+			let lngs = z * Math.cos(theta);
+			let lats = z * Math.sin(theta);
+			return { lng: lngs, lat: lats };
+		}
 
-		var license = getQueryString("license");
+		/**
+		 * GCJ02 转换为 WGS84
+		 * @param lng
+		 * @param lat
+		 * @returns {*[]}
+		 */
+		function gcj02towgs84(lng, lat) {
+			var PI = 3.1415926535897932384626;
+			var a = 6378245.0;
+			var ee = 0.00669342162296594323;
+			var dlat = transformlat(lng - 105.0, lat - 35.0);
+			var dlng = transformlng(lng - 105.0, lat - 35.0);
+			var radlat = lat / 180.0 * PI;
+			var magic = Math.sin(radlat);
+			magic = 1 - ee * magic * magic;
+			var sqrtmagic = Math.sqrt(magic);
+			dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
+			dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
+			mglat = lat + dlat;
+			mglng = lng + dlng;
+			return { lng: lng * 2 - mglng, lat: lat * 2 - mglat };
+		}
+		function transformlat(lng, lat) {
+			var PI = 3.1415926535897932384626;
+			var ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lng * lat + 0.2 * Math.sqrt(Math.abs(lng));
+			ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
+			ret += (20.0 * Math.sin(lat * PI) + 40.0 * Math.sin(lat / 3.0 * PI)) * 2.0 / 3.0;
+			ret += (160.0 * Math.sin(lat / 12.0 * PI) + 320 * Math.sin(lat * PI / 30.0)) * 2.0 / 3.0;
+			return ret
+		}
+
+		function transformlng(lng, lat) {
+			var PI = 3.1415926535897932384626;
+			var ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * Math.sqrt(Math.abs(lng));
+			ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
+			ret += (20.0 * Math.sin(lng * PI) + 40.0 * Math.sin(lng / 3.0 * PI)) * 2.0 / 3.0;
+			ret += (150.0 * Math.sin(lng / 12.0 * PI) + 300.0 * Math.sin(lng / 30.0 * PI)) * 2.0 / 3.0;
+			return ret
+		}
+		var clng, clat;
+		function addPoint(lng, lat) {
+			var point = new BMap.Point(lng, lat);
+			map.centerAndZoom(point, 14);
+			var str = "我的位置";
+			var opts = {
+				position: point,    // 指定文本标注所在的地理位置
+				offset: new BMap.Size(-getByteLen(str) * 3, 5)    //设置文本偏移量
+			}
+			var label = new BMap.Label(str, opts);  // 创建文本标注对象
+			label.setStyle({
+				fontSize: "12px",
+				height: "20px",
+				lineHeight: "20px",
+				fontFamily: "微软雅黑"
+			});
+			map.addOverlay(label);
+			var marker = new BMap.Marker(point); // 创建点
+			map.addOverlay(marker); //增加点
+			var geolocationControl = new BMap.GeolocationControl();
+			map.addControl(geolocationControl);
+			marker.enableDragging(); //标注可拖拽
+			// 开启事件监听
+			marker.addEventListener("dragend", function (e) {
+				$.confirm({
+					title: '提示',
+					text: '是否修改零售户到当前位置?',
+					onOK: function () {
+						clng = e.point.lng;
+						clat = e.point.lat;
+						//点击确认
+						map.clearOverlays();
+						addPoint(e.point.lng, e.point.lat);
+					},
+					onCancel: function () {
+						map.clearOverlays();
+						addPoint(lng, lat);
+					}
+				});
+			});
+		}
+
+
+
 		// 百度地图API功能
 		var map = new BMap.Map("allmap");    // 创建Map实例
 
-		var longitude = getQueryString("longitude");
-		var latitude = getQueryString("latitude");
-		console.log("longitude"+longitude);
-		var point = new BMap.Point(longitude, latitude);
-		var marker = new BMap.Marker(point); // 创建点
-		map.addOverlay(marker); //增加点
-		var geolocationControl = new BMap.GeolocationControl();//显示当前位置控件
-		map.addControl(geolocationControl);
-		marker.enableDragging(); //标注可拖拽
-		marker.addEventListener("dragend", function (e) {
-
-			var clng = e.point.lng; //经度
-			var clat = e.point.lat; //纬度
-			var bMap = bMapTransWechatMap(clng, clat);
-			var gcj02 = gcj02towgs84(bMap.lng, bMap.lat);
-			var wgs84_lng = gcj02.lng;
-			var wgs84_lat = gcj02.lat;
-			$.confirm({
-				title: '提示',
-				text: '是否将经营地址移动到当前位置?',
-				onOK: function () {
-					//点击确认
-
-					var geoc = new BMap.Geocoder();
-
-					geoc.getLocation(point, function (rs) {
-						var addComp;
-						addComp = rs.addressComponents;
-						var addComp1 = JSON.stringify(addComp);
-						var url = "../../user/manualUpdatePosition.do";
-						$.get(url, {
-							license: license,
-							lng: clng,
-							lat: clat,
-							addComp: addComp1,
-							wgs84_lng: wgs84_lng,
-							wgs84_lat: wgs84_lat
-						}, function (data) {
-							console.log(data);
-							if (data == 1) {
-								$.get("../../user/findPositionByLicense.do", {
-									license: license
-								}, function (text) {
-									var data = JSON.parse(text);
-									map.clearOverlays();
-									addPoint(data.lng, data.lat);
-								});
-							} else {
-
-								alert("修改位置失败");
-								map.clearOverlays();
-								addPoint(lng, lat);
-							}
-						});
-					});
-
-				},
-				onCancel: function () {
-
-					$.get("../../user/findPositionByLicense.do", {
-						license: license
-					}, function (text) {
-						var data = JSON.parse(text);
-						map.clearOverlays();
-						addPoint(data.lng, data.lat);
-					});
-
-				}
-			});
-
-		});
+		var lng = getQueryString("longitude");
+		var lat = getQueryString("latitude");
+		addPoint(lng, lat);
 	</script>
 	<script>
 		url = document.location.toString();
@@ -294,46 +320,35 @@
 
 		var licenseImg = [];
 
-		$.post('/ycglj/mobile/user/getUserAuthen.do', {
+		// $.post('/ycglj/mobile/user/getUserAuthen.do', {
 
-		}, function (data) {
-			if (data == 3) {
-				$.alert({
-					title: "提示",
-					text: "你的资料正在审核中,不能重复提交",
-					onOK: function () {
-						//点击确认
-						location.href = "/ycglj/mobile/asset";
-					}
-				});
-			} else if (data == 1) {
-				$.alert({
-					title: "提示",
-					text: "你的资料审核",
-					onOK: function () {
-						//点击确认
-						location.href = "/ycglj/mobile/asset";
-					}
-				});
-			}
-		});
-		function getLicense(license) {
-			setActionSheet("license", license);
-			licenseImg.push("img" + license);
-		}
+		// }, function (data) {
+		// 	if (data == 3) {
+		// 		$.alert({
+		// 			title: "提示",
+		// 			text: "你的资料正在审核中,不能重复提交",
+		// 			onOK: function () {
+		// 				//点击确认
+		// 				location.href = "/ycglj/mobile/asset";
+		// 			}
+		// 		});
+		// 	} else if (data == 1) {
+		// 		$.alert({
+		// 			title: "提示",
+		// 			text: "你的资料审核",
+		// 			onOK: function () {
+		// 				//点击确认
+		// 				location.href = "/ycglj/mobile/asset";
+		// 			}
+		// 		});
+		// 	}
+		// });
 
-		function getBusiness(license) {
-			setActionSheet("business", license);
-			licenseImg.push("zz" + license);
-		}
-
-		function setActionSheet(dataType, license) {
-
+		function setActionSheet(dataType) {
 			var images = {
 				localId: [],
 				serverId: []
 			};
-
 			wx.chooseImage({
 				success: function (res) {
 					images.localId = res.localIds;
@@ -360,8 +375,7 @@
 								//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
 								wxImgCallback(
 									dataType,
-									res.serverId,
-									license
+									res.serverId
 								);
 								//   images.serverId.push(res.serverId);
 								if (i < length) {
@@ -381,9 +395,8 @@
 
 		}
 
-		function wxImgCallback(dataType, serverId, license) {
+		function wxImgCallback(dataType, serverId) {
 			console.log("serverId=" + serverId);
-			console.log("license=" + license);
 			//将serverId传给wx_upload.php的upload方法
 			var url = "../../../file/upload.do";
 			$.get(
@@ -392,8 +405,7 @@
 					campusId: 1,
 					serverId: serverId,
 					dataType: dataType,
-					classType: "user",
-					license: license
+					classType: "user"
 				},
 				function (text) {
 					console.log(text);
@@ -412,287 +424,115 @@
 						//存储到服务器成功后的处理
 						// location.reload();
 
-						var panel = document
-							.createElement("div");
-						panel
-							.setAttribute(
-								"class",
-								"weui-panel__bd");
-						var a = document
-							.createElement("a");
-						a.setAttribute("class",
-							"weui_grid");
-						var a = document
-							.createElement("a");
-						a
-							.setAttribute(
-								"href",
-								"javascript:void(0);");
-						a
-							.setAttribute(
-								"class",
-								"weui-media-box weui-media-box_appmsg");
-						var div = document
-							.createElement("div");
-						div
-							.setAttribute(
-								"class",
-								"weui-media-box__hd");
-
+						var panel = document.createElement("div");
+						panel.setAttribute("class", "weui-panel__bd");
+						var a = document.createElement("a");
+						a.setAttribute("class", "weui_grid");
+						var a = document.createElement("a");
+						a.setAttribute("href", "javascript:void(0);");
+						a.setAttribute("class", "weui-media-box weui-media-box_appmsg");
+						var div = document.createElement("div");
+						div.setAttribute("class", "weui-media-box__hd");
 						src = img;
-						var img = document
-							.createElement("img");
-						img
-							.setAttribute(
-								"class",
-								"weui-media-box__thumb");
-						img.setAttribute("src",
-							src);
+						var img = document.createElement("img");
+						img.setAttribute("class", "weui-media-box__thumb");
+						img.setAttribute("src", src);
 
 						div.appendChild(img);
 
-						div2 = document
-							.createElement("div");
-						div2
-							.setAttribute(
-								"class",
-								"weui-media-box__bd");
-						p = document
-							.createElement("p");
-						p
-							.setAttribute(
-								"class",
-								"weui-media-box__desc");
+						div2 = document.createElement("div");
+						div2.setAttribute("class", "weui-media-box__bd");
+						p = document.createElement("p");
+						p.setAttribute("class", "weui-media-box__desc");
 						div2.appendChild(p);
 						a.appendChild(div);
 						a.appendChild(div2);
 						panel.appendChild(a);
 
 						if (dataType == "identity") {
-							document
-								.getElementById("img1").innerHTML = "";
-							$("#img1").attr(
-								"name",
-								uuid);
-							$("#img1").append(
-								panel);
+							document.getElementById("img1").innerHTML = "";
+							$("#img1").attr("name", uuid);
+							$("#img1").append(panel);
 						} else if (dataType == "conIdentity") {
 							document.getElementById("img2").innerHTML = "";
 							$("#img2").attr("name", uuid);
 							$("#img2").append(panel);
-						} else if (dataType == "license") {
-							document.getElementById("img" + license).innerHTML = "";
-							$("#img" + license).attr("name", uuid);
-							$("#img" + license).append(panel);
 						} else if (dataType == "business") {
-							document.getElementById("zz" + license).innerHTML = "";
-							$("#zz" + license).attr("name", uuid);
-							$("#zz" + license).append(panel);
+							document.getElementById("img3").innerHTML = "";
+							$("#img3").attr("name", uuid);
+							$("#img3").append(panel);
 						}
-						else if (dataType == "other") {
-							document.getElementById("other").innerHTML = "";
-							$("#other").attr("name", uuid);
-							$("#other").append(panel);
-						}
-
 					}
 				});
 		}
 
-		$(document).ready(
-			function () {
-
-				var license = [];
-				$.ajax({
-					url: "/ycglj/mobile/user/getUserLicense.do",
-					data: {
-					},
-					type: "GET",
-					success: function (data) {
-						console.log(data);
-						licenseData = JSON.parse(data);
-						// console.log(data);
-						// license = data[1].license;
-						console.log(data.length);
-						console.log(licenseData);
-
-						for (i = 0; i < licenseData.length; i++) {
-							license.push(licenseData[i].license);
-							$("[name='more']").append('<a class="weui-cell weui-cell_access" onclick="getBusiness(' + licenseData[i].license + ')" href="javascript:;">' +
-								'<div  id="zz' + licenseData[i].license + '" name="0" class="weui-panel__bd">' +
-								'</div>' +
-								'<div class="weui-cell__bd">' +
-								'<p>' + licenseData[i].license + '工商营业执照' + (i + 1) + '</p>' +
-								'</div>' +
-								'<div id="front" class="weui-cell__ft"><svg class="icon" aria-hidden="true">' +
-								'<use xlink: href="#icon-paizhao"></use>' +
-								'</svg></div>' +
-								'</a >' +
-								'<a class="weui-cell weui-cell_access" onclick="getLicense(' + licenseData[i].license + ')" href="javascript:;">' +
-								'<div  id="img' + licenseData[i].license + '" name="0" class="weui-panel__bd">' +
-								'</div>' +
-								'<div class="weui-cell__bd">' +
-								'<p>' + licenseData[i].license + '许可证正本照片' + (i + 1) + '</p>' +
-								'</div>' +
-								'<div id="front" class="weui-cell__ft"><svg class="icon" aria-hidden="true">' +
-								'<use xlink: href="#icon-paizhao"></use>' +
-								'</svg></div>' +
-								'</a >'
-							);
-						}
-
-					}
-				});
-				//提交
-				$("#submit").click(
-					function () {
-
-						location.href = "../sucess.html";
-						// console.log("数组 " + license);
-						// var error = "";
-						// var img1 = $("#img1").attr(
-						// 	"name");
-						// if (img1 == 0) {
-						// 	error = "身份证正面照照片不能空!";
-						// }
-						// var img2 = $("#img2").attr(
-						// 	"name");
-						// if (img2 == 0) {
-						// 	error = "身份证反面照照片不能空!";
-						// }
-						// console.log("img地址不为空" + $('img [src!=""]'));
-
-						// for (let index = 0; index < license.length; index++) {
-						// 	if ($('img' + license[index]).attr("name") == 0) {
-						// 		error = "许可证号正本不能为空!";
-						// 	}
-						// 	else if ($('zz' + license[index]).attr("name")) {
-						// 		error = "营业执照不能为空!";
-						// 	}
-						// }
-						// var img3 = $("#other").attr(
-						// 	"name");
-						// var img4 = $("#displayarea")
-						// 	.attr("name");
-						// if (img4 == 0) {
-						// 	error = "签名不能空!";
-						// }
-
-						// if (error != "") {
-
-						// 	$.alert({
-						// 		title: "",
-						// 		text: error,
-						// 		onOK: function () {
-						// 			//点击确认
-						// 		}
-						// 	});
-
-						// } else {
-						// 	var arrays = new Array(
-						// 		img1, img2, img4);
-
-						// 	var i;
-						// 	for (i in licenseImg) {
-						// 		arrays.push($("#" + licenseImg[i] + "").attr("name"));
-						// 	}
-						// 	if (img3 != null && img3 != 0 && img3 != "") {
-						// 		arrays.push(img3);
-						// 	}
-						// 	console.log('保存图片数组的id' + arrays);
-
-						// 	console.log("arrays=" + arrays);
-						// 	$.post(
-						// 		"/ycglj/mobile/user/updateAffire.do",
-						// 		{
-						// 			arrays: JSON
-						// 				.stringify(arrays)
-						// 		},
-						// 		function (
-						// 			text) {
-						// 			console.log(text);
-						// 			if (text == 1) {
-
-						// 				$
-						// 					.alert({
-						// 						title: "",
-						// 						text: "成功",
-						// 						onOK: function () {
-						// 							//点击确认
-						// 							location.href = "/ycglj/mobile/asset";
-						// 						}
-						// 					});
-
-						// 			} else {
-
-						// 			}
-
-						// 		});
-
-						// }
-
-					})
-
-				// $("#b3").click(function () {
-				//     if($(".signature").jSignature('getData', 'native').length>0){
-				//         alert("已签名");
-				//     }else
-				//     alert("未签名");
-				// })
-
-				function saveImg() {
-					//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
-					var datapair = $("#signature").jSignature(
-						"getData", "image");
-					var i = new Image();
-					i.src = "data:" + datapair[0] + ","
-						+ datapair[1];
-					$(i).appendTo($("#displayarea"));
-					if ($("#signature").jSignature('getData',
-						'native').length > 0) {
-
-						$.post("../../file/inputImage.do", {
-							file: "data:" + datapair[0] + ","
-								+ datapair[1]
-						}, function (text) {
-							console.log(text);
-							var result = JSON.parse(text);
-
-							var data = result.state;
-
-							var img = result.url;
-
-							var uuid = result.uuid;
-
-							$("#displayarea").attr("name", uuid);
-						});
-
-						$.closeModal();
-					} else {
-						$.closeModal();
-
-						$.post("../../file/inputImage.do", {
-							file: "data:" + datapair[0] + ","
-								+ datapair[1]
-						}, function (text) {
-							console.log(text);
-							var result = JSON.parse(text);
-
-							var data = result.state;
-
-							var img = result.url;
-
-							var uuid = result.uuid;
-
-							$("#displayarea").attr("name", uuid);
-						});
-
-					}
+		$(document).ready(function () {
+			//提交
+			$("#submit").click(function () {
+				if (clng != undefined) {
+					lng = clng;
+					lat = clat;
+				}
+				var name = $('#name').val();
+				var idcard = $('#idcard').val();
+				var phone = $('#phone').val();
+				// location.href = "../sucess.html";
+				var error = "";
+				var img1 = $("#img1").attr("name");
+				if (img1 == 0) {
+					error = "身份证正面照照片不能为空!";
+				}
+				var img2 = $("#img2").attr("name");
+				if (img2 == 0) {
+					error = "身份证反面照照片不能为空!";
+				}
+				var img3 = $("#img3").attr("name");
+				if (img3 == 0) {
+					error = "工商营业执照不能为空!";
 				}
 
+				if (error != "") {
+
+					$.alert({
+						title: "",
+						text: error,
+						onOK: function () {
+							//点击确认
+						}
+					});
+
+				} else {
+					var arrays = new Array(img1, img2, img3);
+					console.log('保存图片数组的id' + arrays);
+
+					$.post("../../../assetRegister/insertNew.do",
+						{
+							name: name,
+							id_number: idcard,
+							phone: phone,
+							arrays: JSON.stringify(arrays),
+							lng: lng,
+							lat: lat
+						},
+						function (text) {
+							console.log(text);
+							if (text == 1) {
+								$.alert({
+									title: "",
+									text: "成功",
+									onOK: function () {
+										//点击确认
+										location.href = "../sucess.html";
+									}
+								});
+
+							} else {
+							}
+						});
+				}
 			})
+		})
 	</script>
-	<!-- <script type="text/jscript" src="js/jSignature.min.noconflict.js"></script> -->
 </body>
 
 </html>

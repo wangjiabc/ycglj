@@ -1067,7 +1067,76 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		return i;
 	}
 
+	@Override
+	public Map<String, Object> getAllTempUserJoin(Integer limit, Integer offset, String sort, String order,
+			Map<String, String> search) {
+		// TODO Auto-generated method stub
+		
+		Temp_Users temp_Users=new Temp_Users();
+		temp_Users.setLimit(limit);
+		temp_Users.setOffset(offset);
+		temp_Users.setNotIn("id");
+		
+		if(sort!=null&&!sort.equals("")){
 
+		}else{
+			sort="id";
+		}
+		
+		if(order!=null&&order.equals("desc")){
+			order="desc";
+		}else{
+			order="asc";
+		}
+		
+		temp_Users.setOrder(order);
+		temp_Users.setSort(sort);
+		
+		if(!search.equals("")&&!search.isEmpty()){
+			String[] where=TransMapToString.get(search);
+			temp_Users.setWhere(where);
+		}
+		
+		Map map=new HashMap<>();
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), temp_Users);
+		
+		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), temp_Users).get("");
+		
+		map.put("code", "0");
+		
+		map.put("data", list);
+		
+		map.put("count", count);
+		
+		return map;
+		
+	}
 
-    
+	@Override
+	public Temp_Users getTempUsers(Temp_Users temp_Users) {
+		// TODO Auto-generated method stub
+		Temp_Users temp_Users2 = new Temp_Users();
+
+		try {
+			temp_Users2 = (Temp_Users) SelectExe.get(this.getJdbcTemplate(), temp_Users).get(0);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		if (temp_Users2 != null) {
+			return temp_Users2;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public Integer deleteTempUsers(Temp_Users temp_Users) {
+		// TODO Auto-generated method stub
+		return DeleteExe.get(this.getJdbcTemplate(), temp_Users);
+	}
+
+	
 }

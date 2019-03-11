@@ -84,4 +84,10 @@ public interface UserDAO {
 	public Integer insertTempUser(Temp_Users temp_Users);
 	
 	public Integer updateCheck_Person(Check_Person check_Person);
+	
+	public Map<String,Object> getAllTempUserJoin(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
+    
+	public Temp_Users getTempUsers(Temp_Users temp_Users);
+	
+	public Integer deleteTempUsers(Temp_Users temp_Users); 
 }

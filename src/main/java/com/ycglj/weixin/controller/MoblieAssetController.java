@@ -1,5 +1,6 @@
 package com.ycglj.weixin.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +24,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.Position;
+import com.ycglj.manage.daoModel.Temp_User_License;
+import com.ycglj.manage.daoModel.Temp_Users;
+import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.SellerService;
@@ -196,7 +201,188 @@ private SellerService sellerService;
  
 	} 
 	
+	@RequestMapping("getAllTransactUser")
+	public @ResponseBody Map<String, Object> getAllTransactUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
+			String search,String area,HttpServletRequest request){
+		
+		Map searchMap=new HashMap<>();
+		
+		searchMap.put("authentication > ", "3");
+		
+		if(search!=null&&!search.trim().equals("")){
+			search="%"+search+"%";  
+			searchMap.put("name like ", search);
+		}		
+
+		if(area!=null&&!area.trim().equals("")){
+			searchMap.put("area =", area);
+		}	
+		
+		int offset=(page-1)*limit;
+		
+		return userDao.getAllUserJoin(limit, offset, sort,order, searchMap);
+		
+	}
+			
+	@RequestMapping("getAllNewUser")
+	public @ResponseBody Map<String, Object> getAllNewUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
+			String search,String area,HttpServletRequest request){
+			
+			Map searchMap=new HashMap<>();
+			
+			if(search!=null&&!search.trim().equals("")){
+				search="%"+search+"%";  
+				searchMap.put("name like ", search);
+			}		
+						
+			if(area!=null&&!area.trim().equals("")){
+				searchMap.put("area =", area);
+			}	
+			
+			int offset=(page-1)*limit;
+			
+			return userDao.getAllTempUserJoin(limit, offset, sort, order, searchMap);
+				
+	}
 	
+	@RequestMapping(value="newTransact")
+	public @ResponseBody Integer newTransact(@RequestParam String openId,@RequestParam String license,
+			@RequestParam String startTime,@RequestParam String endTime,@RequestParam Integer area,
+			@RequestParam String region,HttpServletRequest request){
+		
+		Temp_Users temp_Users=new Temp_Users();
+		
+		temp_Users.setLimit(1);
+		temp_Users.setOffset(0);
+		temp_Users.setNotIn("id");
+		
+		String[] where={"open_id=",openId};
+		
+		temp_Users.setWhere(where);
+		
+		Temp_Users temp_Users2=userDao.getTempUsers(temp_Users);
+		
+		Users users=new Users();
+		
+		users.setOpen_id(openId);
+		users.setName(temp_Users2.getName());
+		users.setCard_type(temp_Users2.getCard_type());
+		users.setId_number(temp_Users2.getId_number());
+		users.setPhone(temp_Users2.getPhone());
+		users.setDate(new Date());
+		
+		Date license_start_date = null;
+		Date license_end_date = null;
+		
+		SimpleDateFormat sdf  =   new  SimpleDateFormat("yyyy-MM-dd"); 
+		
+		try {
+			if(startTime!=null&&!startTime.equals(""))
+				license_start_date = sdf.parse(startTime);
+			if(endTime!=null&&!endTime.equals(""))
+				license_end_date=sdf.parse(endTime);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		User_License user_License=new User_License();
+		
+		user_License.setOpen_id(openId);
+		user_License.setPhone(temp_Users2.getPhone());
+		user_License.setLicense(license);
+		user_License.setAuthentication(1);
+		user_License.setAuthen_date(new Date());
+		user_License.setRegion(region);
+		user_License.setArea(area);
+		
+		if(license_start_date!=null)
+			user_License.setLicense_start_date(license_start_date);
+		if(license_end_date!=null)
+			user_License.setLicense_end_date(license_end_date);
+		
+		int i=userDao.insertUser(users, user_License);
+		
+		if (i > 0) {
+			
+			userDao.deleteTempUsers(temp_Users);
+			
+			Position position = new Position();
+
+			position.setLicense(license);
+			position.setLng(temp_Users2.getLng());
+			position.setLat(temp_Users2.getLat());
+			
+			licenseDAO.updatePositionByLicense(position, false);			
+		}
+
+		return i;
+		
+	}
 	
+	@RequestMapping(value="transact")
+	public @ResponseBody Integer transact(@RequestParam Integer type,@RequestParam String license,
+			String startTime,String endTime,HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		int i = 0;
+		
+		if(type==4){
+			
+			User_License user_License=new User_License();
+			user_License.setLimit(1);
+			user_License.setOffset(0);
+			user_License.setNotIn("license");
+			
+			String[] where={"license=",license};
+			
+			user_License.setWhere(where);
+			
+			User_License user_License2=userDao.getUserLicense(user_License);
+			
+			SimpleDateFormat sdf  =   new  SimpleDateFormat("yyyy-MM-dd"); 
+			
+			Date stop_start_date = null;
+			Date stop_end_data = null;
+			
+			try {
+				if(startTime!=null&&!startTime.equals(""))
+					stop_start_date = sdf.parse(startTime);
+				if(endTime!=null&&!endTime.equals(""))
+					stop_end_data=sdf.parse(endTime);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			if(stop_start_date!=null)
+				user_License2.setStop_start_date(stop_start_date);
+			if(stop_end_data!=null)
+				user_License2.setStop_end_data(stop_end_data);
+			
+			i=licenseDAO.deleteLicense(openId, user_License2);
+			
+		}else if(type==6){
+			 
+			Temp_User_License temp_User_License=new Temp_User_License();
+			
+			temp_User_License.setLimit(1);
+			temp_User_License.setOffset(0);
+			temp_User_License.setNotIn("open_id");
+			
+			String[] where={"license=",license};
+			
+			Temp_User_License temp_User_License2=licenseDAO.getTempUserLicense(temp_User_License);
+			
+			i=licenseDAO.insertLicense(temp_User_License);
+			
+		}
+		
+		return i;
+		
+	}
 	
 }

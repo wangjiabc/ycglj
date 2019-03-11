@@ -34,6 +34,7 @@ import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Law_Case;
 import com.ycglj.manage.daoModel.Not_License;
 import com.ycglj.manage.daoModel.Position;
+import com.ycglj.manage.daoModel.Temp_User_License;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModel.WeiXin_User;
@@ -1584,6 +1585,103 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		
 	}
 
+	@Override
+	public Integer deleteLicense(String operate_user,User_License user_License) {
+		// TODO Auto-generated method stub
+		int i;
+		
+		Temp_User_License temp_User_License=new Temp_User_License();
+		
+		temp_User_License.setOpen_id(user_License.getOpen_id());
+		temp_User_License.setPhone(user_License.getPhone());
+		temp_User_License.setLicense(user_License.getLicense());
+		temp_User_License.setAddress(user_License.getAddress());
+		temp_User_License.setAuthentication(user_License.getAuthentication());
+		temp_User_License.setAuthen_date(user_License.getAuthen_date());
+		temp_User_License.setLicense_start_date(user_License.getLicense_start_date());
+		temp_User_License.setLicense_end_date(user_License.getLicense_end_date());
+		temp_User_License.setBusiness_state(user_License.getBusiness_state());
+		temp_User_License.setBusiness_date(user_License.getBusiness_date());
+		temp_User_License.setWeight(user_License.getWeight());
+		temp_User_License.setArea(user_License.getArea());
+		temp_User_License.setOperate_user(operate_user);
+		temp_User_License.setOperate_date(new Date());
+		
+		i=InsertExe.get(this.getJdbcTemplate(), temp_User_License);
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		String[] where={"license=",user_License.getLicense()};
+		
+		user_License.setWhere(where);
+		
+		i=DeleteExe.get(this.getJdbcTemplate(), user_License);
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		return i;
+	}
+
+	@Override
+	public Integer insertLicense(Temp_User_License temp_User_License) {
+		// TODO Auto-generated method stub
+		int i;
+		
+		User_License user_License=new User_License();
+		
+		user_License.setOpen_id(temp_User_License.getOpen_id());
+		user_License.setPhone(temp_User_License.getPhone());
+		user_License.setLicense(temp_User_License.getLicense());
+		user_License.setAddress(temp_User_License.getAddress());
+		user_License.setAuthentication(temp_User_License.getAuthentication());
+		user_License.setAuthen_date(temp_User_License.getAuthen_date());
+		user_License.setLicense_start_date(temp_User_License.getLicense_start_date());
+		user_License.setLicense_end_date(temp_User_License.getLicense_end_date());
+		user_License.setBusiness_state(temp_User_License.getBusiness_state());
+		user_License.setBusiness_date(temp_User_License.getBusiness_date());
+		user_License.setWeight(temp_User_License.getWeight());
+		user_License.setArea(temp_User_License.getArea());
+		user_License.setDate(new Date());
+		
+		i=InsertExe.get(this.getJdbcTemplate(), user_License);
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		String[] where={"license=",temp_User_License.getLicense()};
+		
+		temp_User_License.setWhere(where);
+		
+		i=DeleteExe.get(this.getJdbcTemplate(), temp_User_License);
+		
+		if (i < 1) {
+			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+		}
+		
+		return i;
+	}
+
+	@Override
+	public Temp_User_License getTempUserLicense(Temp_User_License temp_User_License) {
+		// TODO Auto-generated method stub
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), temp_User_License);
+		
+		Temp_User_License temp_User_License2=new Temp_User_License();
+		
+		try{
+			temp_User_License2=(Temp_User_License) list.get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return temp_User_License2;
+	}
 
 	
 }
