@@ -34,6 +34,7 @@ import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Law_Case;
 import com.ycglj.manage.daoModel.Not_License;
 import com.ycglj.manage.daoModel.Position;
+import com.ycglj.manage.daoModel.Temp_Change;
 import com.ycglj.manage.daoModel.Temp_User_License;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
@@ -1654,6 +1655,8 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		}
 		
 		String[] where={"license=",temp_User_License.getLicense()};
+		MyTestUtil.print(temp_User_License);
+		MyTestUtil.print(where);
 		
 		temp_User_License.setWhere(where);
 		
@@ -1681,6 +1684,34 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			e.printStackTrace();
 		}
 		return temp_User_License2;
+	}
+
+	@Override
+	public Integer insertTempChange(Temp_Change temp_Change) {
+		// TODO Auto-generated method stub
+		return InsertExe.get(this.getJdbcTemplate(), temp_Change);
+	}
+
+	@Override
+	public Temp_Change selectTempChange(Temp_Change temp_Change) {
+		// TODO Auto-generated method stub
+		List list=SelectExe.get(this.getJdbcTemplate(), temp_Change);
+		
+		Temp_Change temp_Change2=new Temp_Change();
+		
+		try{
+			temp_Change2=(Temp_Change) list.get(0);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return temp_Change2;
+	}
+
+	@Override
+	public Integer deleteTempChange(Temp_Change temp_Change) {
+		// TODO Auto-generated method stub
+		return DeleteExe.get(this.getJdbcTemplate(), temp_Change);
 	}
 
 	

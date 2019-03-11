@@ -134,7 +134,7 @@
 				<use xlink:href="#icon-map"></use>
 			</svg></div>
 	</a>
-	<div id="allmap"></div>
+	<div id="allmap" style="display: none"></div>
 	<!-- style="display: none" -->
 	</div>
 
@@ -260,7 +260,7 @@
 						clat = e.point.lat;
 						//点击确认
 						map.clearOverlays();
-						addPoint(e.point.lng, e.point.lat);
+						addPoint(clng, clat);
 					},
 					onCancel: function () {
 						map.clearOverlays();

@@ -198,9 +198,6 @@
 			}
 		});
 
-
-		var licenseImg = [];
-
 		// $.post('/ycglj/mobile/user/getUserAuthen.do', {
 
 		// }, function (data) {
@@ -352,6 +349,7 @@
 		}
 		$(document).ready(function () {
 			var startTime, endTime;
+			var license;
 			$("#date").calendar({
 				onChange: function (p, values, displayValues) {
 					console.log(displayValues);
@@ -364,11 +362,34 @@
 					endTime = displayValues;
 				}
 			});
+			// 查询所有业务接口	
+			$.ajax({
+				url: "../../getAllTransactUser.do?limit=10&page=1",
+				data: {
+				},
+				type: "GET",
+				success: function (data) {
+				
+				}
+			});
+			$.ajax({
+				url: "/ycglj/mobile/user/getUserLicense.do",
+				data: {
+				},
+				type: "GET",
+				success: function (data) {
+					licenseData = JSON.parse(data);
+					for (i = 0; i < licenseData.length; i++) {
+						license = licenseData[0].license;
+						$('#license').val(license);
+					}
+				}
+			});
 			//提交
 			$("#submit").click(
 				function () {
 					// location.href = "../sucess.html";
-					console.log("数组 " + license);
+					// console.log("数组 " + license[0]);
 					var error = "";
 					var img1 = $("#img1").attr(
 						"name");
@@ -380,26 +401,7 @@
 					if (img2 == 0) {
 						error = "身份证反面照照片不能空!";
 					}
-					console.log("img地址不为空" + $('img [src!=""]'));
-
-					for (let index = 0; index < license.length; index++) {
-						if ($('img' + license[index]).attr("name") == 0) {
-							error = "许可证号正本不能为空!";
-						}
-						else if ($('zz' + license[index]).attr("name")) {
-							error = "营业执照不能为空!";
-						}
-					}
-					var img3 = $("#other").attr(
-						"name");
-					var img4 = $("#displayarea")
-						.attr("name");
-					if (img4 == 0) {
-						error = "签名不能空!";
-					}
-
 					if (error != "") {
-
 						$.alert({
 							title: "",
 							text: error,
@@ -414,10 +416,11 @@
 
 						console.log("arrays=" + arrays);
 						$.post(
-							"/ycglj/mobile/user/updateAffire.do",
+							"/ycglj/mobile/asset/updateAffire.do",
 							{
 								type: 4,
-								arrays: JSON.stringify(arrays)
+								arrays: JSON.stringify(arrays),
+								license: license
 							},
 							function (text) {
 								console.log(text);
@@ -436,10 +439,9 @@
 							});
 					}
 				})
-
 		})
+
 	</script>
-	<!-- <script type="text/jscript" src="js/jSignature.min.noconflict.js"></script> -->
 </body>
 
 </html>

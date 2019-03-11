@@ -6,7 +6,8 @@
     <title>合江烟草专卖局</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="../layuiadmin/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../layuiadmin/style/admin.css" media="all">
 
@@ -73,7 +74,8 @@
                         <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
                     </li> -->
                     <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
-                        <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
+                        <a href="javascript:;" layadmin-event="more"><i
+                                class="layui-icon layui-icon-more-vertical"></i></a>
                     </li>
                 </ul>
             </div>
@@ -85,7 +87,8 @@
                         <span>合江烟草公司</span>
                     </div>
 
-                    <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+                    <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
+                        lay-filter="layadmin-system-side-menu">
                         <li data-name="home" class="layui-nav-item layui-nav-itemed">
                             <a href="javascript:;" lay-tips="主页" lay-direction="2">
                                 <i class="layui-icon layui-icon-home"></i>
@@ -142,8 +145,20 @@
                                     <a lay-href="check/caseManager.html">案件管理</a>
                                 </dd>
                                 <dd data-name="order" class="layui">
-                                        <a lay-href="check/checkPerson.html">人员信息</a>
-                                    </dd>
+                                    <a lay-href="check/checkPerson.html">人员信息</a>
+                                </dd>
+                            </dl>
+                        </li>
+                        <li data-name="order" class="layui-nav-item">
+                            <a href="javascript:;" lay-tips="证件管理" lay-direction="2">
+                                <i class="layui-icon layui-icon-user"></i>
+                                <cite>证件管理员</cite>
+                            </a>
+                            <dl class="layui-nav-child">
+                                <dd data-name="order" class="layui">
+                                    <a lay-href="banzhen/index.html">业务管理</a>
+                                </dd>
+                                
                             </dl>
                         </li>
                         <li data-name="order" class="layui-nav-item">
@@ -158,11 +173,11 @@
                             </dl>
                         </li>
                         <li data-name="echart" class="layui-nav-item">
-                                <a lay-href="map/echarts.html" lay-tips="统计图表" lay-direction="2">
-                                    <i class="layui-icon layui-icon-home"></i>
-                                    <cite>统计图表</cite>
-                                </a>
-                            </li>
+                            <a lay-href="map/echarts.html" lay-tips="统计图表" lay-direction="2">
+                                <i class="layui-icon layui-icon-home"></i>
+                                <cite>统计图表</cite>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -185,7 +200,8 @@
                 </div>
                 <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
                     <ul class="layui-tab-title" id="LAY_app_tabsheader">
-                        <li lay-id="home/console.html" lay-attr="home/console.html" class="layui-this"><i class="layui-icon layui-icon-home"></i></li>
+                        <li lay-id="home/console.html" lay-attr="home/console.html" class="layui-this"><i
+                                class="layui-icon layui-icon-home"></i></li>
                     </ul>
                 </div>
             </div>

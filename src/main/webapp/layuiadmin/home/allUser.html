@@ -92,7 +92,7 @@
           , { field: 'business_state', title: '业态', edit: 'text' }
           , { field: 'up_date', title: '办理时间', align: 'center',hide:true, templet: function (d) { return createTime(d.up_date); } }
           , { field: 'date', title: '注册时间', align: 'center',hide:true,  templet: function (d) { return createTime(d.date); } }
-          , { field: 'license_end_date', title: '许可证到期日期', align: 'center', templet: function (d) { return createTime(d.license_start_date); } }
+          , { field: 'license_end_date', title: '许可证到期日期', align: 'center', templet: function (d) { return createTime(d.license_end_date); } }
           , { field: 'status', title: '审核状态', align: 'center', templet: function (d) { return setStatus(d.authentication); } }
           , { title: '操作', toolbar: '#barDemo' }
           , { field: 'pass', title: '是否通过', templet: '#checkboxTpl', unresize: true }

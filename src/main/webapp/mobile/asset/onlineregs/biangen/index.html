@@ -79,7 +79,7 @@
 				<p>变更企业名称/个体工商户字号：</p>
 				<p class="p1">(工商营业执照登记的"名称"发生改变，需要提供工商营业执照)</p>
 			</div>
-			<div id="identity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+			<div id="bg1" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
@@ -90,40 +90,40 @@
 				<p>变更经营者姓名</p>
 				<p class="p1">(持证人未改变，持证人身份证登记的"姓名"发生改变，需提供公安部门出具的姓名变更证明)</p>
 			</div>
-			<div id="conIdentity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+			<div id="bg3" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
 		<a class="weui-cell weui-cell_access" onclick="setActionSheet('conIdentity')" href="javascript:;">
-			<div id="img2" name="0" class="weui-panel__bd">
+			<div id="img3" name="0" class="weui-panel__bd">
 			</div>
 			<div class="weui-cell__bd">
 				<p>变更法定代表人(负责人)</p>
 				<p class="p1">(法定代表人或者其他组织负责人发生改变，需提供工商营业执照及法定代表人或其他组织负责人变更证明文件)</p>
 			</div>
-			<div id="conIdentity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+			<div id="bg4" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
 		<a class="weui-cell weui-cell_access" onclick="setActionSheet('conIdentity')" href="javascript:;">
-			<div id="img2" name="0" class="weui-panel__bd">
+			<div id="img4" name="0" class="weui-panel__bd">
 			</div>
 			<div class="weui-cell__bd">
 				<p>变更经营地址名称</p>
 				<p class="p1">(经营地址未改变，经营地址的名称发生改变，需提供社区或政府相关部门的地址名称变更证明)</p>
 			</div>
-			<div id="conIdentity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+			<div id="bg5" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
 		<a class="weui-cell weui-cell_access" onclick="setActionSheet('conIdentity')" href="javascript:;">
-			<div id="img2" name="0" class="weui-panel__bd">
+			<div id="img5" name="0" class="weui-panel__bd">
 			</div>
 			<div class="weui-cell__bd">
 				<p>变更家庭经营成员</p>
 				<p class="p1">(工商营业执照"组成形式"为"家庭成员"的个体商户，持证人在家庭成员间变化的，需提供工商营业执照及工商所出具的家庭成员备案信息证明)</p>
 			</div>
-			<div id="conIdentity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+			<div id="bg6" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
@@ -149,7 +149,7 @@
 	<script>
 		url = document.location.toString();
 		$.ajax({
-			url: "../../../wechat/sign.do",
+			url: "../../../../wechat/sign.do",
 			data: {
 				campusId: 1,
 				url: url
@@ -190,25 +190,25 @@
 		$.post('/ycglj/mobile/user/getUserAuthen.do', {
 
 		}, function (data) {
-			if (data == 3) {
-				$.alert({
-					title: "提示",
-					text: "你的资料正在审核中,不能重复提交",
-					onOK: function () {
-						//点击确认
-						location.href = "/ycglj/mobile/asset";
-					}
-				});
-			} else if (data == 1) {
-				$.alert({
-					title: "提示",
-					text: "你的资料审核",
-					onOK: function () {
-						//点击确认
-						location.href = "/ycglj/mobile/asset";
-					}
-				});
-			}
+			// if (data == 3) {
+			// 	$.alert({
+			// 		title: "提示",
+			// 		text: "你的资料正在审核中,不能重复提交",
+			// 		onOK: function () {
+			// 			//点击确认
+			// 			location.href = "/ycglj/mobile/asset";
+			// 		}
+			// 	});
+			// } else if (data == 1) {
+			// 	$.alert({
+			// 		title: "提示",
+			// 		text: "你的资料审核",
+			// 		onOK: function () {
+			// 			//点击确认
+			// 			location.href = "/ycglj/mobile/asset";
+			// 		}
+			// 	});
+			// }
 		});
 		function getLicense(license) {
 			setActionSheet("license", license);
@@ -278,7 +278,7 @@
 			console.log("serverId=" + serverId);
 			console.log("license=" + license);
 			//将serverId传给wx_upload.php的upload方法
-			var url = "../../file/upload.do";
+			var url = "../../../file/upload.do";
 			$.get(
 				url,
 				{
@@ -525,64 +525,6 @@
 						// }
 
 					})
-
-				// $("#b3").click(function () {
-				//     if($(".signature").jSignature('getData', 'native').length>0){
-				//         alert("已签名");
-				//     }else
-				//     alert("未签名");
-				// })
-
-				function saveImg() {
-					//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
-					var datapair = $("#signature").jSignature(
-						"getData", "image");
-					var i = new Image();
-					i.src = "data:" + datapair[0] + ","
-						+ datapair[1];
-					$(i).appendTo($("#displayarea"));
-					if ($("#signature").jSignature('getData',
-						'native').length > 0) {
-
-						$.post("../../file/inputImage.do", {
-							file: "data:" + datapair[0] + ","
-								+ datapair[1]
-						}, function (text) {
-							console.log(text);
-							var result = JSON.parse(text);
-
-							var data = result.state;
-
-							var img = result.url;
-
-							var uuid = result.uuid;
-
-							$("#displayarea").attr("name", uuid);
-						});
-
-						$.closeModal();
-					} else {
-						$.closeModal();
-
-						$.post("../../file/inputImage.do", {
-							file: "data:" + datapair[0] + ","
-								+ datapair[1]
-						}, function (text) {
-							console.log(text);
-							var result = JSON.parse(text);
-
-							var data = result.state;
-
-							var img = result.url;
-
-							var uuid = result.uuid;
-
-							$("#displayarea").attr("name", uuid);
-						});
-
-					}
-				}
-
 			})
 	</script>
 	<!-- <script type="text/jscript" src="js/jSignature.min.noconflict.js"></script> -->
