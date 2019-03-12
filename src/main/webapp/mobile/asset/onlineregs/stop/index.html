@@ -362,7 +362,7 @@
 					endTime = displayValues;
 				}
 			});
-			// 查询所有业务接口	
+			// 所有办理业务
 			$.ajax({
 				url: "../../getAllTransactUser.do?limit=10&page=1",
 				data: {
@@ -372,6 +372,7 @@
 				
 				}
 			});
+			//用户信息
 			$.ajax({
 				url: "/ycglj/mobile/user/getUserLicense.do",
 				data: {
@@ -413,7 +414,6 @@
 					} else {
 						var arrays = new Array(img1, img2);
 						console.log('保存图片数组的id' + arrays);
-
 						console.log("arrays=" + arrays);
 						$.post(
 							"/ycglj/mobile/asset/updateAffire.do",

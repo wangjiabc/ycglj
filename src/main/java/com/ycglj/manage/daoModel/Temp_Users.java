@@ -41,6 +41,9 @@ public class Temp_Users implements Serializable{
     @SQLDateTime(name="up_date")
 	private Date up_date;
 
+    @SQLString(name="address")
+	private String address;
+
     @SQLDouble(name="lng")
 	private Double lng;
 
@@ -125,6 +128,14 @@ public class Temp_Users implements Serializable{
 
 	public Date getUp_date(){
 		return up_date;
+	}
+
+	public void setAddress(String address){
+		this.address = address;
+	}
+
+	public String getAddress(){
+		return address;
 	}
 
 	public void setLng(Double lng){

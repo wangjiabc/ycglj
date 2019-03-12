@@ -102,6 +102,12 @@
 				<input class="weui-input" id="license" type="text" placeholder="请输入您的许可证号">
 			</div>
 		</div>
+		<div class="weui-cell">
+			<div class="weui-cell__hd"><label class="weui-label">联系电话</label></div>
+			<div class="weui-cell__bd">
+				<input class="weui-input" id="phone" type="text" placeholder="请输入您的手机号码">
+			</div>
+		</div>
 
 		<a class="weui-cell weui-cell_access" onclick="setActionSheet('identity')" href="javascript:;">
 			<div id="img1" name="0" class="weui-panel__bd">
@@ -240,11 +246,9 @@
 								.toString(),
 							isShowProgressTips: images.localId[i]
 								.toString(),
-							success: function (
-								res) {
+							success: function (res) {
 								i++;
-								console
-									.log('已上传：'
+								console.log('已上传：'
 										+ i
 										+ '/'
 										+ length);
@@ -258,10 +262,8 @@
 									upload();
 								}
 							},
-							fail: function (
-								res) {
-								console
-									.log(res);
+							fail: function (res) {
+								console.log(res);
 							}
 						});
 					}
@@ -274,9 +276,7 @@
 			console.log("serverId=" + serverId);
 			//将serverId传给wx_upload.php的upload方法
 			var url = "../../../file/upload.do";
-			$.get(
-				url,
-				{
+			$.get(url,{
 					campusId: 1,
 					serverId: serverId,
 					dataType: dataType,
@@ -364,15 +364,18 @@
 			//提交
 			$("#submit").click(
 				function () {
+					var phone = $('#phone').val();
 					var error = "";
 					var img1 = $("#img1").attr("name");
 					if (img1 == 0) {
 						error = "身份证正面照照片不能空!";
 					}
-					var img2 = $("#img2").attr(
-						"name");
+					var img2 = $("#img2").attr("name");
 					if (img2 == 0) {
 						error = "身份证反面照照片不能空!";
+					}
+					if ($('#phone').val() == "") {
+						error = "手机号码不能为空!";
 					}
 					if (error != "") {
 						$.alert({

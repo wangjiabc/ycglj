@@ -1105,9 +1105,9 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		
 		map.put("code", "0");
 		
-		map.put("data", list);
+		map.put("rows", list);
 		
-		map.put("count", count);
+		map.put("total", count);
 		
 		return map;
 		

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+       Remove this if you use the .htaccess -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+</head>
+<style>
+	html,
+	body {
+		height: 100%;
+		width: 100%;
+		margin: 0;
+	}
+</style>
+
+<body>
+	<form action="" novalidate>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">地址</label></div>
+				<div id="address" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="weui-flex" style="bottom:0;position: fixed;width:100%;">
+		<div class="weui-flex__item">
+			<a id="submit" href="javascript:;" class="weui-btn weui-btn_primary">确 认</a>
+		</div>
+	</div>
+</body>
+<script>
+
+	function getQueryString(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null)
+			return unescape(r[2]);
+		return null;
+	}
+
+	var license = getQueryString("license");
+	
+	$.ajax({
+		url : "../../../user/getRoomInfoByGUID.do",
+		data : {
+			"license" : license
+		},
+		type : "GET",
+		success : function(data) {
+			console.log(data);
+
+
+		}
+	});
+</script>
+
+</html>

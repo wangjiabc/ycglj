@@ -193,7 +193,7 @@ private SellerService sellerService;
 								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 										title+"申请",
-										"http://lzgfgs.com/ycglj/mobile/asset/",
+										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
 										users.getName(), title, time, "已提交申请", "", "",
 										"");
 
@@ -217,7 +217,7 @@ private SellerService sellerService;
 	} 
 	
 	@RequestMapping("getAllTransactUser")
-	public @ResponseBody Map<String, Object> getAllTransactUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
+	public @ResponseBody Map<String, Object> getAllTransactUser(@RequestParam Integer limit,@RequestParam Integer offset,String sort,String order,
 			String search,String area,HttpServletRequest request){
 		
 		Map searchMap=new HashMap<>();
@@ -233,14 +233,26 @@ private SellerService sellerService;
 			searchMap.put("area =", area);
 		}	
 		
-		int offset=(page-1)*limit;
+		//int offset=(page-1)*limit;
 		
-		return userDao.getAllUserJoin(limit, offset, sort,order, searchMap);
+		Map map=userDao.getAllUserJoin(limit, offset, sort,order, searchMap);
+		
+		Map map2=new HashMap<>();
+		
+		List list=(List) map.get("data");
+		
+		int total=(int) map.get("count");
+		
+		map2.put("rows", list);
+		
+		map2.put("total", total);
+		
+		return map2;
 		
 	}
 			
 	@RequestMapping("getAllNewUser")
-	public @ResponseBody Map<String, Object> getAllNewUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
+	public @ResponseBody Map<String, Object> getAllNewUser(@RequestParam Integer limit,@RequestParam Integer offset,String sort,String order,
 			String search,String area,HttpServletRequest request){
 			
 			Map searchMap=new HashMap<>();
@@ -254,9 +266,22 @@ private SellerService sellerService;
 				searchMap.put("area =", area);
 			}	
 			
-			int offset=(page-1)*limit;
+			//int offset=(page-1)*limit;
 			
 			return userDao.getAllTempUserJoin(limit, offset, sort, order, searchMap);
+				
+	}
+	
+	@RequestMapping("getNewUser")
+	public @ResponseBody Map<String, Object> getNewUser(@RequestParam String openId,HttpServletRequest request){
+			
+			Map searchMap=new HashMap<>();
+			
+
+			searchMap.put("open_id = ", openId);
+
+			
+			return userDao.getAllTempUserJoin(1, 0, null, null, searchMap);
 				
 	}
 	
