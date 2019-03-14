@@ -10,6 +10,10 @@
 	<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
 	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="https://api.map.baidu.com/api?v=2.0&ak=cR98TwX2FnKTpANIOYhMYMot9a4ioxjc"></script>
+	<script type="text/javascript" src="https://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
 </head>
 <style>
 	html,
@@ -17,6 +21,12 @@
 		height: 100%;
 		width: 100%;
 		margin: 0;
+		font-family: "微软雅黑";
+	}
+
+	#allmap {
+		height: 40%;
+		width: 100%;
 	}
 </style>
 
@@ -24,20 +34,81 @@
 	<form action="" novalidate>
 		<div class="weui-cells weui-cells_form">
 			<div class="weui-cell">
-				<div class="weui-cell__hd"><label class="weui-label">地址</label></div>
+				<div class="weui-cell__hd"><label class="weui-label">地 址</label></div>
 				<div id="address" class="weui-cell__bd">
 				</div>
 			</div>
 		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">姓 名</label></div>
+				<div id="name" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">手机号</label></div>
+				<div id="phone" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">办理时间</label></div>
+				<div id="time" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">许可证号</label></div>
+				<input class="weui-input" id="license" type="text" placeholder="设置许可证号">
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cells__title">请选择许可证有限期限</div>
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label for="date" class="weui-label">日期</label></div>
+				<div class="weui-cell__bd">
+					<input class="weui-input" id="date" type="text">
+				</div>
+				<div style="text-align: center" class="weui-cell__hd"><label for="date1" class="weui-label">至</label>
+				</div>
+				<div class="weui-cell__bd">
+					<input class="weui-input" id="date1" type="text">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form"></div>
+		<div class="weui-cell__bd">
+			<select class="weui-select" id="select1">
+				<option selected="" value="0">请选择区域:</option>
+				<option value="白沙中队">白沙中队</option>
+				<option value="城区中队">城区中队</option>
+				<option value="九支中队">九支中队</option>
+				<option value="榕山中队">榕山中队</option>
+			</select>
+		</div>
+		</div>
 	</form>
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__hd">资料</div>
+		<div id="img" class="weui-panel__bd">
+		</div>
+	</div>
+	<div id="allmap"></div>
 	<div class="weui-flex" style="bottom:0;position: fixed;width:100%;">
 		<div class="weui-flex__item">
-			<a id="submit" href="javascript:;" class="weui-btn weui-btn_primary">确 认</a>
+			<a id="commit" href="javascript:;" class="weui-btn weui-btn_primary">同 意</a>
+		</div>
+		<div class="weui-flex__item">
+			<a id="refuse" href="javascript:;" class="weui-btn weui-btn_warn">拒 绝</a>
 		</div>
 	</div>
 </body>
 <script>
-
+	//截取地址字符串
 	function getQueryString(name) {
 		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
 		var r = window.location.search.substr(1).match(reg);
@@ -45,26 +116,176 @@
 			return unescape(r[2]);
 		return null;
 	}
+	//初始化数据
+	function initdata(data, type) {
+		if (type == 1) {
+			$('#name').text(data[0].name);
+			$('#phone').text(data[0].phone);
+			$('#address').text(data[0].address);
+			$('#time').text(actionTime(data[0].date))
+			$('.weui-panel_access').remove();
+		} else if (type == 2) {
+			$('#allmap').remove();
+			$('#name').text(data.roomInfo.name);
+			$('#phone').text(data.roomInfo.phone);
+			$('#address').text(data.roomInfo.address);
+			$('#time').text(actionTime(data.roomInfo.up_date))
+			$('form').append(
+				'<div class="weui-cells weui-cells_form">' +
+				'<div class="weui-cell">' +
+				'<div class="weui-cell__hd"><label class="weui-label">身份证号</label></div>' +
+				'<div class="weui-cell__bd">' + data.roomInfo.id_number +
+				'</div></div></div>' +
+				'<div class="weui-cells weui-cells_form">' +
+				'<div class="weui-cell">' +
+				'<div class="weui-cell__hd"><label class="weui-label">业务类型</label></div>' +
+				'<div class="weui-cell__bd">' + getTypeName(data.roomInfo.authentication) +
+				'</div></div></div>'
+			);
+			console.log(data.fileBytes2);
+			for (let index = 0; index < data.fileBytes2.length; index++) {
+				var uri = data.fileBytes2[index].compressUri;
+				src = "/ycglj/" + uri;
+				$('#img').append(
+					'<div class="weui-cell__bd">' +
+					'<div class="weui-cell">' +
+					'<div class="weui-cell__hd"><img src="' + src + '" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>' +
+					'<div class="weui-cell__bd"><p></p></div>' +
+					'</div>' +
+					'</div>'
+				);
+			}
+		}
+	}
+	//业务类型
+	function getTypeName(type) {
+		switch (type) {
+			case 4:
+				return "停业"
+				break;
+			case 5:
+				return "补办"
+				break;
+			case 6:
+				return "恢复营业"
+				break;
+			case 7:
+				return "变更"
+				break;
+			case 8:
+				return "歇业"
+				break;
+			case 9:
+				return "延续"
+				break;
+			default:
+				break;
+		}
+	}
+	//格式化时间戳
+	function actionTime(value) {
+		var date = new Date(value);
+		Y = date.getFullYear() + '-';
+		M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+		D = date.getDate() + ' ';
+		h = date.getHours() + ':';
+		m = date.getMinutes() + ':';
+		s = date.getSeconds();
+		return Y + M + D + h + m + s;
+	}
+	//地图显示
+	function initmap(lng, lat) {
+		// 百度地图API功能
+		var map = new BMap.Map("allmap");    // 创建Map实例
+		var point = new BMap.Point(lng, lat);
+		map.centerAndZoom(point, 14);
+		var marker = new BMap.Marker(point); // 创建点
+		map.addOverlay(marker); //增加点
+	}
 
 	var openId = getQueryString("openId");
-
-	var html = '<div class="weui-cells weui-cells_form">'
-			+ '<div class="weui-cell">'
-			+ '<div class="weui-cell__hd"><label class="weui-label">地址</label></div>'
-			+ '<div id="address" class="weui-cell__bd">' + '</div>' + '</div>'
-			+ '</div>';
-
-	$.ajax({
-		url : "../../getNewUser.do",
-		data : {
-			openId : openId
-		},
-		type : "GET",
-		success : function(data) {
-			console.log(data);
-
+	var license = getQueryString("license");
+	var time1, time2;
+	$("#date").calendar({
+		onChange: function (p, values, displayValues) {
+			console.log(displayValues);
+			time1 = displayValues;
 		}
 	});
+	$("#date1").calendar({
+		onChange: function (p, values, displayValues) {
+			console.log(displayValues);
+			time2 = displayValues;
+		}
+	});
+	console.log(time1);
+	console.log(license);
+	if (license > 0) {
+		var xhm = new XMLHttpRequest();
+		xhm.open("GET", "../../../user/getRoomInfoByGUID.do?license="+license, false);
+		xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhm.send();
+		var data = JSON.parse(xhm.responseText);
+		initdata(data, 2);
+		var type = data.roomInfo.authentication;
+		console.log("type="+data);
+		$('#commit').click(function () {
+			$.ajax({
+				url: "../../../asset/transact.do?license=" + license + "&type=" + type,
+				type: "GET",
+				success: function (data) {
+					console.log(data);
+				}
+			});
+		})
+		//新办用户
+	} else {
+		license = $('#license').val();
+		$.ajax({
+			url: "../../getNewUser.do",
+			data: {
+				openId: openId
+			},
+			type: "GET",
+			success: function (data) {
+				console.log(data);
+				data = JSON.parse(data).rows;
+				console.log(data);
+				initdata(data, 1);
+				initmap(data[0].lng, data[0].lat);
+			}
+		});
+		$('#commit').click(function () {
+			if (time1 == "" && time2 == "" && license == "" && region == "") {
+				$.alert({
+					title: "错误",
+					text: "填写信息有误!",
+					onOK: function () {
+						//点击确认
+					}
+				});
+			} else {
+				console.log(time1);
+				$.ajax({
+					url: "../../../asset/newTransact.do",
+					data: {
+						openId: openId,
+						license: $('#license').val(),
+						startTime: time1[0],
+						endTime: time2[0],
+						area: 1,
+						region: $("#select1").val()
+					},
+					type: "post",
+					success: function (data) {
+						console.log(data);
+					}
+				});
+			}
+		})
+	}
+
+
 </script>
 
 </html>

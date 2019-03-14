@@ -80,8 +80,8 @@
 <body>
 	<div class="weui-cells__title">您的基本信息</div>
 
-	<a class="weui-cell weui-cell_access" onclick="setActionSheet('bg1')" href="javascript:;">
-		<div id="img1" name="0" class="weui-panel__bd">
+	<a id="business" class="weui-cell weui-cell_access" href="javascript:;">
+		<div id="img1" name="" class="weui-panel__bd">
 		</div>
 		<div class="weui-cell__bd">
 			<p>变更企业名称/个体工商户字号：</p>
@@ -92,18 +92,18 @@
 			</svg></div>
 	</a>
 	<a class="weui-cell weui-cell_access" href="javascript:;">
-		<div id="img2" name="0" class="weui-panel__bd">
+		<div id="img2" name="" class="weui-panel__bd">
 		</div>
 		<div class="weui-cell__bd">
 			<input class="weui-input" id="name" type="text" placeholder="输入变更后经营者姓名">
 			<p class="p1">(持证人未改变，持证人身份证登记的"姓名"发生改变，需提供公安部门出具的姓名变更证明)</p>
 		</div>
-		<div id="bg2" onclick="setActionSheet('bg2')" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+		<div id="changeName" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 				<use xlink:href="#icon-paizhao"></use>
 			</svg></div>
 	</a>
-	<a class="weui-cell weui-cell_access" onclick="setActionSheet('bg3')" href="javascript:;">
-		<div id="img3" name="0" class="weui-panel__bd">
+	<a id="legal" class="weui-cell weui-cell_access" href="javascript:;">
+		<div id="img3" name="" class="weui-panel__bd">
 		</div>
 		<div class="weui-cell__bd">
 			<p>变更法定代表人(负责人)</p>
@@ -114,18 +114,18 @@
 			</svg></div>
 	</a>
 	<a class="weui-cell weui-cell_access" href="javascript:;">
-		<div id="img4" name="0" class="weui-panel__bd">
+		<div id="img4" name="" class="weui-panel__bd">
 		</div>
 		<div class="weui-cell__bd">
-			<input class="weui-input" id="name" type="text" placeholder="输入变更后经营地址名称">
+			<input class="weui-input" id="address" type="text" placeholder="输入变更后经营地址名称">
 			<p class="p1">(经营地址未改变，经营地址的名称发生改变，需提供社区或政府相关部门的地址名称变更证明)</p>
 		</div>
-		<div id="bg4" onclick="setActionSheet('bg4')" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+		<div id="changeAddress" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 				<use xlink:href="#icon-paizhao"></use>
 			</svg></div>
 	</a>
-	<a class="weui-cell weui-cell_access" onclick="setActionSheet('bg5')" href="javascript:;">
-		<div id="img5" name="0" class="weui-panel__bd">
+	<a id="family" class="weui-cell weui-cell_access" href="javascript:;">
+		<div id="img5" name="" class="weui-panel__bd">
 		</div>
 		<div class="weui-cell__bd">
 			<p>变更家庭经营成员</p>
@@ -228,7 +228,7 @@
 		// 	licenseImg.push("zz" + license);
 		// }
 
-		function setActionSheet(dataType) {
+		function setActionSheet(dataType, license) {
 			var images = {
 				localId: [],
 				serverId: []
@@ -259,7 +259,8 @@
 								//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
 								wxImgCallback(
 									dataType,
-									res.serverId
+									res.serverId,
+									license
 								);
 								//   images.serverId.push(res.serverId);
 								if (i < length) {
@@ -278,7 +279,7 @@
 			});
 
 		}
-		function wxImgCallback(dataType, serverId) {
+		function wxImgCallback(dataType, serverId, license) {
 			console.log("serverId=" + serverId);
 			//将serverId传给wx_upload.php的upload方法
 			var url = "../../../file/upload.do";
@@ -288,7 +289,8 @@
 					campusId: 1,
 					serverId: serverId,
 					dataType: dataType,
-					classType: "user"
+					classType: "user",
+					license: license
 				},
 				function (text) {
 					console.log(text);
@@ -331,25 +333,25 @@
 						a.appendChild(div2);
 						panel.appendChild(a);
 
-						if (dataType == "bg1") {
+						if (dataType == "business") {
 							document.getElementById("img1").innerHTML = "";
 							$("#img1").attr("name", uuid);
 							$("#img1").append(panel);
-						} else if (dataType == "bg2") {
+						} else if (dataType == "changeName") {
 							document.getElementById("img2").innerHTML = "";
 							$("#img2").attr("name", uuid);
 							$("#img2").append(panel);
-						} else if (dataType == "bg3") {
-							document.getElementById("img2").innerHTML = "";
+						} else if (dataType == "legal") {
+							document.getElementById("img3").innerHTML = "";
 							$("#img3").attr("name", uuid);
 							$("#img3").append(panel);
-						} else if (dataType == "bg4") {
-							document.getElementById("img2").innerHTML = "";
+						} else if (dataType == "changeAddress") {
+							document.getElementById("img4").innerHTML = "";
 							$("#img4").attr("name", uuid);
 							$("#img4").append(panel);
 						}
-						else if (dataType == "bg5") {
-							document.getElementById("img2").innerHTML = "";
+						else if (dataType == "family") {
+							document.getElementById("img5").innerHTML = "";
 							$("#img5").attr("name", uuid);
 							$("#img5").append(panel);
 						}
@@ -359,12 +361,63 @@
 		}
 
 		$(document).ready(function () {
-
+			var license = "";
+			//用户信息
+			$.ajax({
+				url: "/ycglj/mobile/user/getUserLicenseJoin.do",
+				data: {
+				},
+				type: "GET",
+				success: function (data) {
+					licenseData = JSON.parse(data);
+					for (i = 0; i < licenseData.length; i++) {
+						license = licenseData[0].license;
+						$('#bg2').click(function () {
+							setActionSheet("bg2", license)
+						})
+					}
+				}
+			});
+			$('#business').click(function () {
+				setActionSheet("business", license);
+			})
+			$('#changeName').click(function () {
+				setActionSheet("changeName", license);
+			})
+			$('#legal').click(function () {
+				setActionSheet("legal");
+			})
+			$('#changeAddress').click(function () {
+				setActionSheet("changeAddress", license);
+			})
+			$('#family').click(function () {
+				setActionSheet("family");
+			})
 			//提交
 			$("#submit").click(function () {
 				var changeName = "", changeValue = "";
-				var name = $('#name').val()
-				var address = $('#address').val()
+				var name = $('#name').val();
+				var address = $('#address').val();
+				var img1 = $("#img1").attr("name");
+				var img2 = $("#img2").attr("name");
+				var img3 = $("#img3").attr("name");
+				var img4 = $("#img4").attr("name");
+				var img5 = $("#img5").attr("name");
+				var arrays = new Array();
+				if (img1 != "") {
+					arrays.push(img1);
+				} else if (img2 != "") {
+					arrays.push(img2);
+				}
+				else if (img3 != "") {
+					arrays.push(img3);
+				}
+				else if (img4 != "") {
+					arrays.push(img4);
+				}
+				else if (img4 != "") {
+					arrays.push(img4);
+				}
 				if (name != "") {
 					changeName = "name"
 					changeValue = name
@@ -377,7 +430,9 @@
 				$.post(
 					"/ycglj/mobile/asset/updateAffire.do",
 					{
-						type: 6,
+						type: 7,
+						license: license,
+						arrays: JSON.stringify(arrays),
 						changeName: changeName,
 						changeValue: changeValue
 					},

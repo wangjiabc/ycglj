@@ -144,7 +144,7 @@
 		src="https://api.map.baidu.com/api?v=2.0&ak=cR98TwX2FnKTpANIOYhMYMot9a4ioxjc"></script>
 	<script type="text/javascript" src="https://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
 	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
-	<script src="../../order/js/iconfont.js"></script>
+	<script src="../order/js/iconfont.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
 
@@ -275,7 +275,7 @@
 		function wxImgCallback(dataType, serverId) {
 			console.log("serverId=" + serverId);
 			//将serverId传给wx_upload.php的upload方法
-			var url = "../../../file/upload.do";
+			var url = "../../file/upload.do";
 			$.get(url,{
 					campusId: 1,
 					serverId: serverId,
@@ -338,18 +338,8 @@
 		}
 		$(document).ready(function () {
 			var license;
-			// 查询所有业务接口	
 			$.ajax({
-				url: "../getAllTransactUser.do?limit=10&page=1",
-				data: {
-				},
-				type: "GET",
-				success: function (data) {
-
-				}
-			});
-			$.ajax({
-				url: "/ycglj/mobile/user/getUserLicense.do",
+				url: "/ycglj/mobile/user/getUserLicenseJoin.do",
 				data: {
 				},
 				type: "GET",
@@ -358,6 +348,7 @@
 					for (i = 0; i < licenseData.length; i++) {
 						license = licenseData[0].license;
 						$('#license').val(license);
+						$('#phone').val(licenseData[0].phone);
 					}
 				}
 			});
@@ -392,7 +383,7 @@
 
 						console.log("arrays=" + arrays);
 						var type = getQueryString("type");
-						$.post("/ycglj/mobile/user/updateAffire.do",
+						$.post("/ycglj/mobile/asset/updateAffire.do",
 							{
 								type: type,
 								arrays: JSON.stringify(arrays),
@@ -406,7 +397,7 @@
 										text: "成功",
 										onOK: function () {
 											//点击确认
-											location.href = "../sucess.html";
+											location.href = "sucess.html";
 										}
 									});
 

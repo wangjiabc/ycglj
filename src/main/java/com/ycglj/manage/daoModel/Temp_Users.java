@@ -50,6 +50,12 @@ public class Temp_Users implements Serializable{
     @SQLDouble(name="lat")
 	private Double lat;
 
+    @SQLInteger(name="area")
+	private Integer area;
+
+    @SQLString(name="business_state")
+	private String business_state;
+
 	public void setId(Integer id){
 		this.id = id;
 	}
@@ -152,6 +158,22 @@ public class Temp_Users implements Serializable{
 
 	public Double getLat(){
 		return lat;
+	}
+
+	public void setArea(Integer area){
+		this.area = area;
+	}
+
+	public Integer getArea(){
+		return area;
+	}
+
+	public void setBusiness_state(String business_state){
+		this.business_state = business_state;
+	}
+
+	public String getBusiness_state(){
+		return business_state;
 	}
 
 

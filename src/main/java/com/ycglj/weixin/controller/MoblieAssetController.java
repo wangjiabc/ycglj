@@ -30,6 +30,7 @@ import com.ycglj.manage.daoModel.Temp_User_License;
 import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
@@ -275,20 +276,37 @@ private SellerService sellerService;
 	@RequestMapping("getNewUser")
 	public @ResponseBody Map<String, Object> getNewUser(@RequestParam String openId,HttpServletRequest request){
 			
+			Map map=new HashMap<>();
+		
+			Map searchMap2=new HashMap<>();
+			
+			searchMap2.put("[User_License].open_id = ", openId);
+
+			Map licenseMap=licenseDAO.getAllLicense_Position(1, 0, "", "","and", searchMap2);
+
+			 List<Users_License_Position_Join> users_License_Position_Joins = (List<Users_License_Position_Join>) licenseMap.get("rows");
+			 
+			Users_License_Position_Join users_License_Position_Join = users_License_Position_Joins.get(0);
+			
+			List fileBytes = licenseDAO.allLicenseImageByGUID(request, users_License_Position_Join);
+
+			map.put("fileBytes", fileBytes);
+			
 			Map searchMap=new HashMap<>();
 			
-
 			searchMap.put("open_id = ", openId);
-
 			
-			return userDao.getAllTempUserJoin(1, 0, null, null, searchMap);
-				
+			List list=(List) userDao.getAllTempUserJoin(1, 0, null, null, searchMap).get("rows");
+			
+			map.put("rows", list);
+			
+			return map;
 	}
 	
 	@RequestMapping(value="newTransact")
 	public @ResponseBody Integer newTransact(@RequestParam String openId,@RequestParam String license,
 			@RequestParam String startTime,@RequestParam String endTime,@RequestParam Integer area,
-			@RequestParam String region,HttpServletRequest request){
+			@RequestParam String region,String business_state,HttpServletRequest request){
 		
 		Temp_Users temp_Users=new Temp_Users();
 		
@@ -314,14 +332,12 @@ private SellerService sellerService;
 		Date license_start_date = null;
 		Date license_end_date = null;
 		
-		SimpleDateFormat sdf  =   new  SimpleDateFormat("yyyy-MM-dd"); 
-		
 		try {
 			if(startTime!=null&&!startTime.equals(""))
-				license_start_date = sdf.parse(startTime);
+				license_start_date = new Date(new Long(startTime));
 			if(endTime!=null&&!endTime.equals(""))
-				license_end_date=sdf.parse(endTime);
-		} catch (ParseException e) {
+				license_end_date=new Date(new Long(endTime));
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -340,6 +356,11 @@ private SellerService sellerService;
 			user_License.setLicense_start_date(license_start_date);
 		if(license_end_date!=null)
 			user_License.setLicense_end_date(license_end_date);
+		
+		if(business_state!=null&&!business_state.equals(""))
+			user_License.setBusiness_state(business_state);
+		System.out.println("license_start_date="+license_start_date);
+		
 		
 		int i=userDao.insertUser(users, user_License);
 		
@@ -383,17 +404,16 @@ private SellerService sellerService;
 			
 			User_License user_License2=userDao.getUserLicense(user_License);
 			
-			SimpleDateFormat sdf  =   new  SimpleDateFormat("yyyy-MM-dd"); 
-			
+
 			Date stop_start_date = null;
 			Date stop_end_data = null;
 			
 			try {
 				if(startTime!=null&&!startTime.equals(""))
-					stop_start_date = sdf.parse(startTime);
+					stop_start_date = new Date(new Long(startTime));
 				if(endTime!=null&&!endTime.equals(""))
-					stop_end_data=sdf.parse(endTime);
-			} catch (ParseException e) {
+					stop_end_data=new Date(new Long(endTime));
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -481,6 +501,40 @@ private SellerService sellerService;
 		
 		return i;
 		
+	}
+	
+	@RequestMapping("getAllResumeUser")
+	public @ResponseBody Map<String, Object> getAllResumeUser(@RequestParam Integer limit,@RequestParam Integer offset,String sort,String order,
+			String search,String area,HttpServletRequest request){
+			
+		Map searchMap=new HashMap<>();
+		
+		if(search!=null&&!search.trim().equals("")){
+			search="%"+search+"%";  
+			searchMap.put("name like ", search);
+		}		
+					
+		if(area!=null&&!area.trim().equals("")){
+			searchMap.put("area =", area);
+		}	
+		
+		//int offset=(page-1)*limit;
+		
+		return userDao.getAllTempLicenseJoin(limit, offset, sort, order, searchMap);
+				
+	}
+	
+	@RequestMapping("getResumeUser")
+	public @ResponseBody Map<String, Object> getResumeUser(@RequestParam String openId,HttpServletRequest request){
+			
+			Map searchMap=new HashMap<>();
+			
+
+			searchMap.put("open_id = ", openId);
+
+			
+			return userDao.getAllTempLicenseJoin(1, 0, null, null, searchMap);
+				
 	}
 	
 }

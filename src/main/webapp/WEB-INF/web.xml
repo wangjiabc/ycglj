@@ -158,6 +158,7 @@
 		<url-pattern>/mobile/1/*</url-pattern>
 		<url-pattern>/mobile/assetAdmin/*</url-pattern>
 		<url-pattern>/mobile/auditor/*</url-pattern>
+		<url-pattern>/mobile/asset/onlineregs/transact/*</url-pattern>
 	</filter-mapping>
 
 	<!-- 资产巡查的栏截 -->

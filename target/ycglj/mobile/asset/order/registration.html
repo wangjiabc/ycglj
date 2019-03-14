@@ -202,8 +202,8 @@
 		});
 
 
-		var licenseImg=[];
-		
+		var licenseImg = [];
+
 		$.post('/ycglj/mobile/user/getUserAuthen.do', {
 
 		}, function (data) {
@@ -229,14 +229,16 @@
 		});
 		function getLicense(license) {
 			setActionSheet("license", license);
-			licenseImg.push("img"+license);
+			console.log("getlicense" + license);
+			licenseImg.push("img" + license);
 		}
 
 		function getBusiness(license) {
+			console.log("getBusiness" + license);
 			setActionSheet("business", license);
-			licenseImg.push("zz"+license);
+			licenseImg.push("zz" + license);
 		}
-		
+
 		function setActionSheet(dataType, license) {
 
 			var images = {
@@ -391,6 +393,7 @@
 							$("#img2").attr("name", uuid);
 							$("#img2").append(panel);
 						} else if (dataType == "license") {
+							console.log("img" + license);
 							document.getElementById("img" + license).innerHTML = "";
 							$("#img" + license).attr("name", uuid);
 							$("#img" + license).append(panel);
@@ -399,7 +402,7 @@
 							$("#zz" + license).attr("name", uuid);
 							$("#zz" + license).append(panel);
 						}
-						 else if (dataType == "other") {
+						else if (dataType == "other") {
 							document.getElementById("other").innerHTML = "";
 							$("#other").attr("name", uuid);
 							$("#other").append(panel);
@@ -408,6 +411,7 @@
 					}
 				});
 		}
+
 
 		$(document).ready(
 			function () {
@@ -419,7 +423,7 @@
 
 				})
 
-				var license = [];				
+				var license = [];
 				$.ajax({
 					url: "/ycglj/mobile/user/getUserLicense.do",
 					data: {
@@ -428,14 +432,11 @@
 					success: function (data) {
 						console.log(data);
 						licenseData = JSON.parse(data);
-						// console.log(data);
-						// license = data[1].license;
-						console.log(data.length);
-						console.log(licenseData);
-
 						for (i = 0; i < licenseData.length; i++) {
+							console.log("xxxxxxxxxxxxx" + licenseData[i].license);
 							license.push(licenseData[i].license);
-							$("[name='more']").append('<a class="weui-cell weui-cell_access" onclick="getBusiness(' + licenseData[i].license + ')" href="javascript:;">' +
+							var aa = parseInt(licenseData[i].license);
+							$("[name='more']").append('<a class="weui-cell weui-cell_access" onclick="getBusiness(' + aa + ')" href="javascript:;">' +
 								'<div  id="zz' + licenseData[i].license + '" name="0" class="weui-panel__bd">' +
 								'</div>' +
 								'<div class="weui-cell__bd">' +
@@ -444,7 +445,7 @@
 								'<div id="front" class="weui-cell__ft"><svg class="icon" aria-hidden="true">' +
 								'<use xlink: href="#icon-paizhao"></use>' +
 								'</svg></div>' +
-								'</a >'+
+								'</a >' +
 								'<a class="weui-cell weui-cell_access" onclick="getLicense(' + licenseData[i].license + ')" href="javascript:;">' +
 								'<div  id="img' + licenseData[i].license + '" name="0" class="weui-panel__bd">' +
 								'</div>' +
@@ -461,7 +462,7 @@
 					}
 				});
 				//提交
-				$("#submit").click(						
+				$("#submit").click(
 					function () {
 						console.log("数组 " + license);
 						var error = "";
@@ -481,7 +482,7 @@
 							if ($('img' + license[index]).attr("name") == 0) {
 								error = "许可证号正本不能为空!";
 							}
-							else if($('zz' + license[index]).attr("name")){
+							else if ($('zz' + license[index]).attr("name")) {
 								error = "营业执照不能为空!";
 							}
 						}
@@ -506,133 +507,134 @@
 						} else {
 							var arrays = new Array(
 								img1, img2, img4);
-			
+
 							var i;
-							for(i in licenseImg){
-								arrays.push($("#"+licenseImg[i]+"").attr("name"));
+							for (i in licenseImg) {
+								arrays.push($("#" + licenseImg[i] + "").attr("name"));
 							}
-							if(img3!=null&&img3!=0&&img3!=""){
+							if (img3 != null && img3 != 0 && img3 != "") {
 								arrays.push(img3);
 							}
 							console.log('保存图片数组的id' + arrays);
 
-							console.log("arrays="+arrays);
-						$.post(
-							"/ycglj/mobile/user/updateAffire.do",
-							{
-								arrays: JSON
-									.stringify(arrays)
-							},
-							function (
-								text) {
-								console.log(text);
-								if (text == 1) {
+							console.log("arrays=" + arrays);
+							$.post(
+								"/ycglj/mobile/user/updateAffire.do",
+								{
+									arrays: JSON
+										.stringify(arrays)
+								},
+								function (
+									text) {
+									console.log(text);
+									if (text == 1) {
 
-									$
-										.alert({
-											title: "",
-											text: "成功",
-											onOK: function () {
-												//点击确认
-												location.href = "/ycglj/mobile/asset";
-											}
-										});
+										$
+											.alert({
+												title: "",
+												text: "成功",
+												onOK: function () {
+													//点击确认
+													location.href = "/ycglj/mobile/asset";
+												}
+											});
 
-								} else {
+									} else {
 
-								}
+									}
 
-							});
+								});
 
-					}
+						}
 
 					})
 
-		// $("#b3").click(function () {
-		//     if($(".signature").jSignature('getData', 'native').length>0){
-		//         alert("已签名");
-		//     }else
-		//     alert("未签名");
-		// })
+				// $("#b3").click(function () {
+				//     if($(".signature").jSignature('getData', 'native').length>0){
+				//         alert("已签名");
+				//     }else
+				//     alert("未签名");
+				// })
 
-		$("#sign").click(function () {
-			$.modal({
-				title: "签名",
-				text: "<div id=\"signature\"></div>",
-				buttons: [{
-					text: "确定",
-					onClick: saveImg
-				}, {
-					text: "重置",
-					className: "primary",
-					onClick: function () {
-						$("#signature").jSignature("reset")
-					}
-				}, {
-					text: "取消",
-					className: "default",
-					onClick: function () {
-						$.closeModal()
-					}
-				},],
-				autoClose: false
-			});
-			$("#signature").jSignature('init', {
-				height: '200px',
-				width: '100%'
-			});
 
-		});
+				$("#sign").click(function () {
+					$.modal({
+						title: "签名",
+						text: "<div id=\"signature\"></div>",
+						buttons: [{
+							text: "确定",
+							onClick: saveImg
+						}, {
+							text: "重置",
+							className: "primary",
+							onClick: function () {
+								$("#signature").jSignature("reset")
+							}
+						}, {
+							text: "取消",
+							className: "default",
+							onClick: function () {
+								$.closeModal()
+							}
+						},],
+						autoClose: false
+					});
+					$("#signature").jSignature('init', {
+						height: '200px',
+						width: '100%'
+					});
 
-		function saveImg() {
-			//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
-			var datapair = $("#signature").jSignature(
-				"getData", "image");
-			var i = new Image();
-			i.src = "data:" + datapair[0] + ","
-				+ datapair[1];
-			$(i).appendTo($("#displayarea"));
-			if ($("#signature").jSignature('getData',
-				'native').length > 0) {
-
-				$.post("../../file/inputImage.do", {
-					file: "data:" + datapair[0] + ","
-						+ datapair[1]
-				}, function (text) {
-					console.log(text);
-					var result = JSON.parse(text);
-
-					var data = result.state;
-
-					var img = result.url;
-
-					var uuid = result.uuid;
-
-					$("#displayarea").attr("name", uuid);
 				});
 
-				$.closeModal();
-			} else {
-				$.closeModal();
+				function saveImg() {
+					//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
+					var datapair = $("#signature").jSignature(
+						"getData", "image");
+					var i = new Image();
+					i.src = "data:" + datapair[0] + ","
+						+ datapair[1];
+					$(i).appendTo($("#displayarea"));
+					if ($("#signature").jSignature('getData',
+						'native').length > 0) {
 
-				$.post("../../file/inputImage.do", {
-					file: "data:" + datapair[0] + ","
-						+ datapair[1]
-				}, function (text) {
-					console.log(text);
-					var result = JSON.parse(text);
+						$.post("../../file/inputImage.do", {
+							file: "data:" + datapair[0] + ","
+								+ datapair[1]
+						}, function (text) {
+							console.log(text);
+							var result = JSON.parse(text);
 
-					var data = result.state;
+							var data = result.state;
 
-					var img = result.url;
+							var img = result.url;
 
-					var uuid = result.uuid;
+							var uuid = result.uuid;
 
-					$("#displayarea").attr("name", uuid);
-				});
+							$("#displayarea").attr("name", uuid);
+						});
 
-			}
-		}
+						$.closeModal();
+					} else {
+						$.closeModal();
+
+						$.post("../../file/inputImage.do", {
+							file: "data:" + datapair[0] + ","
+								+ datapair[1]
+						}, function (text) {
+							console.log(text);
+							var result = JSON.parse(text);
+
+							var data = result.state;
+
+							var img = result.url;
+
+							var uuid = result.uuid;
+
+							$("#displayarea").attr("name", uuid);
+						});
+
+					}
+				}
 
 			})
 	</script>

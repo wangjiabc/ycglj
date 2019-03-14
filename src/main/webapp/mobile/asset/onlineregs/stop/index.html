@@ -374,11 +374,12 @@
 			});
 			//用户信息
 			$.ajax({
-				url: "/ycglj/mobile/user/getUserLicense.do",
+				url: "/ycglj/mobile/user/getUserLicenseJoin.do",
 				data: {
 				},
 				type: "GET",
 				success: function (data) {
+					console.log(data);
 					licenseData = JSON.parse(data);
 					for (i = 0; i < licenseData.length; i++) {
 						license = licenseData[0].license;

@@ -360,7 +360,7 @@ public class AssetUserRegisterController {
    public @ResponseBody Integer
    insertNew(HttpServletRequest request,@RequestParam String name,
 		   @RequestParam String id_number,@RequestParam String phone,
-		   @RequestParam String arrays,
+		   @RequestParam String arrays,Integer area,String business_state,
 		   Double lng,Double lat,
 		   String regtlx){
 	   
@@ -465,7 +465,12 @@ public class AssetUserRegisterController {
 			if(lat!=null){
 				temp_Users.setLat(lat);
 			}
-			
+			if(area!=null){
+				temp_Users.setArea(area);
+			}
+			if(business_state!=null&&business_state.equals("")){
+				temp_Users.setBusiness_state(business_state);
+			}
 			users.setUpTime(upTime);			
 			weiXin_User.setUp_time(upTime);
 

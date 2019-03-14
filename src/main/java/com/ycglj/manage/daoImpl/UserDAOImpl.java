@@ -19,6 +19,7 @@ import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.PreMessage;
+import com.ycglj.manage.daoModel.Temp_User_License;
 import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
@@ -94,11 +95,12 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	public Integer insertUser(Users users,User_License user_License) {
 		// TODO Auto-generated method stub
 		
-		String[] where={"phone=",users.getPhone()};
+		String[] where={"phone=",users.getPhone(),"open_id=",users.getOpen_id()};
 		
 		users.setLimit(1);
 		users.setOffset(0);
 		users.setWhere(where);
+		users.setWhereTerm("OR");
 		
 		int repeat=0;
 		
@@ -913,6 +915,28 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	}
 
 	@Override
+	public List getUserLicenseJoin(User_License user_License) {
+		// TODO Auto-generated method stub
+		Users_License_Join users_License_Join2=new Users_License_Join();
+		
+		Users users=new Users();
+		
+		users.setLimit(user_License.getLimit());
+		users.setOffset(user_License.getOffset());
+		users.setNotIn("id");
+		
+		Object[] objects={users,user_License};
+		
+		String[] join={"open_id"};
+		
+		Users_License_Join users_License_Join=new Users_License_Join();
+		
+		List list=SelectJoinExe.get(this.getJdbcTemplate(), objects, users_License_Join,join);
+		
+		return list;
+	}
+	
+	@Override
 	public List getUserLicenseById(User_License user_License) {
 		// TODO Auto-generated method stub
 		return SelectExe.get(this.getJdbcTemplate(), user_License);
@@ -1136,6 +1160,50 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	public Integer deleteTempUsers(Temp_Users temp_Users) {
 		// TODO Auto-generated method stub
 		return DeleteExe.get(this.getJdbcTemplate(), temp_Users);
+	}
+
+	@Override
+	public Map<String, Object> getAllTempLicenseJoin(Integer limit, Integer offset, String sort, String order,
+			Map<String, String> search) {
+		// TODO Auto-generated method stub
+		Temp_User_License temp_User_License=new Temp_User_License();
+		temp_User_License.setLimit(limit);
+		temp_User_License.setOffset(offset);
+		temp_User_License.setNotIn("open_id");
+		
+		if(sort!=null&&!sort.equals("")){
+
+		}else{
+			sort="operate_date";
+		}
+		
+		if(order!=null&&order.equals("desc")){
+			order="desc";
+		}else{
+			order="asc";
+		}
+		
+		temp_User_License.setOrder(order);
+		temp_User_License.setSort(sort);
+		
+		if(!search.equals("")&&!search.isEmpty()){
+			String[] where=TransMapToString.get(search);
+			temp_User_License.setWhere(where);
+		}
+		
+		Map map=new HashMap<>();
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), temp_User_License);
+		
+		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), temp_User_License).get("");
+		
+		map.put("code", "0");
+		
+		map.put("rows", list);
+		
+		map.put("total", count);
+		
+		return map;
 	}
 
 	

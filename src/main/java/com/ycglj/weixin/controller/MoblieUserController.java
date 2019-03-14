@@ -40,6 +40,7 @@ import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 import com.ycglj.manage.daoSQL.SelectExe;
 import com.ycglj.manage.service.PhotoService;
@@ -240,6 +241,26 @@ public class MoblieUserController {
 		System.out.println("openId="+openId);
 		
 		MyTestUtil.print(list);
+		
+	    return list;
+	}
+	
+	@RequestMapping("getUserLicenseJoin")
+	public @ResponseBody List getUserLicenseJoin(HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+	
+		User_License user_License=new User_License();
+		user_License.setLimit(1000);
+		user_License.setOffset(0);
+		user_License.setNotIn("open_id");
+		
+		String[] where={"[User_License].open_id = ",openId};
+		user_License.setWhere(where);
+		
+		List list=userDao.getUserLicenseJoin(user_License);
 		
 	    return list;
 	}

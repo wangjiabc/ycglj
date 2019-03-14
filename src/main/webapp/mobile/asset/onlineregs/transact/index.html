@@ -4,15 +4,17 @@
 <head>
     <title>正在办理业务列表</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta name="viewport"
+        content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="format-detection" content="telephone=no" />
     <meta charset="utf-8" />
-	<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
     <!-- <link rel="stylesheet" href="css/example.css" /> -->
-	<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
-    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=pQFgFpS0VnMXwCRN6cTc1jDOcBVi3XoD"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+    <script type="text/javascript"
+        src="https://api.map.baidu.com/api?v=2.0&ak=pQFgFpS0VnMXwCRN6cTc1jDOcBVi3XoD"></script>
     <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 </head>
 
@@ -29,11 +31,11 @@
     <div class="page__bd" style="height:50px;">
         <div class="weui-tab">
             <div class="weui-navbar">
-               <div id="tab1" class="weui-navbar__item weui-bar__item_on">
-                    	新申请
+                <div id="tab1" class="weui-navbar__item weui-bar__item_on">
+                    新申请
                 </div>
                 <div id="tab2" class="weui-navbar__item ">
-                    	正在办理业务
+                    正在办理业务
                 </div>
             </div>
         </div>
@@ -120,7 +122,7 @@
         offset = 0;
         $("#ul").children('li').remove();
         loading = false;
-        loadlist0();
+        loadlist();
     })
     $("#tab2").on("click", function () {
         url = "../../getAllTransactUser.do";
@@ -131,7 +133,7 @@
         loadlist();
     })
 
-    loadlist0();
+    loadlist();
     //下拉刷新 
     $(document.body).pullToRefresh().on("pull-to-refresh", function () {
         limit = 10;
@@ -154,7 +156,6 @@
         }, 1500);   //模拟延迟
 
     });
-
 
     sign_URL = document.location.toString();
 
@@ -197,81 +198,6 @@
 
 
     // =======加载数据loadlist();
-    function loadlist0() {
-        var html = "";
-        $.ajax({
-            type: "get",
-            url: url,
-            data: {
-                "limit": limit,
-                "offset": offset,
-                "search": search,
-                "lng": longitude,
-                "lat": latitude
-            },
-            dataType: "json",
-            error: function (request) {
-                console.log(request);
-                $(".weui-loadmore").hide();
-                html += "网络连接故障";
-                $("#ul").append(html);
-            },
-            success: function (text) {
-                var data = text.rows;
-                var count = text.total;
-                var imgs = text.fileBytes;
-                console.log(data);
-                console.log(imgs);
-
-                var span = document.createElement("span");
-                span.innerHTML = " " + count + "条记录";
-                var count = document.getElementById('count');
-                $("#count").children().remove();
-                count.appendChild(span);
-
-                if (data.length > 0) {
-                    var i = 0;
-                    for (; i < data.length; i++) {
-                        var obj = data[i];
-
-                        var distance = null;
-                        console.log(obj.name + "   " + obj.detail + "  " + obj.lng + "   " + obj.lat);
-                        if (obj.lng != "" && obj.lat != "") {
-                            distance = getDistance(longitude, latitude, obj.lng, obj.lat);
-                        }
-                        
-                        var style="background-color:#FFFFFF";
-                        
-                        if(obj.weight==1)
-                        	style="background-color:#1E90FF";
-                        
-                        var html1 = '<li class="weui-cell" style='+style+' openId="' + obj.open_id + '" onclick="clickEvent0(this);">' +
-                            '<div class="weui-media-box__bd" style="margin-left:10px;">' +
-                            ' <h4 class="weui-media-box__title">' + obj.address + '</h4>' +
-                            ' <p class="weui-media-box__desc">姓 名:' + obj.name + '</p>' +
-                            ' <p class="weui-media-box__desc">距 离:' + distance + '</p>' +
-                            ' </div>' +
-                            '</li>'
-
-                        $("#ul").append(html1);
-                    }
-                    offset = offset + i;
-                    if (i < limit) {
-                        html += "<li><div class=\"weui-cells__title\" >已无更多数据</div></li>";
-                        $("#ul").append(html);
-                        loading = true;
-                    }
-                } else {
-                    html += "<li><div class=\"weui-cells__title\" >已无更多数据</div></li>";
-                    $("#ul").append(html);
-                    loading = true;
-                }
-                $(".weui-loadmore").hide();
-            }
-        });
-    }
-    
-    // =======加载数据loadlist();
     function loadlist() {
         var html = "";
         $.ajax({
@@ -308,25 +234,24 @@
                     var i = 0;
                     for (; i < data.length; i++) {
                         var obj = data[i];
-                        var license = obj.license;
 
                         var distance = null;
                         console.log(obj.name + "   " + obj.detail + "  " + obj.lng + "   " + obj.lat);
                         if (obj.lng != "" && obj.lat != "") {
                             distance = getDistance(longitude, latitude, obj.lng, obj.lat);
                         }
-                        
-                        var style="background-color:#FFFFFF";
-                        
-                        if(obj.weight==1)
-                        	style="background-color:#1E90FF";
-                        
-                        var html1 = '<li class="weui-cell" style='+style+' license="' + obj.license + '" onclick="clickEvent(this);">' +
+
+                        var style = "background-color:#FFFFFF";
+
+                        if (obj.weight == 1)
+                            style = "background-color:#1E90FF";
+
+                        var html1 = '<li class="weui-cell" style=' + style + ' openId="' + obj.open_id + '" license="' + obj.license + '" onclick="clickEvent0(this);">' +
                             '<div class="weui-media-box__bd" style="margin-left:10px;">' +
                             ' <h4 class="weui-media-box__title">' + obj.address + '</h4>' +
                             ' <p class="weui-media-box__desc">姓 名:' + obj.name + '</p>' +
-                            ' <p class="weui-media-box__desc">许可证号:' + obj.license + '</p>' +
-                            ' <p class="weui-media-box__desc">距 离:' + distance + '</p>' +
+                            ' <p class="weui-media-box__desc">距 离:' + distance + '</p>' + 
+                            ' <p class="weui-media-box__desc">办理时间:' + actionTime(obj.date) + '</p>' +
                             ' </div>' +
                             '</li>'
 
@@ -406,6 +331,9 @@
 
     function clickEvent0(that) {
         var openId = encodeURI($(that).attr("openId"));
+        var license = "";
+        license =encodeURI($(that).attr("license"));
+        console.log(openId + '-' + license);
         wx.getLocation({
             success: function (res) {
                 // alert(JSON.stringify(res));
@@ -421,7 +349,7 @@
                     var result = obj.result;
                     var lat = result[0].y;
                     var lng = result[0].x;
-                    location.href = "transact0.html?openId=" + openId ;
+                    location.href = "transact0.html?openId=" + openId + "&license=" + license + "&latitude=" + lat + "&longitude=" + lng;
                 });
 
             },
@@ -430,7 +358,7 @@
             }
         });
     }
-    
+
     function clickEvent(that) {
         var license = encodeURI($(that).attr("license"));
         wx.getLocation({

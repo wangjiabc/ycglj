@@ -10,11 +10,13 @@ import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.PreMessage;
+import com.ycglj.manage.daoModel.Temp_User_License;
 import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModel.WeiXin_User;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 
 
 public interface UserDAO {
@@ -55,6 +57,8 @@ public interface UserDAO {
 
 	public User_License getUserLicense(User_License user_License);
 	
+	public List getUserLicenseJoin(User_License user_License); 
+	
 	public List getUserLicenseById(User_License user_License);
 	
 	public List getTest1();
@@ -90,4 +94,7 @@ public interface UserDAO {
 	public Temp_Users getTempUsers(Temp_Users temp_Users);
 	
 	public Integer deleteTempUsers(Temp_Users temp_Users); 
+	
+	public Map<String,Object> getAllTempLicenseJoin(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
+    
 }
