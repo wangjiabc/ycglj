@@ -23,6 +23,9 @@ public class WeiXin_User implements Serializable{
     @SQLString(name="user_name")
 	private String user_name;
 
+    @SQLString(name="unit")
+	private String unit;
+
     @SQLString(name="headship")
 	private String headship;
 
@@ -68,6 +71,14 @@ public class WeiXin_User implements Serializable{
 
 	public String getUser_name(){
 		return user_name;
+	}
+
+	public void setUnit(String unit){
+		this.unit = unit;
+	}
+
+	public String getUnit(){
+		return unit;
 	}
 
 	public void setHeadship(String headship){

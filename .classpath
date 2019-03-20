@@ -28,5 +28,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/WangJing/Desktop/pasoft/trace-batch-upload/referenced_libraries/aip-java-sdk-4.3.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

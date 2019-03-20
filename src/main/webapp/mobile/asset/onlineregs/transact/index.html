@@ -37,6 +37,9 @@
                 <div id="tab2" class="weui-navbar__item ">
                     正在办理业务
                 </div>
+                <div id="tab3" class="weui-navbar__item ">
+                    恢复营业
+                </div>
             </div>
         </div>
     </div>
@@ -132,6 +135,14 @@
         loading = false;
         loadlist();
     })
+    $("#tab3").on("click", function () {
+        url = "../../getAllResumeUser.do";
+        limit = 10;
+        offset = 0;
+        $("#ul").children('li').remove();
+        loading = false;
+        loadlist();
+    })
 
     loadlist();
     //下拉刷新 
@@ -195,8 +206,7 @@
             });
         }
     });
-
-
+    var agree = 0;
     // =======加载数据loadlist();
     function loadlist() {
         var html = "";
@@ -240,17 +250,17 @@
                         if (obj.lng != "" && obj.lat != "") {
                             distance = getDistance(longitude, latitude, obj.lng, obj.lat);
                         }
-
+                        agree = data[i].agree;
                         var style = "background-color:#FFFFFF";
 
                         if (obj.weight == 1)
                             style = "background-color:#1E90FF";
 
-                        var html1 = '<li class="weui-cell" style=' + style + ' openId="' + obj.open_id + '" license="' + obj.license + '" onclick="clickEvent0(this);">' +
+                        var html1 = '<li class="weui-cell" style=' + style + ' openId="' + obj.open_id + '" license="' + obj.license + '" authentication="' + obj.authentication + '" onclick="clickEvent0(this);">' +
                             '<div class="weui-media-box__bd" style="margin-left:10px;">' +
                             ' <h4 class="weui-media-box__title">' + obj.address + '</h4>' +
                             ' <p class="weui-media-box__desc">姓 名:' + obj.name + '</p>' +
-                            ' <p class="weui-media-box__desc">距 离:' + distance + '</p>' + 
+                            // ' <p class="weui-media-box__desc">距 离:' + distance + '</p>' + 
                             ' <p class="weui-media-box__desc">办理时间:' + actionTime(obj.date) + '</p>' +
                             ' </div>' +
                             '</li>'
@@ -332,7 +342,8 @@
     function clickEvent0(that) {
         var openId = encodeURI($(that).attr("openId"));
         var license = "";
-        license =encodeURI($(that).attr("license"));
+        license = encodeURI($(that).attr("license"));
+        authentication = encodeURI($(that).attr("authentication"));
         console.log(openId + '-' + license);
         wx.getLocation({
             success: function (res) {
@@ -349,7 +360,7 @@
                     var result = obj.result;
                     var lat = result[0].y;
                     var lng = result[0].x;
-                    location.href = "transact0.html?openId=" + openId + "&license=" + license + "&latitude=" + lat + "&longitude=" + lng;
+                    location.href = "transact0.html?openId=" + openId + "&license=" + license + "&latitude=" + lat + "&longitude=" + lng + "&type=" + authentication+"&agree="+agree;
                 });
 
             },

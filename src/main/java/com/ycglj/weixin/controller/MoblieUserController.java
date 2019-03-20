@@ -97,7 +97,7 @@ public class MoblieUserController {
 	
 	@RequestMapping("/getAll")
 	public @ResponseBody Map<String, Object> getAll(@RequestParam Integer position,@RequestParam Integer limit,@RequestParam Integer offset,
-			@RequestParam Double lng, @RequestParam Double lat,String search,HttpServletRequest request) {
+			@RequestParam Double lng, @RequestParam Double lat,String search,Integer weight,HttpServletRequest request) {
 		
 		HttpSession session = request.getSession();
 		
@@ -160,8 +160,12 @@ public class MoblieUserController {
 			}
 		}
 		
-		Map license_Positions;
+		if(weight!=null&&weight==1){
+			where.put("weight=", "1");
+		}
 		
+		Map license_Positions;
+	
 		if(position==1){
 			if(search!=null&&!search.trim().equals("")){
 				search="%"+search+"%";  

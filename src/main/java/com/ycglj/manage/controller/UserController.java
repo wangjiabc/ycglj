@@ -106,8 +106,23 @@ public class UserController {
 			
 			int offset=(page-1)*limit;
 			
-			return userDao.getAllUserJoin(limit, offset, sort,order, searchMap);
-				
+			Map map=new HashMap<>();
+			
+			if(authentication==null||(!authentication.equals("11")&&!authentication.equals("8")&&!authentication.equals("6")&&!authentication.equals("4"))){
+				map=userDao.getAllUserJoin(limit, offset, sort,order, searchMap);
+			}else if(authentication.equals("11")){
+				Map map2=userDao.getAllTempUserJoin(limit, offset, sort, order, new HashMap<>());
+				map.put("code", "0");
+				map.put("data", map2.get("rows"));
+				map.put("count", map2.get("total"));
+			}else{
+				Map map2=userDao.getAllTempLicenseJoin(limit, offset, sort, order, searchMap);
+				map.put("code", "0");
+				map.put("data", map2.get("rows"));
+				map.put("count", map2.get("total"));
+			}
+			
+			return map;
 	}
 	
 	

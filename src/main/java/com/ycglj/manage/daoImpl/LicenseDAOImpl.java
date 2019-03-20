@@ -571,7 +571,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 					+" "+sql1;
 			sql2="SELECT count(*) from " 
 					+"(select ROW_NUMBER() OVER (ORDER BY SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))) AS rows ,"
-					+ "[User_License].license ,[User_License].region,[User_License].area,[User_License].open_id,[User_License].phone,[User_License].address " 
+					+ "[User_License].license ,[User_License].region,[User_License].area,[User_License].open_id,[User_License].phone,[User_License].address,[User_License].weight " 
 					+ " FROM [User_License] left join  [Users]"
 					+ "on  [User_License].open_id = [Users].open_id "
 					+ "left join [Position] "
@@ -1607,6 +1607,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		temp_User_License.setArea(user_License.getArea());
 		temp_User_License.setOperate_user(operate_user);
 		temp_User_License.setOperate_date(new Date());
+		temp_User_License.setDate(new Date());
 		
 		i=InsertExe.get(this.getJdbcTemplate(), temp_User_License);
 		
@@ -1712,6 +1713,12 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	public Integer deleteTempChange(Temp_Change temp_Change) {
 		// TODO Auto-generated method stub
 		return DeleteExe.get(this.getJdbcTemplate(), temp_Change);
+	}
+
+	@Override
+	public Integer updateTempUserLicense(Temp_User_License temp_User_License) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), temp_User_License);
 	}
 
 	

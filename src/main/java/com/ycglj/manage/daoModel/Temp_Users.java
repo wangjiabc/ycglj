@@ -56,6 +56,12 @@ public class Temp_Users implements Serializable{
     @SQLString(name="business_state")
 	private String business_state;
 
+    @SQLInteger(name="agree")
+	private Integer agree;
+
+    @SQLString(name="cause")
+	private String cause;
+
 	public void setId(Integer id){
 		this.id = id;
 	}
@@ -174,6 +180,22 @@ public class Temp_Users implements Serializable{
 
 	public String getBusiness_state(){
 		return business_state;
+	}
+
+	public void setAgree(Integer agree){
+		this.agree = agree;
+	}
+
+	public Integer getAgree(){
+		return agree;
+	}
+
+	public void setCause(String cause){
+		this.cause = cause;
+	}
+
+	public String getCause(){
+		return cause;
 	}
 
 

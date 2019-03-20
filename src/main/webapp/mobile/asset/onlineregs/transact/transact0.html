@@ -55,41 +55,49 @@
 		</div>
 		<div class="weui-cells weui-cells_form">
 			<div class="weui-cell">
-				<div class="weui-cell__hd"><label class="weui-label">办理时间</label></div>
+				<div class="weui-cell__hd"><label class="weui-label">申请时间</label></div>
 				<div id="time" class="weui-cell__bd">
 				</div>
 			</div>
 		</div>
 		<div class="weui-cells weui-cells_form">
 			<div class="weui-cell">
-				<div class="weui-cell__hd"><label class="weui-label">许可证号</label></div>
-				<input class="weui-input" id="license" type="text" placeholder="设置许可证号">
-			</div>
-		</div>
-		<div class="weui-cells weui-cells_form">
-			<div class="weui-cells__title">请选择许可证有限期限</div>
-			<div class="weui-cell">
-				<div class="weui-cell__hd"><label for="date" class="weui-label">日期</label></div>
-				<div class="weui-cell__bd">
-					<input class="weui-input" id="date" type="text">
-				</div>
-				<div style="text-align: center" class="weui-cell__hd"><label for="date1" class="weui-label">至</label>
-				</div>
-				<div class="weui-cell__bd">
-					<input class="weui-input" id="date1" type="text">
+				<div class="weui-cell__hd"><label class="weui-label">业态</label></div>
+				<div id="business_state" class="weui-cell__bd">
 				</div>
 			</div>
 		</div>
-		<div class="weui-cells weui-cells_form"></div>
-		<div class="weui-cell__bd">
-			<select class="weui-select" id="select1">
-				<option selected="" value="0">请选择区域:</option>
-				<option value="白沙中队">白沙中队</option>
-				<option value="城区中队">城区中队</option>
-				<option value="九支中队">九支中队</option>
-				<option value="榕山中队">榕山中队</option>
-			</select>
-		</div>
+		<div id="clear">
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"><label class="weui-label">许可证号</label></div>
+					<input class="weui-input" id="license" type="text" placeholder="请设置许可证号">
+				</div>
+			</div>
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cells__title">请设置许可证有限期限</div>
+				<div class="weui-cell">
+					<div class="weui-cell__hd"><label for="date" class="weui-label">日期</label></div>
+					<div class="weui-cell__bd">
+						<input class="weui-input" id="date" type="text">
+					</div>
+					<div style="text-align: center" class="weui-cell__hd"><label for="date1"
+							class="weui-label">至</label>
+					</div>
+					<div class="weui-cell__bd">
+						<input class="weui-input" id="date1" type="text">
+					</div>
+				</div>
+			</div>
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cell__bd">
+					<select class="weui-select" id="select1">
+						<option selected="" value="0">请选择区域:</option>
+						<option value="1">泸州市合江县</option>
+						<option value="2">泸州市江阳区</option>
+					</select>
+				</div>
+			</div>
 		</div>
 	</form>
 	<div class="weui-panel weui-panel_access">
@@ -99,10 +107,13 @@
 	</div>
 	<div id="allmap"></div>
 	<div class="weui-flex" style="bottom:0;position: fixed;width:100%;">
+		<!-- <div class="weui-flex__item">
+			<a id="accept" href="javascript:;" class="weui-btn weui-btn_primary">受 理</a>
+		</div> -->
 		<div class="weui-flex__item">
-			<a id="commit" href="javascript:;" class="weui-btn weui-btn_primary">同 意</a>
+			<a id="commit" href="javascript:;" class="weui-btn weui-btn_primary">受 理</a>
 		</div>
-		<div class="weui-flex__item">
+		<div class="weui-flex__item refuse">
 			<a id="refuse" href="javascript:;" class="weui-btn weui-btn_warn">拒 绝</a>
 		</div>
 	</div>
@@ -118,18 +129,40 @@
 	}
 	//初始化数据
 	function initdata(data, type) {
+		//新办
 		if (type == 1) {
-			$('#name').text(data[0].name);
-			$('#phone').text(data[0].phone);
-			$('#address').text(data[0].address);
-			$('#time').text(actionTime(data[0].date))
+			if (data.rows[0].agree == 1) {
+				$('#commit').text("同 意");
+			} else {
+				$('#clear').remove();
+			}
+			$('#name').text(data.rows[0].name)
+			$('#phone').text(data.rows[0].phone)
+			$('#address').text(data.rows[0].address)
+			$('#time').text(actionTime(data.rows[0].date))
+			$('#business_state').text(data.rows[0].business_state)
 			$('.weui-panel_access').remove();
-		} else if (type == 2) {
+			for (let index = 0; index < data.fileBytes.length; index++) {
+				var uri = data.fileBytes[index].compressUri;
+				src = "/ycglj/" + uri;
+				$('form').append(
+					'<div class="weui-cell__bd">' +
+					'<div class="weui-cell">' +
+					'<div class="weui-cell__hd"><img src="' + src + '" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>' +
+					'<div class="weui-cell__bd"><p></p></div>' +
+					'</div>' +
+					'</div>'
+				);
+			}
+		}
+		//其他业务
+		else if (type == 2) {
 			$('#allmap').remove();
+			$('#clear').remove();
 			$('#name').text(data.roomInfo.name);
 			$('#phone').text(data.roomInfo.phone);
 			$('#address').text(data.roomInfo.address);
-			$('#time').text(actionTime(data.roomInfo.up_date))
+			$('#time').text(actionTime(data.roomInfo.date))
 			$('form').append(
 				'<div class="weui-cells weui-cells_form">' +
 				'<div class="weui-cell">' +
@@ -155,6 +188,16 @@
 					'</div>'
 				);
 			}
+		}
+		//恢复营业
+		else if (type == 3) {
+			$('#allmap').remove();
+			$('#clear').remove();
+			$('#name').text(data.rows[0].name);
+			$('#phone').text(data.rows[0].phone);
+			$('#address').text(data.rows[0].address);
+			$('#business_state').text(getTypeName(data.rows[0].business_state));
+			$('#time').text(actionTime(data.rows[0].operate_date))
 		}
 	}
 	//业务类型
@@ -220,27 +263,69 @@
 	});
 	console.log(time1);
 	console.log(license);
+	//其它业务
 	if (license > 0) {
-		var xhm = new XMLHttpRequest();
-		xhm.open("GET", "../../../user/getRoomInfoByGUID.do?license="+license, false);
-		xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xhm.send();
-		var data = JSON.parse(xhm.responseText);
-		initdata(data, 2);
-		var type = data.roomInfo.authentication;
-		console.log("type="+data);
+		//恢复营业
+		console.log(getQueryString("type"));
+		//办理恢复营业
+		var url = "";
+		var type = "";
+		if (getQueryString("type") == 6) {
+			url = "../../../asset/getResumeUser.do?openId=" + openId;
+			var xhm = new XMLHttpRequest();
+			xhm.open("GET", url, false);
+			xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhm.send();
+			var data = JSON.parse(xhm.responseText);
+			initdata(data, 3);
+			type = data.rows[0].authentication;
+		}
+		//办理其它业务
+		else {
+			url = "../../../user/getRoomInfoByGUID.do?license=" + license;
+			var xhm = new XMLHttpRequest();
+			xhm.open("GET", url, false);
+			xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhm.send();
+			var data = JSON.parse(xhm.responseText);
+			initdata(data, 2);
+			type = data.roomInfo.authentication;
+		}
+		console.log(url);
+
 		$('#commit').click(function () {
 			$.ajax({
 				url: "../../../asset/transact.do?license=" + license + "&type=" + type,
 				type: "GET",
 				success: function (data) {
 					console.log(data);
+					if (data == 0) {
+						$.alert({
+						title: "信息",
+						text: "受理失败~!",
+						onOK: function () {
+							//点击确认
+							location.href = "../index.html";
+						}
+					});
+					} else {
+						$.alert({
+							title: "信息",
+							text: "受理成功~!",
+							onOK: function () {
+								//点击确认
+								location.href = "../index.html";
+							}
+						});
+					}
 				}
 			});
 		})
-		//新办用户
-	} else {
+	}
+	//新办
+	else {
 		license = $('#license').val();
+		var agree = 0;
 		$.ajax({
 			url: "../../getNewUser.do",
 			data: {
@@ -248,39 +333,118 @@
 			},
 			type: "GET",
 			success: function (data) {
-				console.log(data);
-				data = JSON.parse(data).rows;
-				console.log(data);
+				data = JSON.parse(data);
+				agree = data.rows[0].agree;
 				initdata(data, 1);
-				initmap(data[0].lng, data[0].lat);
+				initmap(data.rows[0].lng, data.rows[0].lat);
 			}
 		});
 		$('#commit').click(function () {
-			if (time1 == "" && time2 == "" && license == "" && region == "") {
-				$.alert({
-					title: "错误",
-					text: "填写信息有误!",
-					onOK: function () {
-						//点击确认
-					}
-				});
-			} else {
-				console.log(time1);
-				$.ajax({
-					url: "../../../asset/newTransact.do",
-					data: {
-						openId: openId,
-						license: $('#license').val(),
-						startTime: time1[0],
-						endTime: time2[0],
-						area: 1,
-						region: $("#select1").val()
-					},
-					type: "post",
-					success: function (data) {
-						console.log(data);
-					}
-				});
+			var msg = "";
+			//提交验证
+			{
+				// console.log(time1);
+				//受理
+				if (agree == 0) {
+					$.ajax({
+						url: "../../../asset/agreeNew.do",
+						data: {
+							openId: openId,
+							agree: 1,
+						},
+						type: "post",
+						success: function (data) {
+							$.alert({
+								title: "信息",
+								text: "受理成功~!",
+								onOK: function () {
+									//点击确认
+									location.href = "../index.html";
+								}
+							});
+						}
+					});
+				}
+				//同意
+				else if (agree == 1) {
+					$.ajax({
+						url: "../../../asset/newTransact.do",
+						data: {
+							openId: openId,
+							license: $('#license').val(),
+							startTime: time1[0],
+							endTime: time2[0],
+							area: $('#select1').val(),
+							business_state: $('#business_state').val(),
+							region: $("#select1").val()
+						},
+						type: "post",
+						success: function (data) {
+							$.alert({
+								title: "信息",
+								text: "办理成功~!",
+								onOK: function () {
+									//点击确认
+									location.href = "../index.html";
+								}
+							});
+						}
+					});
+				}
+				else if (agree == 2) {
+					$.alert({
+						title: "信息",
+						text: "请让用户重新提交~!",
+						onOK: function () {
+							//点击确认
+							location.href = "../index.html";
+						}
+					});
+				}
+			}
+
+		})
+
+		$('#refuse').click(function () {
+			var msg = "";
+			//提交验证
+			{
+				// console.log(time1);
+				//拒绝办理
+				if (agree == 0) {
+					$.prompt("请输入拒绝受理的原因", function (text) {
+						//点击确认后的回调函数
+						//text 是用户输入的内容
+						$.ajax({
+							url: "../../../asset/agreeNew.do",
+							data: {
+								openId: openId,
+								agree: 2,
+								cause: text
+							},
+							type: "post",
+							success: function (data) {
+								console.log(data);
+								location.href = "../index.html";
+							}
+						});
+					}, function () {
+						//点击取消后的回调函数
+					});
+
+				}
+				//拒绝受理
+				else {
+
+				}
+				// $.alert({
+				// 	title: "信息",
+				// 	text: msg,
+				// 	onOK: function () {
+				// 		//点击确认
+				// 		location.href = "../index.html";
+				// 	}
+				// });
 			}
 		})
 	}

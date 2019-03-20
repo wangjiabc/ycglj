@@ -84,4 +84,6 @@ public interface LicenseDAO {
 	public Temp_Change selectTempChange(Temp_Change temp_Change);
 	
 	public Integer deleteTempChange(Temp_Change temp_Change);
+	
+	public Integer updateTempUserLicense(Temp_User_License temp_User_License);
 }

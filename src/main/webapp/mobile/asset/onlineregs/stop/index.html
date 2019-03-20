@@ -125,11 +125,11 @@
 		</a>
 		<div class="weui-cells__title">请选择申请停业整顿期限</div>
 		<div class="weui-cell">
-			<div class="weui-cell__hd"><label for="date" class="weui-label">日期</label></div>
+			日期
 			<div class="weui-cell__bd">
 				<input class="weui-input" id="date" type="text">
 			</div>
-			<div style="text-align: center" class="weui-cell__hd"><label for="date1" class="weui-label">至</label></div>
+			至
 			<div class="weui-cell__bd">
 				<input class="weui-input" id="date1" type="text">
 			</div>
@@ -362,16 +362,6 @@
 					endTime = displayValues;
 				}
 			});
-			// 所有办理业务
-			$.ajax({
-				url: "../../getAllTransactUser.do?limit=10&page=1",
-				data: {
-				},
-				type: "GET",
-				success: function (data) {
-				
-				}
-			});
 			//用户信息
 			$.ajax({
 				url: "/ycglj/mobile/user/getUserLicenseJoin.do",
@@ -381,9 +371,11 @@
 				success: function (data) {
 					console.log(data);
 					licenseData = JSON.parse(data);
+					license = licenseData[0].license;
 					for (i = 0; i < licenseData.length; i++) {
-						license = licenseData[0].license;
-						$('#license').val(license);
+						$('#license').val(licenseData[0].license);
+						$('#name').val(licenseData[0].name);
+						$('#idcard').val(licenseData[0].idcard);
 					}
 				}
 			});
@@ -416,12 +408,14 @@
 						var arrays = new Array(img1, img2);
 						console.log('保存图片数组的id' + arrays);
 						console.log("arrays=" + arrays);
+						var name=$('#name').val();
 						$.post(
 							"/ycglj/mobile/asset/updateAffire.do",
 							{
 								type: 4,
 								arrays: JSON.stringify(arrays),
-								license: license
+								license: license,
+								name:name
 							},
 							function (text) {
 								console.log(text);

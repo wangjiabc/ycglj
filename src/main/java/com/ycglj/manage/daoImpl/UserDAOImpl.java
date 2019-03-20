@@ -647,9 +647,10 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 			
 			where[i]="data_type != ";
 			where[i+1]="license";
-			where[i+2]="data_type != ";
-			where[i+3]="business";
-			
+			if(size>2){
+				where[i+2]="data_type != ";
+				where[i+3]="business";
+			}
 			System.out.println("where1=");
 			
 			MyTestUtil.print(where);
@@ -1085,6 +1086,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 			check_Person.setWhere(where);
 			i=UpdateExe.get(this.getJdbcTemplate(), check_Person);
 		}else{
+			MyTestUtil.print(check_Person);
 			i=InsertExe.get(this.getJdbcTemplate(), check_Person);
 		}
 		
@@ -1171,6 +1173,11 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		temp_User_License.setOffset(offset);
 		temp_User_License.setNotIn("open_id");
 		
+		Users users=new Users();
+		users.setLimit(limit);
+		users.setOffset(offset);
+		users.setNotIn("open_id");
+		
 		if(sort!=null&&!sort.equals("")){
 
 		}else{
@@ -1189,13 +1196,22 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		if(!search.equals("")&&!search.isEmpty()){
 			String[] where=TransMapToString.get(search);
 			temp_User_License.setWhere(where);
+			users.setWhere(where);
 		}
 		
 		Map map=new HashMap<>();
 		
-		List list=SelectExe.get(this.getJdbcTemplate(), temp_User_License);
+		//List list=SelectExe.get(this.getJdbcTemplate(), temp_User_License);
 		
-		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), temp_User_License).get("");
+		Object[] objects={temp_User_License,users};
+		
+		String[] join={"open_id"};
+		
+		Users_License_Join users_License_Join=new Users_License_Join();
+		
+		List list=SelectJoinExe.get(this.getJdbcTemplate(), objects, users_License_Join, join);
+		
+		int count=(int) SelectJoinExe.getCount(this.getJdbcTemplate(), objects,join).get("");
 		
 		map.put("code", "0");
 		
@@ -1204,6 +1220,39 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		map.put("total", count);
 		
 		return map;
+	}
+
+	@Override
+	public Integer updateTempUsers(Temp_Users temp_Users) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), temp_Users);
+	}
+
+	@Override
+	public User_Data getUserDataByTime(String openId,String data_type) {
+		// TODO Auto-generated method stub
+		User_Data user_Data=new User_Data();
+		user_Data.setLimit(1);
+		user_Data.setOffset(0);
+		user_Data.setNotIn("uuid");
+		user_Data.setSort("date");
+		user_Data.setOrder("desc");
+		
+		String[] where={"open_id=",openId,"data_type=",data_type};
+		user_Data.setWhere(where);
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), user_Data);
+		
+		User_Data user_Data2 = null;
+		
+		try {
+			user_Data2=(User_Data) list.get(0);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return user_Data2;
 	}
 
 	

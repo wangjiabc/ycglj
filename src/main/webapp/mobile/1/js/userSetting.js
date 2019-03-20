@@ -166,6 +166,7 @@ $.get("/ycglj/oauth/test.do", {
 	                	 		return;
 	 			    		   }
 			    			 var name=document.getElementById("name").value;
+			    			 var unit=document.getElementById("unit").value;
 			    			 var headship=document.getElementById("headship").value;
 			    			 var phone=document.getElementById("phone").value;
 			    			 var email=document.getElementById("email").value;
@@ -174,6 +175,7 @@ $.get("/ycglj/oauth/test.do", {
 	 			    			if(campusId!=null&&typeof(campusId)!="undefined"){
 	 			    				$.post('/ycglj/mobile/register/insert.do', {
 	 			    					name:name,
+	 			    					unit:unit,
 	 			    					headship:headship,
 	 			    					phone:phone,
 	 			    					email:email,
@@ -345,6 +347,7 @@ $.get("/ycglj/oauth/test.do", {
                 	 			return;
  			    			}
  			    			var name=document.getElementById("name").value;
+ 			    			var unit=document.getElementById("unit").value;
  			    			var headship=document.getElementById("headship").value;
  			    			var phone=document.getElementById("phone").value;
  			    			var email=document.getElementById("email").value;
@@ -353,6 +356,7 @@ $.get("/ycglj/oauth/test.do", {
  			    			if(campusId!=null&&typeof(campusId)!="undefined"){
  			    				$.post('/ycglj/mobile/register/insert.do', {
  			    					name:name,
+ 			    					unit:unit,
  			    					headship:headship,
  			    					phone:phone,
  			    					email:email,

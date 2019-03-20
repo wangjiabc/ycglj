@@ -192,7 +192,7 @@ public class UserRegisterController {
    @RequestMapping("insert")
    public @ResponseBody Integer
    insert(HttpServletRequest request,@RequestParam String name,
-		   @RequestParam String headship,
+		   @RequestParam String unit,@RequestParam String headship,
 		   @RequestParam String phone,@RequestParam String email,
 		   @RequestParam String address,@RequestParam String regtlx){
 	   
@@ -256,6 +256,10 @@ public class UserRegisterController {
                 if(!address.equals("")){
                 	users.setAddress(address);
                 	weiXin_User.setAddress(address);
+                }
+                if(!unit.equals("")){
+                	weiXin_User.setUnit(unit);
+                	check_Person.setUnit(unit);
                 }
 				users.setUpTime(upTime);
 				weiXin_User.setUp_time(upTime);

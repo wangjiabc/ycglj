@@ -93,7 +93,41 @@
 			<input class="weui-input" id="phone" type="text" placeholder="请输入您的联系电话">
 		</div>
 	</div>
-
+	<div class="weui-cell">
+		<div class="weui-cell__hd"><label class="weui-label">地址</label></div>
+		<div class="weui-cell__bd">
+			<input class="weui-input" id="address" type="text" placeholder="请输入您的地址">
+		</div>
+	</div>
+	<div class="weui-cell">
+		<select class="weui-select" id="select">
+			<option selected="" value="0">请选择区域</option>
+			<option value="1">泸州市合江县</option>
+		</select>
+	</div>
+	<div class="weui-cell">
+		<select class="weui-select" id="select1">
+			<option selected="" value="0">请选择业态</option>
+			<option value="食杂店">食杂店</option>
+			<option value="便利店">便利店</option>
+			<option value="超市">超市</option>
+			<option value="商场">商场</option>
+			<option value="烟酒店">烟酒店</option>
+			<option value="娱乐服务">娱乐服务</option>
+			<option value="路边摊">路边摊</option>
+			<option value="其它">其它</option>
+		</select>
+	</div>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('self')" href="javascript:;">
+		<div id="img0" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>自拍照</p>
+		</div>
+		<div id="self" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
 	<a class="weui-cell weui-cell_access" onclick="setActionSheet('identity')" href="javascript:;">
 		<div id="img1" name="0" class="weui-panel__bd">
 		</div>
@@ -349,7 +383,14 @@
 				localId: [],
 				serverId: []
 			};
+			var sourceType;
+			if (dataType == "self") {
+				sourceType = ['camera'];
+			} else {
+				sourceType = ['album', 'camera'];
+			}
 			wx.chooseImage({
+				sourceType: sourceType,
 				success: function (res) {
 					images.localId = res.localIds;
 					console.log('已选择 '
@@ -449,7 +490,11 @@
 						a.appendChild(div2);
 						panel.appendChild(a);
 
-						if (dataType == "identity") {
+						if (dataType == "self") {
+							document.getElementById("img0").innerHTML = "";
+							$("#img0").attr("name", uuid);
+							$("#img0").append(panel);
+						} else if (dataType == "identity") {
 							document.getElementById("img1").innerHTML = "";
 							$("#img1").attr("name", uuid);
 							$("#img1").append(panel);
@@ -476,8 +521,15 @@
 				var name = $('#name').val();
 				var idcard = $('#idcard').val();
 				var phone = $('#phone').val();
+				var address = $('#address').val();
+				var area = $('#select').val();
+				var business_state = $('#select1').val();
 				// location.href = "../sucess.html";
 				var error = "";
+				var img0 = $("#img0").attr("name");
+				if (img0 == 0) {
+					error = "自拍照不能为空!";
+				}
 				var img1 = $("#img1").attr("name");
 				if (img1 == 0) {
 					error = "身份证正面照照片不能为空!";
@@ -489,6 +541,9 @@
 				var img3 = $("#img3").attr("name");
 				if (img3 == 0) {
 					error = "工商营业执照不能为空!";
+				}
+				if (name == "" && idcard == "" && phone == "" && address == "" && area == "" && business_state == "") {
+					error="请填写完整信息";
 				}
 
 				if (error != "") {
@@ -502,7 +557,7 @@
 					});
 
 				} else {
-					var arrays = new Array(img1, img2, img3);
+					var arrays = new Array(img0, img1, img2, img3);
 					console.log('保存图片数组的id' + arrays);
 
 					$.post("../../../assetRegister/insertNew.do",
@@ -510,6 +565,9 @@
 							name: name,
 							id_number: idcard,
 							phone: phone,
+							address: address,
+							area: area,
+							business_state: business_state,
 							arrays: JSON.stringify(arrays),
 							lng: lng,
 							lat: lat
@@ -525,8 +583,16 @@
 										location.href = "../sucess.html";
 									}
 								});
+							} else if (text == 4) {
+								$.alert({
+									title: "",
+									text: "人脸识别失败,请重新上传身份证照片和自拍照",
+									onOK: function () {
 
+									}
+								});
 							} else {
+
 							}
 						});
 				}

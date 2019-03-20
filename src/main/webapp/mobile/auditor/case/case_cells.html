@@ -35,6 +35,9 @@
                 <div id="tab2" class="weui-navbar__item ">
                     	全部商户
                 </div>
+                <div id="tab3" class="weui-navbar__item ">
+                    	重点检查
+                </div>
             </div>
         </div>
     </div>
@@ -130,7 +133,15 @@
         loading = false;
         loadlist();
     })
-
+	$("#tab3").on("click", function () {
+        url = "../../user/getAll.do?position=1&weight=1";
+        limit = 10;
+        offset = 0;
+        $("#ul").children('li').remove();
+        loading = false;
+        loadlist();
+    })
+    
     loadlist();
     //下拉刷新 
     $(document.body).pullToRefresh().on("pull-to-refresh", function () {

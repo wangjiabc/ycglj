@@ -97,4 +97,7 @@ public interface UserDAO {
 	
 	public Map<String,Object> getAllTempLicenseJoin(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
     
+	public Integer updateTempUsers(Temp_Users temp_Users);
+	
+	public User_Data getUserDataByTime(String openId,String data_type);
 }

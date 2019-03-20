@@ -32,6 +32,7 @@ import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.PreMessage;
 import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.WeiXin_User;
+import com.ycglj.manage.face.RegisterCompare;
 import com.ycglj.manage.model.Sellers;
 import com.ycglj.manage.model.Users;
 
@@ -360,6 +361,7 @@ public class AssetUserRegisterController {
    public @ResponseBody Integer
    insertNew(HttpServletRequest request,@RequestParam String name,
 		   @RequestParam String id_number,@RequestParam String phone,
+		   @RequestParam String address,
 		   @RequestParam String arrays,Integer area,String business_state,
 		   Double lng,Double lat,
 		   String regtlx){
@@ -374,6 +376,12 @@ public class AssetUserRegisterController {
         	 e.printStackTrace();
 		  }
 	  
+        long face=new RegisterCompare().match(openId,request);
+       
+        if(face<80){
+        	return 4;
+        }
+        
 		JSONArray jsonArray = JSONArray.parseArray(arrays);
 
 		if (jsonArray != null && jsonArray.size() > 0) {
@@ -458,6 +466,10 @@ public class AssetUserRegisterController {
 				weiXin_User.setUser_name(name);
 			}
 
+			if(!address.equals("")){
+				temp_Users.setAddress(address);
+			}
+			
 			if(lng!=null){
 				temp_Users.setLng(lng);
 			}
@@ -468,14 +480,15 @@ public class AssetUserRegisterController {
 			if(area!=null){
 				temp_Users.setArea(area);
 			}
-			if(business_state!=null&&business_state.equals("")){
+			if(business_state!=null&&!business_state.equals("")){
 				temp_Users.setBusiness_state(business_state);
 			}
 			users.setUpTime(upTime);			
 			weiXin_User.setUp_time(upTime);
 
 			temp_Users.setDate(upTime);
-
+			temp_Users.setAgree(0);
+			
 			int up=userDao.insertTempUser(temp_Users);
 			
 			int count = orderDao.selectCountWeiXinUser(weiXin_User);
@@ -488,7 +501,6 @@ public class AssetUserRegisterController {
 			
 			try {
 
-				if (up > 0) {
 
 					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 
@@ -499,8 +511,6 @@ public class AssetUserRegisterController {
 					List list2 = (List) userDao.getAllUser(1, 0, "", "", searchMap).get("data");
 
 					com.ycglj.manage.daoModel.Users users2 = (com.ycglj.manage.daoModel.Users) list2.get(0);
-
-					users2.getPhone();
 					
 					List list=userService.getUserByTransact();					
 					
@@ -528,7 +538,7 @@ public class AssetUserRegisterController {
 								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 										title+"申请",
-										"http://lzgfgs.com/ycglj/mobile/asset/",
+										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
 										users2.getName(), title, time, "已提交申请", "", "",
 										"");
 
@@ -540,7 +550,6 @@ public class AssetUserRegisterController {
 					Thread t = new Thread(r);
 					t.start();
 
-				}
 
 			} catch (Exception e) {
 				// TODO: handle exception
