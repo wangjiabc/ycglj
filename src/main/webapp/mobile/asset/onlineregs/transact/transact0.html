@@ -35,9 +35,9 @@
 		<div class="weui-cells weui-cells_form">
 			<div class="weui-cell">
 				<div class="weui-cell__hd"><label class="weui-label">地 址</label></div>
-				<div id="address" class="weui-cell__bd">
-				</div>
+				<input class="weui-input" id="address" type="text">
 			</div>
+		</div>
 		</div>
 		<div class="weui-cells weui-cells_form">
 			<div class="weui-cell">
@@ -63,8 +63,20 @@
 		<div class="weui-cells weui-cells_form">
 			<div class="weui-cell">
 				<div class="weui-cell__hd"><label class="weui-label">业态</label></div>
-				<div id="business_state" class="weui-cell__bd">
-				</div>
+				<div class="weui-cell__bd">
+				<select class="weui-select" id="business_state">
+					<option value="食杂店">食杂店</option>
+					<option value="便利店">便利店</option>
+					<option value="超市">超市</option>
+					<option value="商场">商场</option>
+					<option value="烟酒店">烟酒店</option>
+					<option value="娱乐服务">娱乐服务</option>
+					<option value="路边摊">路边摊</option>
+					<option value="其它">其它</option>
+				</select>
+			</div>
+				<!-- <div id="business_state" class="weui-cell__bd">
+				</div> -->
 			</div>
 		</div>
 		<div id="clear">
@@ -138,9 +150,9 @@
 			}
 			$('#name').text(data.rows[0].name)
 			$('#phone').text(data.rows[0].phone)
-			$('#address').text(data.rows[0].address)
+			$('#address').val(data.rows[0].address)
 			$('#time').text(actionTime(data.rows[0].date))
-			$('#business_state').text(data.rows[0].business_state)
+			$('#business_state').val(data.rows[0].business_state)
 			$('.weui-panel_access').remove();
 			for (let index = 0; index < data.fileBytes.length; index++) {
 				var uri = data.fileBytes[index].compressUri;
@@ -301,13 +313,13 @@
 					console.log(data);
 					if (data == 0) {
 						$.alert({
-						title: "信息",
-						text: "受理失败~!",
-						onOK: function () {
-							//点击确认
-							location.href = "../index.html";
-						}
-					});
+							title: "信息",
+							text: "受理失败~!",
+							onOK: function () {
+								//点击确认
+								location.href = "../index.html";
+							}
+						});
 					} else {
 						$.alert({
 							title: "信息",
@@ -371,6 +383,7 @@
 						url: "../../../asset/newTransact.do",
 						data: {
 							openId: openId,
+							address: $('#address').val(),
 							license: $('#license').val(),
 							startTime: time1[0],
 							endTime: time2[0],

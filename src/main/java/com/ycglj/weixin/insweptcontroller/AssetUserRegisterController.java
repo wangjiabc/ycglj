@@ -504,14 +504,6 @@ public class AssetUserRegisterController {
 
 					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 
-					Map searchMap = new HashMap<>();
-
-					searchMap.put("open_id = ", openId);
-
-					List list2 = (List) userDao.getAllUser(1, 0, "", "", searchMap).get("data");
-
-					com.ycglj.manage.daoModel.Users users2 = (com.ycglj.manage.daoModel.Users) list2.get(0);
-					
 					List list=userService.getUserByTransact();					
 					
 					Runnable r = new Runnable() {
@@ -539,7 +531,7 @@ public class AssetUserRegisterController {
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 										title+"申请",
 										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
-										users2.getName(), title, time, "已提交申请", "", "",
+										name, title, time, "已提交申请", "", "",
 										"");
 
 							}

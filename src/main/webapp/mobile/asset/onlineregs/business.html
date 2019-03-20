@@ -249,9 +249,9 @@
 							success: function (res) {
 								i++;
 								console.log('已上传：'
-										+ i
-										+ '/'
-										+ length);
+									+ i
+									+ '/'
+									+ length);
 								//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
 								wxImgCallback(
 									dataType,
@@ -276,12 +276,12 @@
 			console.log("serverId=" + serverId);
 			//将serverId传给wx_upload.php的upload方法
 			var url = "../../file/upload.do";
-			$.get(url,{
-					campusId: 1,
-					serverId: serverId,
-					dataType: dataType,
-					classType: "user"
-				},
+			$.get(url, {
+				campusId: 1,
+				serverId: serverId,
+				dataType: dataType,
+				classType: "user"
+			},
 				function (text) {
 					console.log(text);
 					var result = JSON.parse(text);
@@ -396,16 +396,22 @@
 								console.log(text);
 								if (text == 1) {
 									$.alert({
-										title: "",
+										title: "信息",
 										text: "成功",
 										onOK: function () {
 											//点击确认
 											location.href = "sucess.html";
 										}
 									});
-
-								} else {
 								}
+								$.alert({
+										title: "信息",
+										text: "成功",
+										onOK: function () {
+											//点击确认
+											location.href = "sucess.html";
+										}
+									});
 							});
 					}
 				})

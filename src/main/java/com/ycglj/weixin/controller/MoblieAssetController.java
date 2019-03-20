@@ -377,7 +377,8 @@ private SellerService sellerService;
 	@RequestMapping(value="newTransact")
 	public @ResponseBody Integer newTransact(@RequestParam String openId,@RequestParam String license,
 			@RequestParam String startTime,@RequestParam String endTime,@RequestParam Integer area,
-			@RequestParam String region,String business_state,HttpServletRequest request){
+			@RequestParam String region,String business_state,
+			String address,HttpServletRequest request){
 		
 		Temp_Users temp_Users=new Temp_Users();
 		
@@ -434,6 +435,8 @@ private SellerService sellerService;
 		
 		if(business_state!=null&&!business_state.equals(""))
 			user_License.setBusiness_state(business_state);
+		if(address!=null&&!address.equals(""))
+			user_License.setAddress(address);
 		System.out.println("license_start_date="+license_start_date);
 		
 		
@@ -505,6 +508,8 @@ private SellerService sellerService;
 		
 		String openId=session.getAttribute("openId").toString();
 		
+		String transactOpenId = null;
+		
 		int i = 0;
 		
 		if(type==4||type==8){
@@ -520,6 +525,7 @@ private SellerService sellerService;
 			
 			User_License user_License2=userDao.getUserLicense(user_License);
 			
+			transactOpenId=user_License2.getOpen_id();
 
 			Date stop_start_date = null;
 			Date stop_end_data = null;
@@ -555,6 +561,8 @@ private SellerService sellerService;
 			
 			Temp_User_License temp_User_License2=licenseDAO.getTempUserLicense(temp_User_License);
 			
+			transactOpenId=temp_User_License2.getOpen_id();
+			
 			i=licenseDAO.insertLicense(temp_User_License2);
 			
 		}else if(type==7){
@@ -573,25 +581,28 @@ private SellerService sellerService;
 			
 			int up=0;
 			
+			User_License user_License=new User_License();
+			
+			user_License.setWhere(where);
+			
+			List list=userDao.getUserLicenseById(user_License);
+			
+			try{
+				user_License=(User_License) list.get(0);
+			}catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
+			transactOpenId=user_License.getOpen_id();
+			
 			if(changeName.equals("name")){
 				
 				Users users=new Users();
 				users.setName(changeValue);
-				
-				User_License user_License=new User_License();
-				
-				user_License.setWhere(where);
-				
-				List list=userDao.getUserLicenseById(user_License);
-				
-				try{
-					user_License=(User_License) list.get(0);
-				}catch (Exception e) {
-					// TODO: handle exception
-					e.printStackTrace();
-				}
-				
+
 				if(user_License.getOpen_id()!=null&&!user_License.getOpen_id().equals("")){
+					
 					String[] where2={"open_id=",user_License.getOpen_id()};
 					users.setWhere(where2);
 					userDao.updateOnlyUsers(users);
@@ -599,7 +610,6 @@ private SellerService sellerService;
 				
 			}else if(changeName.equals("address")){
 				
-				User_License user_License=new User_License();
 				user_License.setAddress(changeValue);
 				
 				user_License.setWhere(where);
@@ -620,7 +630,9 @@ private SellerService sellerService;
 					
 					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 					
-					List list=userService.getUserByTransact();					
+					//List list=userService.getUserByTransact();					
+					
+					final String transactOpenId2=transactOpenId;
 					
 					Runnable r = new Runnable() {
 
@@ -646,22 +658,14 @@ private SellerService sellerService;
 							String time = sdf.format(date);
 							
 							WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
-
-							Iterator iterator=list.iterator();
-													
-							while (iterator.hasNext()) {
 								
-								com.ycglj.manage.model.Users users=(com.ycglj.manage.model.Users) iterator.next();
-								
-								String transactOpenId=users.getOpenId();
-								
-								wechatSendMessageController.sendMessage(transactOpenId, "94bHvwYcW9ITl-FbQnY1BnFFrqorue-RkGdd5hND0bU", //审核结果通知
+							wechatSendMessageController.sendMessage(transactOpenId2, "94bHvwYcW9ITl-FbQnY1BnFFrqorue-RkGdd5hND0bU", //审核结果通知
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 										title+"申请",
 										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
-										"尊敬的"+users.getName()+",您的"+title+"申请","已通过", time,"", "", "", 
+										"尊敬的零售户您的"+title+"申请","已通过", time,"", "", "", 
 										"");
-							}
+						
 							
 						}
 					};

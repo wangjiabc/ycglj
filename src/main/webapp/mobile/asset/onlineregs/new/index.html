@@ -94,9 +94,9 @@
 		</div>
 	</div>
 	<div class="weui-cell">
-		<div class="weui-cell__hd"><label class="weui-label">地址</label></div>
+		<div class="weui-cell__hd"><label class="weui-label">经营场所地址</label></div>
 		<div class="weui-cell__bd">
-			<input class="weui-input" id="address" type="text" placeholder="请输入您的地址">
+			<input class="weui-input" id="address" type="text" placeholder="请输入您的经营场所地址">
 		</div>
 	</div>
 	<div class="weui-cell">
@@ -122,7 +122,7 @@
 		<div id="img0" name="0" class="weui-panel__bd">
 		</div>
 		<div class="weui-cell__bd">
-			<p>自拍照</p>
+			<p>自拍正面头像免冠照</p>
 		</div>
 		<div id="self" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 				<use xlink:href="#icon-paizhao"></use>
@@ -162,7 +162,7 @@
 	</a>
 	<a id="map" class="weui-cell weui-cell_access menu_list" href="javascript:;">
 		<div class="weui-cell__bd weui-flex__item">
-			<p>选择经营场所</p>
+			<p>选择经营场所位置(可手动拖动点调整位置)</p>
 		</div>
 		<div class="weui-cell__ft"><svg class="icon" aria-hidden="true">
 				<use xlink:href="#icon-map"></use>
@@ -580,7 +580,7 @@
 									text: "成功",
 									onOK: function () {
 										//点击确认
-										location.href = "../sucess.html";
+										location.href = "sucess.html";
 									}
 								});
 							} else if (text == 4) {
