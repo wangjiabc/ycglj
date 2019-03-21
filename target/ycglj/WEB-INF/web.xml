@@ -188,7 +188,7 @@
 		<url-pattern>/mobile/assetAdmin/assetCheck/*</url-pattern>
 	</filter-mapping>
 
-     <!-- 资产交租页面的栏截 -->
+     <!-- 零售户办理页面的栏截 -->
     <filter>
 		<filter-name>MobileAssetIsLoginFilter</filter-name>
 		<filter-class>com.ycglj.manage.filter.MobileAssetIsLoginFilter</filter-class>
