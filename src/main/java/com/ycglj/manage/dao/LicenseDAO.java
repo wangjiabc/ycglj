@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.Crimal_Case;
 import com.ycglj.manage.daoModel.Crimal_Record;
 import com.ycglj.manage.daoModel.FileSelfBelong;
@@ -28,6 +29,8 @@ public interface LicenseDAO {
 	public Map<String, Object> findAllLicense_Position(Integer limit, Integer offset, Double lng, Double lat,String term,Map search);
 	
 	public Map<String, Object> getAllLicense_Position(Integer limit, Integer offset,String sort,String order,String term,Map search);
+	
+	public Map<String, Object> getAllLicense_Position2(Integer limit, Integer offset,String sort,String order,Map search,String area);
 	
 	public Map<String, Object> License_PositionImageQuery(HttpServletRequest request, List LicenseLits);
 	
@@ -86,4 +89,8 @@ public interface LicenseDAO {
 	public Integer deleteTempChange(Temp_Change temp_Change);
 	
 	public Integer updateTempUserLicense(Temp_User_License temp_User_License);
+	
+	public Integer updateCheckPerson(Check_Person check_Person);
+	
+	public Integer deleteUserLicense(String license);
 }

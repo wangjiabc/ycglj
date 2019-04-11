@@ -26,6 +26,8 @@ public interface UserService {
 	
 	List<Users> getUserByTransact();
 	
+	List<Users> getUserByTransact(Integer area);
+	
 	Users getUserInfoById(Integer campusId,String openId);
 	
 	Integer getUserCount(String campusAdmin,Integer campusId,String search);

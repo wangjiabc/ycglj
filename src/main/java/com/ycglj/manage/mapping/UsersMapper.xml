@@ -282,6 +282,9 @@
 		users.open_id = usersinfo.open_id
 		<where>
 				users.transact>0
+				<if test="area != null">
+					and area=#{area,jdbcType=INTEGER}
+				</if>
 		</where>	
 	</select>
 	
@@ -439,7 +442,7 @@
         </where>
      </update>
      
-     <!-- 修改办理权限 -->
+     <!-- 修改地区权限 -->
      <update id="upAtionArea" parameterType="java.util.Map">
      update users
       <set>

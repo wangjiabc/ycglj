@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>添加弹出层</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../../layui/css/layui.css" />
+    <link rel="stylesheet" href="../../style/admin.css" media="all">
+</head>
+
+<body>
+    <form class="layui-form" style="margin:20px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">设置区域</label>
+            <div class="layui-input-inline">
+                <select lay-filter="area" name="area">
+                    <option value="">请选择所属区域</option>
+                    <option value="1">合江县</option>
+                    <option value="2">江阳区</option>
+                    <option value="3">龙马潭区</option>
+                    <option value="4">纳溪区</option>
+                    <option value="5">泸县</option>
+                    <option value="6">古蔺</option>
+                    <option value="7">叙永</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select lay-filter="region" id="region" name="region">
+                    <option value="">选择中队</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button lay-submit lay-filter="save" class="layui-btn layui-btn-normal">确定</button>
+                <button lay-submit lay-filter="cancel" class="layui-btn layui-btn-primary">取消</button>
+            </div>
+        </div>
+    </form>
+
+
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="../../layui/layui.js"></script>
+    <script>
+        layui.use(['layer', 'form'], function () {
+            var layer = layui.layer,
+                form = layer.form,
+                laydate = layui.laydate;
+            var license_end_time;
+            layui.form.on('submit(save)', function (data) {
+                var openId = window.location.href.split('?')[1];
+                console.log(data.field);
+                var area = data.field.area;
+                var region = data.field.region;
+                $.ajax({
+                    type: "get",
+                    url: "/ycglj/user/upAtionArea.do?openId=" + openId + "&area=" + area + "&region=" + region,
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    async: false,
+                    dataType: "json",
+                    success: function (data) {
+                        parent.layui.layer.closeAll('iframe');
+                    },
+                    error: function (e) {
+                        parent.layui.layer.closeAll('iframe');
+                        console.log(e);
+                    }
+                })
+            })
+            layui.form.on('submit(cancel)', function (data) {
+                parent.layui.layer.closeAll('iframe');
+            })
+            layui.form.on('select(area)', function (data) {
+                console.log('value=' + data.value);
+                if (data.value == 1) {
+                    var option = '<option value="">选择中队</option>' +
+                        '<option value="白沙中队">白沙中队</option>' +
+                        '<option value="城区中队">城区中队</option>' +
+                        '<option value="九支中队">九支中队</option>' +
+                        '<option value="榕山中队">榕山中队</option>';
+                }
+                else if (data.value == 2) {
+                    var option = '<option value="">选择中队</option>' +
+                        '<option value="重点零售户监管中队">重点零售户监管中队</option>' +
+                        '<option value="特勤中队">特勤中队</option>' +
+                        '<option value="市场监管中队">市场监管中队</option>';
+                }
+                else if (data.value == 3) {
+                    var option = '<option value="">选择中队</option>' +
+                        '<option value="户籍管理中队">户籍管理中队</option>';
+                } else if (data.value == 4) {
+                    var option = '<option value="">选择中队</option>' +
+                        '<option value="城区稽查中队">城区稽查中队</option>' +
+                        '<option value="护国稽查中队">护国稽查中队</option>' +
+                        '<option value="大渡稽查中队">大渡稽查中队</option>';
+                } else if (data.value == 5) {
+                    var option = '<option value="">选择中队</option>' +
+                        '<option value="大要案中队">大要案中队</option>' +
+                        '<option value="特勤中队">特勤中队</option>' +
+                        '<option value="户籍中队">户籍中队</option>';
+                } else if (data.value == 6) {
+                    var option = '<option value="">选择中队</option>' +
+                        '<option value="太平中队">太平中队</option>' +
+                        '<option value="石宝中队">石宝中队</option>' +
+                        '<option value="城区中队">城区中队</option>';
+                } else if (data.value == 7) {
+                    var option = '<option value="">选择中队</option>' +
+                        '<option value="江门中队">江门中队</option>' +
+                        '<option value="城区中队">城区中队</option>' +
+                        '<option value="麻城中队">麻城中队</option>' +
+                        '<option value="分水中队">分水中队</option>';
+                }
+                $('#region').empty();
+                $("#region").append(option);
+                layui.form.render('select');
+            })
+            return false;
+        })
+    </script>
+</body>
+
+</html>

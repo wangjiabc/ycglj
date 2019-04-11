@@ -34,6 +34,7 @@ import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.Law_Case;
 import com.ycglj.manage.daoModel.Not_License;
 import com.ycglj.manage.daoModel.Position;
+import com.ycglj.manage.daoModel.Temp_Change;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
@@ -119,6 +120,11 @@ public class MoblieUserController {
 			area=1;
 		}
 		
+		if(place==2){
+			where.put("area=",String.valueOf(area));
+		}
+		
+		/*
 		if(business==null){
 			business=5;
 		}
@@ -159,6 +165,7 @@ public class MoblieUserController {
 				
 			}
 		}
+		*/
 		
 		if(weight!=null&&weight==1){
 			where.put("weight=", "1");
@@ -177,11 +184,19 @@ public class MoblieUserController {
 
 			license_Positions=licenseDAO.findAllLicense_Position(limit, offset, lng, lat, "or", where);
 		}else {
+			Map searchMap=new HashMap<>();
 			if(search!=null&&!search.trim().equals("")){
-				search="%"+search+"%";  
-				where.put("[Users].name like ", search);
-			}		
-			license_Positions=licenseDAO.getAllLicense_Position(limit, offset, "", "","and", where);
+				search="%"+search+"%";  				
+				searchMap.put("[Users].name like ", search);
+				searchMap.put("[User_License].license like ", search);
+				searchMap.put("[User_License].phone like ", search);
+				searchMap.put("[User_License].address like ", search);
+			}
+			if(place==2){
+				license_Positions=licenseDAO.getAllLicense_Position2(limit, offset, "", "", searchMap,String.valueOf(area));
+			}else{
+				license_Positions=licenseDAO.getAllLicense_Position2(limit, offset, "", "", searchMap,null);
+			}
 		}
 		
 		List licenses=(List) license_Positions.get("rows");
@@ -265,6 +280,24 @@ public class MoblieUserController {
 		user_License.setWhere(where);
 		
 		List list=userDao.getUserLicenseJoin(user_License);
+		
+	    return list;
+	}
+	
+	@RequestMapping("getTempUserLicenseJoin")
+	public @ResponseBody List getTempUserLicenseJoin(HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		
+		String openId=session.getAttribute("openId").toString();
+		
+		Map search=new HashMap<>();
+		
+		search.put("[Temp_User_License].open_id = ",openId);
+
+		Map map=userDao.getAllTempLicenseJoin(10, 0, null, null, search);
+		
+		List list=(List) map.get("rows");
 		
 	    return list;
 	}
@@ -394,6 +427,20 @@ public class MoblieUserController {
 		}else{
 			map.put("crimal", "");
 		}
+		
+		Temp_Change temp_Change=new Temp_Change();
+		
+		temp_Change.setLimit(1);
+		temp_Change.setOffset(0);
+		temp_Change.setNotIn("license");
+		
+		String[] where={"license=",license};
+		
+		temp_Change.setWhere(where);
+		
+		Temp_Change temp_Change2=licenseDAO.selectTempChange(temp_Change);
+		
+		map.put("change", temp_Change2);
 		
 		return map;
 		
@@ -556,6 +603,59 @@ public class MoblieUserController {
 		HttpSession session = request.getSession();
 		
 		String openId=session.getAttribute("openId").toString();
+		
+		com.ycglj.manage.model.Users users=userService.getUserByOnlyOpenId(openId);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Map where=new HashMap<>();
+		
+		Integer place=users.getPlace();
+		
+		Integer area=users.getArea();
+		
+		Integer business=users.getBusiness();
+
+		Map search=new HashMap<>();
+		
+		search.put("[User_License].license=", license);
+		
+		List list2=(List) licenseDAO.getAllLicense_Position(1, 0, null, null, "and", search).get("rows");
+		
+		Users_License_Position_Join users_License_Position_Join=(Users_License_Position_Join) list2.get(0);
+		
+		if(place==3){
+			return -5;
+		}
+		if(place==2){
+			if(business==4){
+				Check_Person check_Person=new Check_Person();
+				check_Person.setLimit(1);
+				check_Person.setOffset(0);
+				check_Person.setNotIn("id");
+				String[] where2={"phone=",users.getPhone()};
+				check_Person.setWhere(where2);
+				List list=userDao.getAllCheck_Person(check_Person);
+				String region="";
+				try{
+					check_Person=(Check_Person) list.get(0);
+					region=check_Person.getDepartment();
+				}catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+				if(region!=null&&!region.equals("")){
+					if(!region.equals(users_License_Position_Join.getRegion())){
+						return -5;
+					}
+				}else{
+					return -5;
+				}
+					
+			}else{
+				return -5;
+			}
+		}
 		
 		UUID uuid=UUID.randomUUID();
 		

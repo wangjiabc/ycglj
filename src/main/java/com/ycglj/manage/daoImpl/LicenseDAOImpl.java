@@ -43,6 +43,7 @@ import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.Crimal_Record_Join;
 import com.ycglj.manage.daoModelJoin.License_Position_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
+import com.ycglj.manage.daoRowMapper.RowMappers;
 import com.ycglj.manage.daoSQL.DeleteExe;
 import com.ycglj.manage.daoSQL.InsertExe;
 import com.ycglj.manage.daoSQL.SelectExe;
@@ -667,6 +668,148 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		return map;
 	}
 	
+	@Override
+	public Map<String, Object> getAllLicense_Position2(Integer limit, Integer offset, String sort, String order,
+			Map search,String area) {
+		// TODO Auto-generated method stub
+
+		String sql0 = "SELECT TOP " + limit + " * from "
+				+ "[User_License] left join [Position] on [User_License].license=[Position].license left join [Users] on [User_License].open_id=[Users].open_id ";
+				
+		String sql = null;
+
+		StringBuilder whereCommand = new StringBuilder();
+
+		List params = new ArrayList<>();
+		List paramsCount = new ArrayList<>();
+
+		if (!search.isEmpty()) {
+			String[] where = TransMapToString.get(search);
+
+			List wheres = new ArrayList<String[]>();
+
+			String[] columnWhere;
+
+			wheres.add(where);
+
+			Iterator<String[]> iterator = wheres.iterator();
+			System.out.println("wheres=" + wheres);
+
+			while (iterator.hasNext()) {
+				columnWhere = iterator.next();
+				int k = 1;
+				for (String whereterm : columnWhere) {
+						if (k % 2 == 0) {
+							// System.out.println("鍋舵暟");
+							// whereCommand.append(whereterm+"\n AND ");
+						} else {
+							// System.out.println("濂囨暟");
+							// whereCommand.append("\n "+whereterm);
+							whereCommand.append(whereterm + "? \n  OR ");
+						}
+					k++;
+					System.out.println("whereCommand=" + whereCommand);
+				}
+			}
+
+			iterator = wheres.iterator();
+			while (iterator.hasNext()) {
+				columnWhere = iterator.next();
+				int k = 1;
+				for (String whereterm : columnWhere) {
+					if (!whereterm.equals("rea=")) {
+						if (k % 2 == 0) {
+							// System.out.println("鍋舵暟");
+							params.add(whereterm);
+						} else {
+							// System.out.println("濂囨暟");
+							// whereCommand.append("\n "+whereterm);
+						}
+					}
+					k++;
+				}
+			}
+
+			iterator = wheres.iterator();
+			while (iterator.hasNext()) {
+				columnWhere = iterator.next();
+				int k = 1;
+				for (String whereterm : columnWhere) {
+					if (k % 2 == 0) {
+						// System.out.println("鍋舵暟");
+						params.add(whereterm);
+						paramsCount.add(whereterm);
+					} else {
+						// System.out.println("濂囨暟");
+						// whereCommand.append("\n "+whereterm);
+					}
+					k++;
+				}
+			}
+
+		}
+
+		if (!search.isEmpty()) {
+			String  whereCom;
+			if(area!=null&&!area.equals("")){
+				whereCom="(" + whereCommand.substring(0, whereCommand.length() - 7) +") and area="+area;
+			}else{
+				whereCom="(" + whereCommand.substring(0, whereCommand.length() - 7) +")";
+			}
+			sql = sql0 + // sqlserver鍒嗛〉闇�瑕佸湪top涔熷姞涓妛here鏉′欢
+					"\n  where "+whereCom+" and "+ 
+					" [User_License].license not in("+
+					" select top "+offset+" [User_License].license FROM [User_License] left join [Position] on [User_License].license=[Position].license left join [Users] on [User_License].open_id=[Users].open_id where "
+					+ whereCom +")";
+		}else{
+			String  whereCom;
+			if(area!=null&&!area.equals("")){
+				whereCom=" area= "+area+" and ";
+			}else{
+				whereCom="";
+			}
+			
+			String  whereCom2;
+			if(area!=null&&!area.equals("")){
+				whereCom2=" where area= "+area;
+			}else{
+				whereCom2="";
+			}
+			
+			sql=sql0+" where "+whereCom+" [User_License].license not in( select top "+offset+" [User_License].license FROM [User_License] left join [Position] on [User_License].license=[Position].license left join [Users] on [User_License].open_id=[Users].open_id "+whereCom2+" ORDER BY [User_License].license)ORDER BY [User_License].license";
+		}
+
+		System.out.println("sql="+sql);
+		
+		List list = this.getJdbcTemplate().query(sql, params.toArray(),
+				new RowMappers(Users_License_Position_Join.class));
+
+		Map map=new HashMap<String, Object>();
+		
+		map.put("rows", list);
+		MyTestUtil.print(list);
+
+		String countSql = "SELECT count(*) from "
+				+ "[User_License] left join [Position] on [User_License].license=[Position].license left join [Users] on [User_License].open_id=[Users].open_id ";
+
+		if (!search.isEmpty()) {
+			countSql = countSql + // sqlserver鍒嗛〉闇�瑕佸湪top涔熷姞涓妛here鏉′欢
+					"\n  where " + whereCommand.substring(0, whereCommand.length() - 7);
+		}else{
+			String  whereCom;
+			if(area!=null&&!area.equals("")){
+				countSql = countSql + // sqlserver鍒嗛〉闇�瑕佸湪top涔熷姞涓妛here鏉′欢
+						"\n  where area="+area;
+			}
+
+		}
+
+		Map amount = this.getJdbcTemplate().queryForMap(countSql, paramsCount.toArray());
+
+		map.put("total", amount.get(""));
+		
+		return map;
+	}
 	
 	@Override
 	public Map<String, Object> License_PositionImageQuery(HttpServletRequest request, List LicenseLits) {
@@ -1648,6 +1791,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		user_License.setWeight(temp_User_License.getWeight());
 		user_License.setArea(temp_User_License.getArea());
 		user_License.setDate(new Date());
+		user_License.setAuthentication(1);
 		
 		i=InsertExe.get(this.getJdbcTemplate(), user_License);
 		
@@ -1719,6 +1863,38 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	public Integer updateTempUserLicense(Temp_User_License temp_User_License) {
 		// TODO Auto-generated method stub
 		return UpdateExe.get(this.getJdbcTemplate(), temp_User_License);
+	}
+
+	@Override
+	public Integer updateCheckPerson(Check_Person check_Person) {
+		// TODO Auto-generated method stub
+		return UpdateExe.get(this.getJdbcTemplate(), check_Person);
+	}
+
+	@Override
+	public Integer deleteUserLicense(String license) {
+		// TODO Auto-generated method stub
+		
+		int i=0;
+		
+		User_License user_License=new User_License();
+		
+		String[] where={"license=",license};
+		
+		user_License.setWhere(where);
+		
+		i=DeleteExe.get(this.getJdbcTemplate(), user_License);
+		
+		if(i>0){
+			
+			Position position=new Position();
+			
+			position.setWhere(where);
+			
+			DeleteExe.get(this.getJdbcTemplate(), position);
+		}
+		
+		return i;
 	}
 
 	

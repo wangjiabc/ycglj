@@ -1,7 +1,10 @@
 package com.ycglj.weixin.insweptcontroller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,9 +24,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.Temp_Change;
+import com.ycglj.manage.daoModel.Temp_User_License;
+import com.ycglj.manage.daoModel.User_License;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.model.Users;
 import com.ycglj.manage.service.UserService;
+import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
+import com.ycglj.weixin.controller.WechatSendMessageController;
 
 @Controller
 @RequestMapping("/mobile/user")
@@ -101,6 +110,73 @@ public class MobileUserController {
 	                
 	                //上传成功
 	                if(up>0){
+	                	
+	                	try {
+	           			
+	           				if (up > 0) {
+	           					
+	           					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+	           					Map searchMap = new HashMap<>();
+
+	           					Runnable r = new Runnable() {
+
+	           						@Override
+	           						public void run() {
+
+	           							Date date=new Date();		
+	           							SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+	           							String time = sdf.format(date);
+	           							
+	           							WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+	           							
+	           							List listUser=userService.getUserByTransact();
+	           							
+	           							Iterator iterator=listUser.iterator();
+	           							
+	           							Map searchMap=new HashMap<>();
+	    					    		
+	    					    		searchMap.put("[User_License].open_id = ", openId);
+	    					    		
+	    					    		List userlist=(List) userDao.getAllUserJoin(1, 0, "", "", searchMap).get("data");
+	    								
+	    					    		String name = null;
+	    					    		
+	    					    		try{
+	    					    			Users_License_Join users_License_Join=(Users_License_Join) userlist.get(0);
+	    					    			name=users_License_Join.getName();
+	    					    		}catch (Exception e) {
+	    									// TODO: handle exception
+	    					    			e.printStackTrace();
+	    								}
+	           							
+	           							while (iterator.hasNext()) {
+	           								
+	           								com.ycglj.manage.model.Users users=(com.ycglj.manage.model.Users) iterator.next();
+	           								
+	           								String transactOpenId=users.getOpenId();
+	           								
+	           								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
+	           										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
+	           										"延续申请",
+	           										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
+	           										"延续申请",name, "延续申请", time, "已提交申请", "", 
+	           										"");
+	           							}
+	           							
+	           						}
+	           					};
+
+	           					Thread t = new Thread(r);
+	           					t.start();
+
+	           				}
+
+	           			} catch (Exception e) {
+	           				// TODO: handle exception
+	           				e.printStackTrace();
+	           			}
+	                	
 	                    return 1;
 	                 //   Constants.printJson(response, fileName);;
 	                }else {

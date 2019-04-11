@@ -84,8 +84,11 @@
         暂无权限
         {{#  } }}
       </script>
-      <script type="text/html" id="area">
-        {{#   if(d.area == 1){ }}
+    <script type="text/html" id="area">
+        <button class="layui-btn layui-btn-xs layuiadmin-btn-useradmin layui-btn-normal" lay-submit lay-event="area">
+            设置区域
+        </button>
+        <!-- {{#   if(d.area == 1){ }}
         合江县
         {{#  } else { }}
         <select id="gradeitems">
@@ -93,7 +96,7 @@
             <option value="1">合江县</option>
             <option value="2">其它县</option>
         </select>
-        {{#  } }} 
+        {{#  } }}  -->
       </script>
     <script src="../layui/layui.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
@@ -121,10 +124,11 @@
                     , { field: 'name', edit: 'text', title: '姓名' }
                     , { field: 'department', title: '部门' }
                     , { field: 'duty', title: '职务' }
+                    , { field: 'address', title: '所属区域' }
                     , { field: 'card_number', title: '执法证编号' }
                     , { field: 'subscribeTime', title: '关注时间', align: 'center', templet: function (d) { return util.toDateString(d.subscribeTime, 'yyyy-MM-dd HH:mm') } }
-                    , { field: 'area', title: '所属区域', templet: '#area' }
-                     , { field: 'business', title: '所属权限', templet: '#permission' }
+                    , { field: 'area', title: '设置区域', templet: '#area' }
+                    , { field: 'business', title: '所属权限', templet: '#permission' }
                     , { title: '操作', toolbar: '#barDemo' }
                 ]]
             });
@@ -184,6 +188,18 @@
                         type: 2,
                         content: '/ycglj/layuiadmin/home/Dialog/permissionDialog.html?' + openId,
                         area: ['440px', '290px'],
+                        end: function () {
+                            table.reload('test');
+                        }
+                    });
+                }
+                else if (obj.event === "area") {
+                    console.log(openId);
+                    layer.open({
+                        title: '设置所属区域',
+                        type: 2,
+                        content: '/ycglj/layuiadmin/home/Dialog/areaDialog.html?' + openId,
+                        area: ['640px', '380px'],
                         end: function () {
                             table.reload('test');
                         }

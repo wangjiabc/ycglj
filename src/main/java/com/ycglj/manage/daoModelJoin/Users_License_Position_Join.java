@@ -105,6 +105,18 @@ public class Users_License_Position_Join implements Serializable{
     @SQLDouble(name="wgs84_lat")
 	private Double wgs84_lat;
     
+    @SQLInteger(name="area")
+	private Integer area;
+    
+    @SQLDateTime(name="application_date")
+	private Date application_date;
+    
+    @SQLDateTime(name="stop_start_date")
+	private Date stop_start_date;
+
+    @SQLDateTime(name="stop_end_data")
+	private Date stop_end_data;
+    
 	public void setOpen_id(String open_id){
 		this.open_id = open_id;
 	}
@@ -351,5 +363,37 @@ public class Users_License_Position_Join implements Serializable{
 
 	public Double getWgs84_lat(){
 		return wgs84_lat;
+	}
+	
+	public void setArea(Integer area){
+		this.area = area;
+	}
+
+	public Integer getArea(){
+		return area;
+	}
+	
+	public void setApplication_date(Date application_date){
+		this.application_date = application_date;
+	}
+
+	public Date getApplication_date(){
+		return application_date;
+	}
+	
+	public void setStop_start_date(Date stop_start_date){
+		this.stop_start_date = stop_start_date;
+	}
+
+	public Date getStop_start_date(){
+		return stop_start_date;
+	}
+
+	public void setStop_end_data(Date stop_end_data){
+		this.stop_end_data = stop_end_data;
+	}
+
+	public Date getStop_end_data(){
+		return stop_end_data;
 	}
 }

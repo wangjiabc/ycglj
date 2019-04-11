@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.bouncycastle.jce.provider.asymmetric.ec.Signature.ecCVCDSA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.Position;
 import com.ycglj.manage.daoModel.Temp_Change;
 import com.ycglj.manage.daoModel.Temp_User_License;
@@ -31,6 +33,8 @@ import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModel.WeiXin_User;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.SellerService;
@@ -85,7 +89,9 @@ private SellerService sellerService;
 	
 	@RequestMapping(value="updateAffire")
 	public @ResponseBody Integer uploadFilesSpecifyPath(@RequestParam String license,@RequestParam Integer type,@RequestParam String arrays,
-							String changeName,String changeValue,String name,HttpServletRequest request,HttpServletResponse response) throws Exception {  
+							String changeName,String changeValue,String name,
+							String stopStartTime,String stopEndTime,
+							HttpServletRequest request,HttpServletResponse response) throws Exception {  
 
 		HttpSession session = request.getSession();
 		
@@ -96,7 +102,7 @@ private SellerService sellerService;
 		 JSONArray jsonArray = JSONArray.parseArray(arrays);
 
 		 int up = 0;
-		 
+		
 		 if(jsonArray!=null&&jsonArray.size()>0){
 	            //组合image名称，“;隔开”
 	            
@@ -121,33 +127,84 @@ private SellerService sellerService;
 	         //   Constants.printJson(response, "没有检测到文件！");
 	        }
 	    
+			
+		 Users_License_Position_Join user_License2=new Users_License_Position_Join();
+			
+		 Map searchMap2=new HashMap<>();
+		 searchMap2.put("[User_License].license = ",license);
+		 
+		 List lists=(List) licenseDAO.getAllLicense_Position(1, 0, null, null, "and", searchMap2).get("rows");
+		 
+		 try{
+			 user_License2=(Users_License_Position_Join) lists.get(0);
+		 }catch (Exception e) {
+			// TODO: handle exception
+			 e.printStackTrace();
+		}
+		 
+		 final Users_License_Position_Join user_License3=user_License2;
+		 
+		 System.out.println("type="+type);
 		 
 		 try {
 
-			 if(up>0&&type!=6&&type!=7){
+			 if(type!=6){
 					User_License user_License=new User_License();
 					
 					String[] where={"open_id = ", openId,"license = ",license};
 					
+					Date license_start_date = null;
+					Date license_end_date = null;
+					
+					System.out.println("stopStartTime="+stopStartTime);
+					
+					try {
+						if(stopStartTime!=null&&!stopStartTime.equals("")){
+							license_start_date = new Date(new Long(stopStartTime));
+							user_License.setStop_start_date(license_start_date);
+						}
+						if(stopEndTime!=null&&!stopEndTime.equals("")){
+							license_end_date=new Date(new Long(stopEndTime));
+							user_License.setStop_end_data(license_end_date);
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 					user_License.setWhere(where);
 					user_License.setAuthentication(type);
-
+					user_License.setApplication_date(new Date());
+					
 					up=userDao.updateUserLicense(user_License);
 			 }
-			 
+			
 				if (up > 0) {
 					
 					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 
 					Map searchMap = new HashMap<>();
-				
-					List list=userService.getUserByTransact();					
-					
+
 					Runnable r = new Runnable() {
 
 						@Override
 						public void run() {
 
+							String name2=name;
+							
+							List list=null;
+							
+							Integer area=null;
+							
+							System.out.println("user_License3=");
+							MyTestUtil.print(user_License3);
+							if(user_License3.getArea()!=null){
+								area=user_License3.getArea();
+								list=userService.getUserByTransact(area);
+							}else{
+								list=userService.getUserByTransact();
+							}
+							
 							String title="";
 							
 							if(type==4){
@@ -158,6 +215,23 @@ private SellerService sellerService;
 								title="恢复营业";
 								
 								Temp_User_License temp_User_License=new Temp_User_License();
+								
+								Date license_start_date = null;
+								Date license_end_date = null;
+								
+								try {
+									if(stopStartTime!=null&&!stopStartTime.equals("")){
+										license_start_date = new Date(new Long(stopStartTime));
+										temp_User_License.setStop_start_date(license_start_date);
+									}
+									if(stopEndTime!=null&&!stopEndTime.equals("")){
+										license_end_date=new Date(new Long(stopEndTime));
+										temp_User_License.setStop_end_data(license_end_date);
+									}
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 								
 								temp_User_License.setAuthentication(type);
 								
@@ -175,6 +249,20 @@ private SellerService sellerService;
 								temp_Change.setName(changeName);
 								temp_Change.setValue(changeValue);
 								
+								Map searchMap=new HashMap<>();
+					    		
+					    		searchMap.put("[User_License].license= ", license);
+					    		
+					    		List userlist=(List) userDao.getAllUserJoin(1, 0, "", "", searchMap).get("data");
+								
+					    		try{
+					    			Users_License_Join users_License_Join=(Users_License_Join) userlist.get(0);
+					    			name2=users_License_Join.getName();
+					    		}catch (Exception e) {
+									// TODO: handle exception
+					    			e.printStackTrace();
+								}
+					    		
 								licenseDAO.insertTempChange(temp_Change);
 								
 							}else if(type==8){
@@ -199,7 +287,7 @@ private SellerService sellerService;
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 										title+"申请",
 										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
-										"",name, title, time, "已提交申请", "", 
+										title+"申请",name2, title, time, "已提交", "", 
 										"");
 							}
 							
@@ -340,11 +428,11 @@ private SellerService sellerService;
 						String templateID="";
 						
 						if(agree==1){
-							title="预约受理通知";
-							templateID="oNPqrUviob9r-g2hdcG_zwi3eniBTV5W9hEr1wmvYxI"; // 预约受理通知
+							title="新办受理申请通知";
+							templateID="moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY"; // 申请待审核通知
 						}else{
-							title="你好"+temp_Users2.getName()+"，你的预约信息审核失败";
-							templateID="js3FNl_UMEPEx1LUeBcGCVLsaUQ4iDtLZpJpi8sIlXg"; //预约失败提醒
+							title="你好"+temp_Users2.getName()+"，你的新办申请信息审核失败";
+							templateID="b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw"; //申请驳回通知
 						}
 						
 						Date date = new Date();
@@ -353,11 +441,19 @@ private SellerService sellerService;
 
 						WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 
-						wechatSendMessageController.sendMessage(openId, templateID,
+						if(agree==1){
+							wechatSendMessageController.sendMessage(openId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
+									//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
+									title,
+									"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
+									title,temp_Users2.getName(), title, time, "已受理", "", 
+									"");
+						}else{
+							wechatSendMessageController.sendMessage(openId, templateID,
 								// "1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
 								title , "http://lzgfgs.com/ycglj/mobile/asset",
-								title,temp_Users2.getName(), String.valueOf(date.getTime()), time, title, "", cause);
-
+								title,temp_Users2.getName(), time, "未通过", cause, "请修改后，重新提交", "");
+						}
 					}
 				};
 
@@ -481,7 +577,7 @@ private SellerService sellerService;
 						wechatSendMessageController.sendMessage(openId, templateID,
 								// "1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
 								title , "http://lzgfgs.com/ycglj/mobile/asset",
-								"尊敬的"+temp_Users2.getName(), "许可证申请成功", time, title, "", "","");
+								"尊敬的"+temp_Users2.getName(), "许可证办理成功", time, title, "", "","");
 
 					}
 				};
@@ -502,7 +598,7 @@ private SellerService sellerService;
 	
 	@RequestMapping(value="transact")
 	public @ResponseBody Integer transact(@RequestParam Integer type,@RequestParam String license,
-			String startTime,String endTime,HttpServletRequest request){
+			Integer agree,String startTime,String endTime,String name,HttpServletRequest request){
 		
 		HttpSession session = request.getSession();
 		
@@ -510,123 +606,232 @@ private SellerService sellerService;
 		
 		String transactOpenId = null;
 		
-		int i = 0;
-		
-		if(type==4||type==8){
-			
-			User_License user_License=new User_License();
-			user_License.setLimit(1);
-			user_License.setOffset(0);
-			user_License.setNotIn("license");
-			
-			String[] where={"license=",license};
-			
-			user_License.setWhere(where);
-			
-			User_License user_License2=userDao.getUserLicense(user_License);
-			
-			transactOpenId=user_License2.getOpen_id();
-
-			Date stop_start_date = null;
-			Date stop_end_data = null;
-			
-			try {
-				if(startTime!=null&&!startTime.equals(""))
-					stop_start_date = new Date(new Long(startTime));
-				if(endTime!=null&&!endTime.equals(""))
-					stop_end_data=new Date(new Long(endTime));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			if(stop_start_date!=null)
-				user_License2.setStop_start_date(stop_start_date);
-			if(stop_end_data!=null)
-				user_License2.setStop_end_data(stop_end_data);
-			
-			i=licenseDAO.deleteLicense(openId, user_License2);
-			
-		}else if(type==6){
-			 
-			Temp_User_License temp_User_License=new Temp_User_License();
-			
-			temp_User_License.setLimit(1);
-			temp_User_License.setOffset(0);
-			temp_User_License.setNotIn("open_id");
-			
-			String[] where={"license=",license};
-			
-			temp_User_License.setWhere(where);
-			
-			Temp_User_License temp_User_License2=licenseDAO.getTempUserLicense(temp_User_License);
-			
-			transactOpenId=temp_User_License2.getOpen_id();
-			
-			i=licenseDAO.insertLicense(temp_User_License2);
-			
-		}else if(type==7){
-			
-			Temp_Change temp_Change=new Temp_Change();
-			
-			String[] where={"license=",license};
-			
-			temp_Change.setWhere(where);
-			
-			Temp_Change temp_Change2=licenseDAO.selectTempChange(temp_Change);
-			
-			String changeName=temp_Change2.getName();
-			
-			String changeValue=temp_Change2.getValue();
-			
-			int up=0;
-			
-			User_License user_License=new User_License();
-			
-			user_License.setWhere(where);
-			
-			List list=userDao.getUserLicenseById(user_License);
-			
-			try{
-				user_License=(User_License) list.get(0);
-			}catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
-			
-			transactOpenId=user_License.getOpen_id();
-			
-			if(changeName.equals("name")){
-				
-				Users users=new Users();
-				users.setName(changeValue);
-
-				if(user_License.getOpen_id()!=null&&!user_License.getOpen_id().equals("")){
-					
-					String[] where2={"open_id=",user_License.getOpen_id()};
-					users.setWhere(where2);
-					userDao.updateOnlyUsers(users);
-				}
-				
-			}else if(changeName.equals("address")){
-				
-				user_License.setAddress(changeValue);
-				
-				user_License.setWhere(where);
-				
-				userDao.updateOnlyLicense(user_License);
-				
-			}
-			
-			if(up>0){
-				licenseDAO.deleteTempChange(temp_Change);
-			}
-			
-			i=up;
+		if(agree==null){
+			agree=1;
 		}
 		
-		try {
+		int i = 0;
+		
+		if (agree == 1) {
+			
+			if (type == 4) {
 
+				User_License user_License = new User_License();
+				user_License.setLimit(1);
+				user_License.setOffset(0);
+				user_License.setNotIn("license");
+
+				String[] where = { "license=", license };
+
+				user_License.setWhere(where);
+
+				User_License user_License2 = userDao.getUserLicense(user_License);
+
+				transactOpenId = user_License2.getOpen_id();
+
+				Date stop_start_date = null;
+				Date stop_end_data = null;
+
+				try {
+					if (startTime != null && !startTime.equals(""))
+						stop_start_date = new Date(new Long(startTime));
+					if (endTime != null && !endTime.equals(""))
+						stop_end_data = new Date(new Long(endTime));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				if (stop_start_date != null)
+					user_License2.setStop_start_date(stop_start_date);
+				if (stop_end_data != null)
+					user_License2.setStop_end_data(stop_end_data);
+
+				i = licenseDAO.deleteLicense(openId, user_License2);
+
+			} else if (type == 6) {
+
+				Temp_User_License temp_User_License = new Temp_User_License();
+
+				temp_User_License.setLimit(1);
+				temp_User_License.setOffset(0);
+				temp_User_License.setNotIn("open_id");
+
+				String[] where = { "license=", license };
+
+				temp_User_License.setWhere(where);
+
+				Temp_User_License temp_User_License2 = licenseDAO.getTempUserLicense(temp_User_License);
+
+				transactOpenId = temp_User_License2.getOpen_id();
+
+				i = licenseDAO.insertLicense(temp_User_License2);
+
+			} else if (type == 7) {
+
+				Temp_Change temp_Change = new Temp_Change();
+
+				temp_Change.setLimit(1);
+				temp_Change.setOffset(0);
+				temp_Change.setNotIn("license");
+
+				String[] where = { "license=", license };
+
+				temp_Change.setWhere(where);
+
+				Temp_Change temp_Change2 = licenseDAO.selectTempChange(temp_Change);
+
+				String changeName = temp_Change2.getName();
+
+				String changeValue = temp_Change2.getValue();
+
+				int up = 0;
+
+				User_License user_License = new User_License();
+
+				user_License.setLimit(1);
+				user_License.setOffset(0);
+				user_License.setNotIn("license");
+
+				user_License.setWhere(where);
+
+				List list = userDao.getUserLicenseById(user_License);
+
+				try {
+					user_License = (User_License) list.get(0);
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+
+				transactOpenId = user_License.getOpen_id();
+
+				if (changeName.equals("name")) {
+
+					Users users = new Users();
+					users.setName(changeValue);
+
+					if (user_License.getOpen_id() != null && !user_License.getOpen_id().equals("")) {
+
+						String[] where2 = { "open_id=", user_License.getOpen_id() };
+						users.setWhere(where2);
+						up = userDao.updateOnlyUsers(users);
+					}
+
+				} else if (changeName.equals("address")) {
+
+					User_License user_License2 = new User_License();
+
+					user_License2.setAddress(changeValue);
+
+					user_License2.setWhere(where);
+
+					up = userDao.updateOnlyLicense(user_License2);
+
+				}
+
+				if (up > 0) {
+
+					licenseDAO.deleteTempChange(temp_Change);
+
+					User_License user_License3 = new User_License();
+
+					user_License3.setAuthentication(1);
+
+					user_License3.setWhere(where);
+
+					up = userDao.updateOnlyLicense(user_License3);
+
+				}
+
+				i = up;
+			} else if (type == 5) {
+
+				User_License user_License = new User_License();
+
+				user_License.setLimit(1);
+				user_License.setOffset(0);
+				user_License.setNotIn("license");
+
+				String[] where = { "license=", license };
+				
+				user_License.setWhere(where);
+
+				List list = userDao.getUserLicenseById(user_License);
+
+				try {
+					user_License = (User_License) list.get(0);
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+
+				transactOpenId = user_License.getOpen_id();
+				
+				User_License user_License2 = new User_License();
+
+				user_License2.setAuthentication(1);
+
+				user_License2.setWhere(where);
+
+				i = userDao.updateOnlyLicense(user_License2);
+
+			} else if (type == 8) {
+
+				User_License user_License = new User_License();
+
+				user_License.setLimit(1);
+				user_License.setOffset(0);
+				user_License.setNotIn("license");
+
+				String[] where = { "license=", license };
+				
+				user_License.setWhere(where);
+
+				List list = userDao.getUserLicenseById(user_License);
+
+				try {
+					user_License = (User_License) list.get(0);
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+
+				transactOpenId = user_License.getOpen_id();
+				
+				i = licenseDAO.deleteUserLicense(license);
+
+			}
+
+		}else{
+			
+			if (type != 6) {
+				User_License user_License = new User_License();
+
+				user_License.setAuthentication(1);
+
+				String[] where = { "license=", license };
+
+				user_License.setWhere(where);
+
+				i = userDao.updateOnlyLicense(user_License);
+			} else {
+				Temp_User_License temp_User_License = new Temp_User_License();
+
+				temp_User_License.setAuthentication(4);
+
+				String[] where = { "license=", license };
+
+				temp_User_License.setWhere(where);
+				
+				i=licenseDAO.updateTempUserLicense(temp_User_License);
+
+			}
+		}
+		
+		final Integer agree2=agree;
+		
+		try {
 					
 					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 					
@@ -658,15 +863,23 @@ private SellerService sellerService;
 							String time = sdf.format(date);
 							
 							WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
-								
+							
+							String result="";
+							
+							if(agree2==1){
+								result="已通过";
+							}else{
+								result="已拒绝";
+							}
+							
 							wechatSendMessageController.sendMessage(transactOpenId2, "94bHvwYcW9ITl-FbQnY1BnFFrqorue-RkGdd5hND0bU", //审核结果通知
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 										title+"申请",
-										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
-										"尊敬的零售户您的"+title+"申请","已通过", time,"", "", "", 
+										"http://lzgfgs.com/ycglj/mobile/asset",
+										"尊敬的零售户"+name+",您的"+title+"申请",result, time,"", "", "", 
 										"");
-						
 							
+													
 						}
 					};
 
@@ -708,14 +921,107 @@ private SellerService sellerService;
 	@RequestMapping("getResumeUser")
 	public @ResponseBody Map<String, Object> getResumeUser(@RequestParam String openId,HttpServletRequest request){
 			
-			Map searchMap=new HashMap<>();
-			
+		Map searchMap = new HashMap<>();
 
-			searchMap.put("[Temp_User_License].open_id = ", openId);
+		searchMap.put("[Temp_User_License].open_id = ", openId);
 
+		Map map = new HashMap<>();
+
+		map = userDao.getAllTempLicenseJoin(1, 0, null, null, searchMap);
+
+		try {
+			List list = (List) map.get("rows");
+
+			Users_License_Join users_License_Join = (Users_License_Join) list.get(0);
 			
-			return userDao.getAllTempLicenseJoin(1, 0, null, null, searchMap);
-				
+			Users_License_Position_Join users_License_Position_Join=new Users_License_Position_Join();
+			
+			users_License_Position_Join.setOpen_id(users_License_Join.getOpen_id());
+			users_License_Position_Join.setLicense(users_License_Join.getLicense());
+			
+			List fileBytes = licenseDAO.allLicenseImageByGUID(request, users_License_Position_Join);
+
+			map.put("fileBytes", fileBytes);
+			
+			Map searchMap2 = new HashMap<>();
+
+			searchMap2.put("open_id = ", users_License_Join.getOpen_id());
+			searchMap2.put("currently = ", "1");
+
+			if (users_License_Join.getLicense() != null && !users_License_Join.getLicense().equals("")) {
+				searchMap2.put("license=", users_License_Join.getLicense());
+			}
+
+			Map map2 = userDao.getAllUserData(request, 1000, 0, "", "", searchMap2);
+
+			List fileBytes2=(List) map2.get("fileBytes");
+			
+			map.put("fileBytes2", fileBytes2);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return map;
+		
+	}
+	
+	@RequestMapping("/getCheckPerson")
+	public @ResponseBody Check_Person getCheckPerson(@RequestParam String phone,HttpServletRequest request){
+		
+		Check_Person check_Person = new Check_Person();
+
+		Map search = new HashMap<>();
+
+		search.put("phone=", phone);
+
+		Map map = licenseDAO.getAllCheckPerson(1, 0, "id", "asc", search);
+
+		List list = (List) map.get("data");
+
+		try {
+			check_Person = (Check_Person) list.get(0);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		return check_Person;
+	}
+	
+	@RequestMapping("/postAdvice")
+	public @ResponseBody Integer postAdvice(@RequestParam String phone,@RequestParam String advice,HttpServletRequest request){
+		
+		WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+		
+		List list=userService.getUserByTransact();
+		
+		Iterator iterator=list.iterator();
+		
+		Date date=new Date();		
+		SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
+		String time = sdf.format(date);
+		
+		int i=0;
+		
+		while (iterator.hasNext()) {
+			
+			com.ycglj.manage.model.Users users=(com.ycglj.manage.model.Users) iterator.next();
+			
+			String transactOpenId=users.getOpenId();
+			
+			wechatSendMessageController.sendMessage(transactOpenId, "HRSujAWukFOthuMbOITAcDPvtgimAmz3hNyltOAyEAE", //投诉建议通知
+					//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
+					"投诉建议通知",
+					"",
+					"投诉人电话:"+phone,time, advice, "", "", "", 
+					"");
+			
+			i++;
+		}
+		
+		return i;
+		
 	}
 	
 }

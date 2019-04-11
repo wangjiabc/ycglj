@@ -35,14 +35,14 @@
 </style>
 
 <body>
-	<div class="weui-cell weui-cell_select" style="width:100%;background-color: #67bd8c">
+	<!-- <div class="weui-cell weui-cell_select" style="width:100%;background-color: #67bd8c">
 		<div class="weui-cell__bd">
 			<select class="weui-select" name="select1" style="color:white;">
 				<option selected="" value="1">请选择您申请的地区:</option>
 				<option value="2">泸州市合江县</option>
 			</select>
 		</div>
-	</div>
+	</div> -->
 	<div class="weui-cells">
 		<p class="demos-title">烟草专卖零售许可证</p>
 	</div>
@@ -116,6 +116,21 @@
 
 </body>
 <script>
+	business();
+	//停业办理成功后 只能点击新办业务和恢复营业业务
+	//歇业办理成功后 只能点击新办业务
+	function business(){
+		$.ajax({
+				url: "/ycglj/mobile/user/getUserLicenseJoin.do",
+				data: {
+				},
+				type: "GET",
+				success: function (data) {
+					licenseData = JSON.parse(data);
+					// console.log(authen);
+				}
+			});
+	}
 	function newmap() {
 		url = document.location.toString();
 		$.ajax({

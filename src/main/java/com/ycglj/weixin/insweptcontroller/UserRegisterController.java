@@ -2,6 +2,7 @@ package com.ycglj.weixin.insweptcontroller;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Check_Person;
@@ -48,6 +50,8 @@ public class UserRegisterController {
 	OrderDAO orderDao=(OrderDAO) applicationContext.getBean("orderdao");
 	
 	UserDAO userDao=(UserDAO) applicationContext.getBean("userdao");
+	
+	LicenseDAO licenseDAO=(LicenseDAO) applicationContext.getBean("licensedao");
 	
 	/*
 	 * 生成验证码类
@@ -193,13 +197,14 @@ public class UserRegisterController {
    public @ResponseBody Integer
    insert(HttpServletRequest request,@RequestParam String name,
 		   @RequestParam String unit,@RequestParam String headship,
-		   @RequestParam String phone,@RequestParam String email,
-		   @RequestParam String address,@RequestParam String regtlx){
+		   @RequestParam String phone,
+		   String department,
+		   @RequestParam String address){
 	   
 	   HttpSession session = request.getSession();
        String openId=null;
        System.out.println("name="+name+"  headship="+headship+"   phone="
-    		   +phone+"   email="+email+"    address="+address+"  regtlx="+regtlx);
+    		   +phone+"   address="+address);
        try{
          openId=session.getAttribute("openId").toString();
          }catch (Exception e) {
@@ -207,19 +212,26 @@ public class UserRegisterController {
         	 e.printStackTrace();
 		  }
 	  
-	   if(regtlx.equals("")){
-		   return 2;
-	   }
-	   
-	   regtlx=regtlx.toLowerCase();
-	   
-	   String verifyCode=(String) session.getAttribute("verifyCode");
-	   
-	   if(!regtlx.equals(verifyCode)){
-		   verifyCode=null;
-		   return 2;
-	   }
 	
+       Check_Person check_Person2 = new Check_Person();
+
+		Map search = new HashMap<>();
+
+		search.put("name=", name);
+		search.put("phone=", phone);
+
+		Map map = licenseDAO.getAllCheckPerson(1, 0, "id", "asc", search);
+
+		List list = (List) map.get("data");
+
+		try {
+			check_Person2 = (Check_Person) list.get(0);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return -2;
+		}
+       
 	   Date upTime=new Date();
 	   
 	   try {		
@@ -249,10 +261,7 @@ public class UserRegisterController {
                 	weiXin_User.setHeadship(headship);
                 	check_Person.setDuty(headship);
                 }
-                if(!email.equals("")){
-                	users.setEmail(email);
-                	weiXin_User.setEmail(email);
-                }
+ 
                 if(!address.equals("")){
                 	users.setAddress(address);
                 	weiXin_User.setAddress(address);
@@ -260,6 +269,10 @@ public class UserRegisterController {
                 if(!unit.equals("")){
                 	weiXin_User.setUnit(unit);
                 	check_Person.setUnit(unit);
+                }
+                if(department!=null&&!department.equals("")){
+                	weiXin_User.setRank(department);
+                	check_Person.setDepartment(department);
                 }
 				users.setUpTime(upTime);
 				weiXin_User.setUp_time(upTime);

@@ -527,6 +527,8 @@ public class UserController {
         	
         	com.ycglj.manage.model.Users users=iterator.next();
         	
+        	MyTestUtil.print(users);
+        	
         	if (users.getPlace()>0) {
 				
         		Map serarchMap=new HashMap<>();
@@ -535,8 +537,7 @@ public class UserController {
         		
         		List<Check_Person> list=(List) licenseDAO.getAllCheckPerson(1, 0, "id", "", serarchMap).get("data");
         		
-        		try{
-        			
+        		try{        			
         			Check_Person check_Person=list.get(0);
         			if(check_Person!=null){
         				users.setName(check_Person.getName());
@@ -609,6 +610,7 @@ public class UserController {
 		return userService.upAtionFormatter(map);
 	}
 	
+		
 	@RequestMapping(value="/upAtionTransact")
 	public @ResponseBody Integer upAtionTransact(HttpServletRequest request,@RequestParam String openId,
 			@RequestParam Integer transact){
@@ -625,7 +627,7 @@ public class UserController {
 	
 	@RequestMapping(value="/upAtionArea")
 	public @ResponseBody Integer upAtionArea(HttpServletRequest request,@RequestParam String openId,
-			@RequestParam Integer area){
+			@RequestParam Integer area,@RequestParam String region){
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		Integer campusId=1;
@@ -634,7 +636,22 @@ public class UserController {
 		map.put("area", area);
 		map.put("campusId", campusId);
 		
-		return userService.upAtionArea(map);
+		int i=0;
+		
+		i=userService.upAtionArea(map);
+		
+		com.ycglj.manage.model.Users users=userService.getUserByOnlyOpenId(openId);
+		MyTestUtil.print(users);
+		System.out.println("phone="+users.getPhone());
+		Check_Person check_Person=new Check_Person();
+		
+		check_Person.setDepartment(region);
+		
+		check_Person.setPhone(users.getPhone());
+		
+		userDao.updateCheck_Person(check_Person);
+		
+		return i;
 	}
 	
 	@RequestMapping(value="/upAtionBusiness")

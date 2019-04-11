@@ -483,6 +483,9 @@ public class AssetUserRegisterController {
 			if(business_state!=null&&!business_state.equals("")){
 				temp_Users.setBusiness_state(business_state);
 			}
+			if(id_number!=null){
+				temp_Users.setId_number(id_number);
+			}
 			users.setUpTime(upTime);			
 			weiXin_User.setUp_time(upTime);
 
@@ -504,14 +507,12 @@ public class AssetUserRegisterController {
 
 					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 
-					List list=userService.getUserByTransact();					
+					List list=userService.getUserByTransact(area);					
 					
 					Runnable r = new Runnable() {
 
 						@Override
 						public void run() {
-
-							String title="新零售户";
 														
 							Date date=new Date();		
 							SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
@@ -529,9 +530,9 @@ public class AssetUserRegisterController {
 								
 								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
-										title+"申请",
+										"新办申请",
 										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
-										name, title, time, "已提交申请", "", "",
+										"新办申请",name, "新办烟草专卖零售许可证", time, "已提交", "", 
 										"");
 
 							}

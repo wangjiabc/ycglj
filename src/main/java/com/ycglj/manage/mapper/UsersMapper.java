@@ -57,6 +57,8 @@ public interface UsersMapper {
 	
 	List<Users> getUserByTransact();
 	
+	List<Users> getUserByTransact(@Param(value="area")Integer area);
+	
 	List<Users> getUserByPlace(@Param(value="place")Integer place);
 	
 	Integer getOpenId(@Param(value="campusId")Integer campusId,@Param(value="openId")String openId);

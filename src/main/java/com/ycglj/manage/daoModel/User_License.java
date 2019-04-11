@@ -59,6 +59,9 @@ public class User_License implements Serializable{
     @SQLDateTime(name="stop_end_data")
 	private Date stop_end_data;
 
+    @SQLDateTime(name="application_date")
+	private Date application_date;
+
 	public void setOpen_id(String open_id){
 		this.open_id = open_id;
 	}
@@ -185,6 +188,14 @@ public class User_License implements Serializable{
 
 	public Date getStop_end_data(){
 		return stop_end_data;
+	}
+
+	public void setApplication_date(Date application_date){
+		this.application_date = application_date;
+	}
+
+	public Date getApplication_date(){
+		return application_date;
 	}
 
 

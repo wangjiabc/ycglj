@@ -313,6 +313,8 @@
               history.back();
             } else if (text == -1) {
               alert("新建记录失败,至少选择一项违法记录!");
+            } else if(text==-5){
+            	alert("你没有新建案由权限!");
             } else {
               alert("新建记录失败!");
             }

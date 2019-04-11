@@ -129,6 +129,16 @@
 					<use xlink:href="#icon-paizhao"></use>
 				</svg></div>
 		</a>
+		<div class="weui-cells__title">申请人手写签名</div>
+		<div class="weui-cells">
+			<a class="weui-cell weui-cell_access" href="javascript:;">
+				<div class="weui-cell__bd">
+					<p>申请人签字</p>
+				</div>
+				<div id="sign" class="weui-cell__ft">点击签名</div>
+			</a>
+			<div id="displayarea" name="0"></div>
+		</div>
 	</div>
 
 
@@ -147,6 +157,7 @@
 	<script src="../order/js/iconfont.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+	<script type="text/jscript" src="../order/js/jSignature.min.noconflict.js"></script>
 
 	<script>
 		function getQueryString(name) {
@@ -225,7 +236,55 @@
 		// 	setActionSheet("business", license);
 		// 	licenseImg.push("zz" + license);
 		// }
+		function saveImg() {
+			//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
+			var datapair = $("#signature").jSignature(
+				"getData", "image");
+			var i = new Image();
+			i.src = "data:" + datapair[0] + ","
+				+ datapair[1];
+			$(i).appendTo($("#displayarea"));
+			if ($("#signature").jSignature('getData',
+				'native').length > 0) {
 
+				$.post("../../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+						+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					$("#displayarea").attr("name", uuid);
+				});
+
+				$.closeModal();
+			} else {
+				$.closeModal();
+
+				$.post("../../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+						+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					$("#displayarea").attr("name", uuid);
+				});
+
+			}
+		}
 		function setActionSheet(dataType) {
 			var images = {
 				localId: [],
@@ -336,10 +395,21 @@
 					}
 				});
 		}
+
+		var type = getQueryString("type");
+
+		var url;
+
+		url = "/ycglj/mobile/user/getUserLicenseJoin.do";
+
+		if (type == 6) {
+			url = "/ycglj/mobile/user/getTempUserLicenseJoin.do";
+		}
+
 		$(document).ready(function () {
 			var license;
 			$.ajax({
-				url: "/ycglj/mobile/user/getUserLicenseJoin.do",
+				url: url,
 				data: {
 				},
 				type: "GET",
@@ -385,37 +455,81 @@
 						console.log('保存图片数组的id' + arrays);
 
 						console.log("arrays=" + arrays);
-						var type = getQueryString("type");
-						$.post("/ycglj/mobile/asset/updateAffire.do",
-							{
-								type: type,
-								arrays: JSON.stringify(arrays),
-								license: license
-							},
-							function (text) {
-								console.log(text);
-								if (text == 1) {
+						if (type == 8) {
+							$.confirm("办理歇业业务将会在系统里清除您的许可证信息!", function () {
+								//点击确认后的回调函数
+								$.post("/ycglj/mobile/asset/updateAffire.do",
+									{
+										type: type,
+										arrays: JSON.stringify(arrays),
+										license: license,
+										name: $('#name').val()
+									},
+									function (text) {
+										console.log(text);
+										$.alert({
+											title: "信息",
+											text: "成功",
+											onOK: function () {
+												//点击确认
+												location.href = "sucess2.html";
+											}
+										});
+									});
+							}, function () {
+								//点击取消后的回调函数
+							});
+						} else {
+							$.post("/ycglj/mobile/asset/updateAffire.do",
+								{
+									type: type,
+									arrays: JSON.stringify(arrays),
+									license: license,
+									name: $('#name').val()
+								},
+								function (text) {
+									console.log(text);
 									$.alert({
 										title: "信息",
 										text: "成功",
 										onOK: function () {
 											//点击确认
-											location.href = "sucess.html";
+											location.href = "sucess2.html";
 										}
 									});
-								}
-								$.alert({
-										title: "信息",
-										text: "成功",
-										onOK: function () {
-											//点击确认
-											location.href = "sucess.html";
-										}
-									});
-							});
+								});
+						}
 					}
 				})
 		})
+		$("#sign").click(function () {
+			$.modal({
+				title: "签名",
+				text: "<div id=\"signature\"></div>",
+				buttons: [{
+					text: "确定",
+					onClick: saveImg
+				}, {
+					text: "重置",
+					className: "primary",
+					onClick: function () {
+						$("#signature").jSignature("reset")
+					}
+				}, {
+					text: "取消",
+					className: "default",
+					onClick: function () {
+						$.closeModal()
+					}
+				},],
+				autoClose: false
+			});
+			$("#signature").jSignature('init', {
+				height: '200px',
+				width: '100%'
+			});
+
+		});
 
 	</script>
 </body>

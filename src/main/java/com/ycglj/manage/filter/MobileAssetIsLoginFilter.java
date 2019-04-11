@@ -24,6 +24,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.ycglj.manage.mapper.UsersMapper;
 import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Users;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
@@ -90,16 +91,17 @@ public class MobileAssetIsLoginFilter implements Filter{
 
 		        	Map searchMap=new HashMap<>();
 		    		
-		    		searchMap.put("open_id = ", openId);
+		    		searchMap.put("[User_License].open_id = ", openId);
 		    		
-		    		List list=(List) userDao.getAllUser(1, 0, "", "", searchMap).get("data");
+		    		List list=(List) userDao.getAllUserJoin(1, 0, "", "", searchMap).get("data");
 
 		        	try {
 
-		        			Users users=(Users) list.get(0);
+		        			Users_License_Join users_License_Join= (Users_License_Join) list.get(0);
 		        			
-		        			if(!(users.getName()==null)&&!users.getName().equals("")&&
-		        					!(users.getPhone()==null)&&!users.getPhone().equals("")){
+		        			if(!(users_License_Join.getName()==null)&&!users_License_Join.getName().equals("")&&
+		        					!(users_License_Join.getPhone()==null)&&!users_License_Join.getPhone().equals("")
+		        					&&!(users_License_Join.getLicense()==null)&&!(users_License_Join.getLicense().equals(""))){
 		        				chain.doFilter(request, response);
 		        			}else{		        			
 		        				wrapper.sendRedirect(settingPath);

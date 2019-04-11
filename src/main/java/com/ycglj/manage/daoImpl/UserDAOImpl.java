@@ -1,6 +1,7 @@
 package com.ycglj.manage.daoImpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -650,6 +651,10 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 			if(size>2){
 				where[i+2]="data_type != ";
 				where[i+3]="business";
+			}else{
+				where=Arrays.copyOf(where, i+4);
+				where[i+2]="data_type != ";
+				where[i+3]="business";
 			}
 			System.out.println("where1=");
 			
@@ -1080,12 +1085,11 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		
 		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), check_Person2).get("");
 		
-		int i;
-		
+		int i=0;
 		if(count>0){
 			check_Person.setWhere(where);
 			i=UpdateExe.get(this.getJdbcTemplate(), check_Person);
-		}else{
+		}else if(check_Person.getPhone()!=null&&!check_Person.getPhone().equals("")){
 			MyTestUtil.print(check_Person);
 			i=InsertExe.get(this.getJdbcTemplate(), check_Person);
 		}

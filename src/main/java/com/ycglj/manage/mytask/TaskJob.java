@@ -109,7 +109,7 @@ private SellerService sellerService;
 			wechatSendMessageController.sendMessage(user_Order_Join.getOpen_id(), "	eaksmyfmdqFHNfByW7pWiVP9wia_mlh2Oq9lm2lhIOs", "预约过期通知",
 					"http://lzgfgs.com/ycglj/mobile/asset/authentic/precontract.html",
 					"尊敬的零售户"+user_Order_Join.getName()+"您的预约已过期未办理", "审核通过", "审核许可证",
-					date.toString(),time, "合江县烟草专卖局", "");
+					date.toString(),time, "烟草专卖局", "");
 			
 		}
     	    
@@ -142,7 +142,7 @@ private SellerService sellerService;
 			wechatSendMessageController.sendMessage(user_Order_Join.getOpen_id(), "dOps8F9wiUAJ9DezpFCkgt_x4IFbLt-7vb6tFFx-pEk", "预约到期提醒",
 					"http://lzgfgs.com/ycglj/mobile/asset/authentic/precontract.html",
 					"尊敬的零售户"+user_Order_Join.getName()+"您的预约即将开始", user_Order_Join.getName(), "审核许可证",
-					date.toString(),d, "", "请准时到合江县烟草专卖局办理，不要错过时间哦");
+					date.toString(),d, "", "请准时到烟草专卖局办理，不要错过时间哦");
 			
 		}
     	    
