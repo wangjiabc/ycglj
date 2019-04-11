@@ -105,6 +105,38 @@
       </script>
 
     <script>
+        function getAreaName(area) {
+            switch (area) {
+                case 1:
+                    return "泸州市合江县"
+                    break;
+                case 1:
+                    return "泸州市江阳区"
+                    break;
+                case 2:
+                    return "泸州市龙马潭区"
+                    break;
+                case 3:
+                    return "泸州市纳溪区"
+                    break;
+                case 4:
+                    return "泸州市泸县"
+                    break;
+                case 5:
+                    return "泸州市古蔺县"
+                    break;
+                case 6:
+                    return "泸州市合江县"
+                    break;
+                case 7:
+                    return "泸州市叙永县"
+                    break;
+                case null:
+                    return "暂无区域"
+                default:
+                    break;
+            }
+        }
         layui.use(['table', 'laytpl', 'layer', 'util'], function () {
             var table = layui.table,
                 layer = layui.layer,
@@ -122,9 +154,9 @@
                     , { field: 'nickname', edit: 'text', title: '微信昵称' }
                     , { field: 'phone', edit: 'text', title: '电话' }
                     , { field: 'name', edit: 'text', title: '姓名' }
+                    , { field: 'area', title: '所属区域', templet: function (d) { return getAreaName(d.area) } }
                     , { field: 'department', title: '部门' }
                     , { field: 'duty', title: '职务' }
-                    , { field: 'address', title: '所属区域' }
                     , { field: 'card_number', title: '执法证编号' }
                     , { field: 'subscribeTime', title: '关注时间', align: 'center', templet: function (d) { return util.toDateString(d.subscribeTime, 'yyyy-MM-dd HH:mm') } }
                     , { field: 'area', title: '设置区域', templet: '#area' }

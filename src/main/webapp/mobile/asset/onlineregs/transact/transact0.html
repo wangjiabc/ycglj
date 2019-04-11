@@ -195,6 +195,7 @@
 			// $('#address').attr("placeholder", data.rows[0].address);
 			$('#time').text(actionTime(data.rows[0].date))
 			$('#business_state').val(data.rows[0].business_state)
+			$('#select1').val(data.rows[0].area)
 			$('.weui-panel_access').remove();
 			//照片信息显示
 			for (let index = 0; index < data.fileBytes.length; index++) {
@@ -447,35 +448,43 @@
 		})
 		$('#refuse').click(function () {
 			type = getQueryString("type");
-			$.ajax({
-				url: "../../../asset/transact.do?license=" + license + "&type=" + type + "&name=" + $('#name').text() + "&agree=2",
-				type: "GET",
-				success: function (data) {
-					console.log(data);
-					if (data == 0) {
-						$.alert({
-							title: "信息",
-							text: "拒绝失败~!",
-							onOK: function () {
-								//点击确认
-								location.href = "index.html";
-							}
-						});
-					} else {
-						$.alert({
-							title: "信息",
-							text: "拒绝成功~!",
-							onOK: function () {
-								//点击确认
-								location.href = "index.html";
-							}
-						});
+			$.prompt("请输入拒绝受理的原因", function (text) {
+				//点击确认后的回调函数
+				//text 是用户输入的内容
+				$.ajax({
+					url: "../../../asset/transact.do?license=" + license + "&type=" + type + "&name=" + $('#name').text() + "&agree=2" + "&cause=" + text,
+					type: "GET",
+					success: function (data) {
+						console.log(data);
+						if (data == 0) {
+							$.alert({
+								title: "信息",
+								text: "拒绝失败~!",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						} else {
+							$.alert({
+								title: "信息",
+								text: "拒绝成功~!",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						}
+					},
+					error: function (e) {
+						$.alert("发生错误！");
 					}
-				},
-				error: function (e) {
-					$.alert("发生错误！");
-				}
+				});
+			}, function () {
+				//点击取消后的回调函数
+				// location.href = "index.html";
 			});
+
 		})
 	}
 	//新办

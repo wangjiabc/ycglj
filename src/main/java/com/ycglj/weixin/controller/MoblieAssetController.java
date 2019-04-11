@@ -598,22 +598,22 @@ private SellerService sellerService;
 	
 	@RequestMapping(value="transact")
 	public @ResponseBody Integer transact(@RequestParam Integer type,@RequestParam String license,
-			Integer agree,String startTime,String endTime,String name,HttpServletRequest request){
-		
+			Integer agree,String startTime,String endTime,String name,String cause,HttpServletRequest request){
+
 		HttpSession session = request.getSession();
-		
-		String openId=session.getAttribute("openId").toString();
-		
+
+		String openId = session.getAttribute("openId").toString();
+
 		String transactOpenId = null;
-		
-		if(agree==null){
-			agree=1;
+
+		if (agree == null) {
+			agree = 1;
 		}
-		
+
 		int i = 0;
-		
+
 		if (agree == 1) {
-			
+
 			if (type == 4) {
 
 				User_License user_License = new User_License();
@@ -754,7 +754,7 @@ private SellerService sellerService;
 				user_License.setNotIn("license");
 
 				String[] where = { "license=", license };
-				
+
 				user_License.setWhere(where);
 
 				List list = userDao.getUserLicenseById(user_License);
@@ -767,7 +767,7 @@ private SellerService sellerService;
 				}
 
 				transactOpenId = user_License.getOpen_id();
-				
+
 				User_License user_License2 = new User_License();
 
 				user_License2.setAuthentication(1);
@@ -785,7 +785,7 @@ private SellerService sellerService;
 				user_License.setNotIn("license");
 
 				String[] where = { "license=", license };
-				
+
 				user_License.setWhere(where);
 
 				List list = userDao.getUserLicenseById(user_License);
@@ -798,99 +798,138 @@ private SellerService sellerService;
 				}
 
 				transactOpenId = user_License.getOpen_id();
-				
+
 				i = licenseDAO.deleteUserLicense(license);
 
 			}
 
-		}else{
-			
+		} else {
+
 			if (type != 6) {
+
 				User_License user_License = new User_License();
 
-				user_License.setAuthentication(1);
+				user_License.setLimit(1);
+				user_License.setOffset(0);
+				user_License.setNotIn("license");
 
 				String[] where = { "license=", license };
 
 				user_License.setWhere(where);
 
-				i = userDao.updateOnlyLicense(user_License);
+				List list = userDao.getUserLicenseById(user_License);
+
+				try {
+					user_License = (User_License) list.get(0);
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+
+				transactOpenId = user_License.getOpen_id();
+
+				User_License user_License2 = new User_License();
+
+				user_License2.setAuthentication(1);
+
+				user_License2.setWhere(where);
+
+				i = userDao.updateOnlyLicense(user_License2);
+
 			} else {
+
 				Temp_User_License temp_User_License = new Temp_User_License();
 
-				temp_User_License.setAuthentication(4);
+				temp_User_License.setLimit(1);
+				temp_User_License.setOffset(0);
+				temp_User_License.setNotIn("open_id");
 
 				String[] where = { "license=", license };
 
 				temp_User_License.setWhere(where);
-				
-				i=licenseDAO.updateTempUserLicense(temp_User_License);
+
+				temp_User_License = licenseDAO.getTempUserLicense(temp_User_License);
+
+				transactOpenId = temp_User_License.getOpen_id();
+
+				Temp_User_License temp_User_License2 = new Temp_User_License();
+
+				temp_User_License2.setAuthentication(4);
+
+				temp_User_License2.setWhere(where);
+
+				i = licenseDAO.updateTempUserLicense(temp_User_License2);
 
 			}
 		}
-		
-		final Integer agree2=agree;
-		
+
+		final Integer agree2 = agree;
+
 		try {
-					
+
+			WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+			// List list=userService.getUserByTransact();
+
+			final String transactOpenId2 = transactOpenId;
+
+			Runnable r = new Runnable() {
+
+				@Override
+				public void run() {
+
+					String title = "";
+
+					if (type == 4) {
+						title = "停业";
+					} else if (type == 5) {
+						title = "补办";
+					} else if (type == 6) {
+						title = "恢复营业";
+					} else if (type == 7) {
+						title = "变更";
+					} else if (type == 8) {
+						title = "歇业";
+					}
+
+					Date date = new Date();
+					SimpleDateFormat sdf = new SimpleDateFormat(" yyyy-MM-dd HH:mm:ss ");
+					String time = sdf.format(date);
+
 					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
-					
-					//List list=userService.getUserByTransact();					
-					
-					final String transactOpenId2=transactOpenId;
-					
-					Runnable r = new Runnable() {
 
-						@Override
-						public void run() {
+					String result = "";
 
-							String title="";
-							
-							if(type==4){
-								title="停业";
-							}else if(type==5){
-								title="补办";
-							}else if(type==6){
-								title="恢复营业";
-							}else if(type==7){
-								title="变更";																
-							}else if(type==8){
-								title="歇业";
-							}
-							
-							Date date=new Date();		
-							SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
-							String time = sdf.format(date);
-							
-							WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
-							
-							String result="";
-							
-							if(agree2==1){
-								result="已通过";
-							}else{
-								result="已拒绝";
-							}
-							
-							wechatSendMessageController.sendMessage(transactOpenId2, "94bHvwYcW9ITl-FbQnY1BnFFrqorue-RkGdd5hND0bU", //审核结果通知
-										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
-										title+"申请",
-										"http://lzgfgs.com/ycglj/mobile/asset",
-										"尊敬的零售户"+name+",您的"+title+"申请",result, time,"", "", "", 
-										"");
-							
-													
-						}
-					};
+					if (agree2 == 1) {
+						result = "已通过";
+					} else {
+						result = "已拒绝";
+					}
 
-					Thread t = new Thread(r);
-					t.start();
+					if (agree2 == 1) {
+						wechatSendMessageController.sendMessage(transactOpenId2,
+								"94bHvwYcW9ITl-FbQnY1BnFFrqorue-RkGdd5hND0bU", // 审核结果通知
+								// "1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+								title + "申请", "http://lzgfgs.com/ycglj/mobile/asset",
+								"尊敬的零售户" + name + ",您的" + title + "申请", result, time, "", "", "", "");
+					} else {
+						wechatSendMessageController.sendMessage(openId, "b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw",
+								// "1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+								title + "申请", "http://lzgfgs.com/ycglj/mobile/asset", title + "申请", name, time, "未通过",
+								cause, "请修改后，重新提交", "");
+					}
 
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
-		
+				}
+			};
+
+			Thread t = new Thread(r);
+			t.start();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
 		return i;
 		
 	}

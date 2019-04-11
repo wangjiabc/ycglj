@@ -477,30 +477,15 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			int i=0;
 			boolean areaTerm=false; 
 			boolean regionTerm=false;
+			boolean weightTerm=false;
 			String areawhere=null;
 			String regionwhere=null;
+			String weightwhere=null;
 			
 			for(String str : where){
 				
 				System.out.println("str="+str);
-				/*
-				String REGEX = "area=";
-				Pattern pattern=Pattern.compile(REGEX);
-				Matcher matcher=pattern.matcher(str);
-				System.out.println("REGEX="+REGEX);
-				System.out.println(matcher.find());
-				if(matcher.find()){
-					areawhere=" "+str+" ";
-					areaTerm=true;
-					continue;
-				}
-				
-				if(areaTerm){
-					areawhere=areawhere+str+" ";
-			    	areaTerm=false;
-			    	continue;
-				}
-				*/
+
 				String REGEX = "area=";
 				Pattern pattern=Pattern.compile(REGEX);
 				Matcher matcher=pattern.matcher(str);
@@ -529,6 +514,21 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 				if(regionTerm){
 					regionwhere=regionwhere+"'"+str+"')";
 			    	regionTerm=false;
+			    	continue;
+				}
+				
+				String REGEX2 = "weight=";
+				Pattern pattern2=Pattern.compile(REGEX2);
+				Matcher matcher2=pattern2.matcher(str);				
+				if(matcher2.find()){
+					weightwhere="("+str+" ";
+					weightTerm=true;
+					continue;
+				}
+				System.out.println("weightwhere="+weightwhere);
+				if(weightTerm){
+					weightwhere=weightwhere+"'"+str+"')";
+			    	weightTerm=false;
 			    	continue;
 				}
 				
@@ -563,6 +563,14 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 					serach="("+areawhere+")";
 				}else if(areawhere==null&&regionwhere!=null){
 					serach="("+regionwhere+")";
+				}
+			}
+			
+			if(weightwhere!=null){
+				if(serach==null||serach.equals("")){
+					serach=weightwhere;
+				}else{
+					serach=serach+" and "+weightwhere;
 				}
 			}
 			
@@ -612,6 +620,73 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	return map;
 	}
 
+	@Override
+	public Map<String, Object> findAllLicenseNotPosition(Integer limit, Integer offset, String search,Integer area) {
+		// TODO Auto-generated method stub
+		
+		String sql01 = "SELECT top " + limit + " * FROM "
+				+ "[User_License] left join [Position] on [User_License].license=[Position].license left join [Users] on [User_License].open_id=[Users].open_id "
+				+ "where ";
+		
+		 String sql02= "[Position].lng is null ";
+		 
+		 String sql03= "and [User_License].license not in( select top " + offset
+				+ " [User_License].license FROM [User_License] left join [Position] on [User_License].license=[Position].license left join [Users] on [User_License].open_id=[Users].open_id where  [Position].lng is null "
+				+ " ";
+		
+		
+		String sql1="SELECT count(*) "+
+				"FROM [User_License] left join [Position] on [User_License].license=[Position].license left join [Users] on [User_License].open_id=[Users].open_id "+
+				"where [Position].lng is null";
+		
+		String sql;
+		
+		if(search.equals("")){
+			if(area==null){
+				sql=sql01+sql02+sql03+")";
+			}else{
+				sql=sql01+sql02+" and  area="+area+sql03+" and area="+area+")";
+				sql1=sql1+" and area="+area;
+			}
+		}else{
+			if(area==null){
+				sql=sql01+sql02+" and [Users].name like '%"+search+"%' "+sql03+"AND [Users].name like '%"+search+ "%' )";
+				sql1=sql1+" and [Users].name like '%"+search+"%'";
+			}else{
+				sql=sql01+sql02+" and area="+area+" AND [Users].name like '%"+search+"%' "+sql03+" and area="+area+" AND [Users].name like '%"+search+"%')";
+				sql1=sql1+" and area="+area+" AND [Users].name like '%"+search+"%'";
+			}
+		}
+
+		
+		Users_License_Position_Join users_License_Position_Join=new Users_License_Position_Join();
+		
+		User_License user_License=new User_License();
+
+		Position position=new Position();	
+		
+		Users users=new Users();
+		
+		Object[] objects={user_License,position,users};
+		
+		Map map=new HashMap<>();
+		
+		try{
+			List list=SelectSqlJoinExe.get(this.getJdbcTemplate(), sql, objects,users_License_Position_Join);
+			
+			int total=(int) SelectSqlJoinExe.getCount(this.getJdbcTemplate(), sql1, objects).get("");
+			
+			map.put("rows", list);
+			
+			map.put("total", total);
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return map;
+	}
+	
 	@Override
 	public Map<String, Object> getAllLicense_Position(Integer limit, Integer offset, String sort, String order,
 			String term,Map search) {
@@ -794,9 +869,12 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 
 		if (!search.isEmpty()) {
 			countSql = countSql + // sqlserver鍒嗛〉闇�瑕佸湪top涔熷姞涓妛here鏉′欢
-					"\n  where " + whereCommand.substring(0, whereCommand.length() - 7);
+					"\n  where (" + whereCommand.substring(0, whereCommand.length() - 7)+")";
+			if(area!=null&&!area.equals("")){
+				countSql = countSql + // sqlserver鍒嗛〉闇�瑕佸湪top涔熷姞涓妛here鏉′欢
+						"\n  and area="+area;
+			}
 		}else{
-			String  whereCom;
 			if(area!=null&&!area.equals("")){
 				countSql = countSql + // sqlserver鍒嗛〉闇�瑕佸湪top涔熷姞涓妛here鏉′欢
 						"\n  where area="+area;
@@ -1896,6 +1974,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		
 		return i;
 	}
+
 
 	
 }

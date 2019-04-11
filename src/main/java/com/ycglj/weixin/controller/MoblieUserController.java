@@ -116,6 +116,8 @@ public class MoblieUserController {
 		
 		Integer business=users.getBusiness();
 		
+		System.out.println("place="+place);
+		
 		if(area==null){
 			area=1;
 		}
@@ -171,7 +173,7 @@ public class MoblieUserController {
 			where.put("weight=", "1");
 		}
 		
-		Map license_Positions;
+		Map license_Positions = null;
 	
 		if(position==1){
 			if(search!=null&&!search.trim().equals("")){
@@ -183,7 +185,7 @@ public class MoblieUserController {
 			}		
 
 			license_Positions=licenseDAO.findAllLicense_Position(limit, offset, lng, lat, "or", where);
-		}else {
+		}else if(position==0){
 			Map searchMap=new HashMap<>();
 			if(search!=null&&!search.trim().equals("")){
 				search="%"+search+"%";  				
@@ -196,6 +198,12 @@ public class MoblieUserController {
 				license_Positions=licenseDAO.getAllLicense_Position2(limit, offset, "", "", searchMap,String.valueOf(area));
 			}else{
 				license_Positions=licenseDAO.getAllLicense_Position2(limit, offset, "", "", searchMap,null);
+			}
+		}else if(position==2){		
+			if(place==2){
+				license_Positions=licenseDAO.findAllLicenseNotPosition(limit, offset, search,area);
+			}else{
+				license_Positions=licenseDAO.findAllLicenseNotPosition(limit, offset, search,null);
 			}
 		}
 		

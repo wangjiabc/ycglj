@@ -30,7 +30,10 @@
         <div class="weui-tab">
             <div class="weui-navbar">
                <div id="tab1" class="weui-navbar__item weui-bar__item_on">
-                    	有位置商户
+                    	有位置
+                </div>
+                <div id="tab4" class="weui-navbar__item ">
+                    	无位置
                 </div>
                 <div id="tab2" class="weui-navbar__item ">
                     	全部商户
@@ -135,6 +138,14 @@
     })
 	$("#tab3").on("click", function () {
         url = "../../user/getAll.do?position=1&weight=1";
+        limit = 10;
+        offset = 0;
+        $("#ul").children('li').remove();
+        loading = false;
+        loadlist();
+    })
+    $("#tab4").on("click", function () {
+        url = "../../user/getAll.do?position=2";
         limit = 10;
         offset = 0;
         $("#ul").children('li').remove();
@@ -260,6 +271,8 @@
                         console.log(obj.name + "   " + obj.detail + "  " + obj.lng + "   " + obj.lat);
                         if (obj.lng != "" && obj.lat != "") {
                             distance = getDistance(longitude, latitude, obj.lng, obj.lat);
+                        }else{
+                        	distance = 0;
                         }
                         
                         var style="background-color:#FFFFFF";

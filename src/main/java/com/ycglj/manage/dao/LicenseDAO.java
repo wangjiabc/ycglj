@@ -32,6 +32,8 @@ public interface LicenseDAO {
 	
 	public Map<String, Object> getAllLicense_Position2(Integer limit, Integer offset,String sort,String order,Map search,String area);
 	
+	public Map<String, Object> findAllLicenseNotPosition(Integer limit, Integer offset,String search,Integer area);
+		
 	public Map<String, Object> License_PositionImageQuery(HttpServletRequest request, List LicenseLits);
 	
 	public List allLicenseImageByGUID(HttpServletRequest request, Users_License_Position_Join users_License_Position_Join);

@@ -128,7 +128,8 @@ public class UserController {
 	
     @RequestMapping("insertUser")
 	public @ResponseBody Integer insertUser(@RequestParam String license,@RequestParam String name,String idNumber,
-			@RequestParam String phone,String address,String region,String business_status,String license_end_time,HttpServletRequest request) {
+			@RequestParam String phone,String address,String region,String business_status,String license_end_time,
+			Integer area,HttpServletRequest request) {
     	
     	Users users = new Users();
     	
@@ -147,6 +148,7 @@ public class UserController {
     	user_License.setPhone(phone);
     	user_License.setAddress(address);
     	user_License.setRegion(region);
+    	user_License.setArea(area);
     	
     	//SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
     	DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
