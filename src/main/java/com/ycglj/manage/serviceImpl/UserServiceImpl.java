@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	public List<Users> getAllFullUser(Integer campusId,Integer limit, Integer offset, String sort,
-			String order,Integer place,String search) {
-		return usersMapper.getAllFullUser(campusId, limit, offset, sort, order, place, search);
+			String order,Integer place,Integer area,String search) {
+		return usersMapper.getAllFullUser(campusId, limit, offset, sort, order, place,area, search);
 	}
 	
 	public Integer getUserCount(String campusAdmin ,Integer campusId,String search) {
@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
 	
 
 
-	public Integer getUserFullCount(Integer campusId,Integer place,String search) {
-		return usersMapper.getUserFullCount(campusId,place,search);
+	public Integer getUserFullCount(Integer campusId,Integer place,Integer area,String search) {
+		return usersMapper.getUserFullCount(campusId,place,area,search);
 	}
 
 
@@ -228,6 +228,7 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return usersMapper.getCountUserByOpenId(openId);
 	}
+
 
 
 }

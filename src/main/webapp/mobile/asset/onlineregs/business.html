@@ -247,7 +247,7 @@
 			if ($("#signature").jSignature('getData',
 				'native').length > 0) {
 
-				$.post("../../../file/inputImage.do", {
+				$.post("../../file/inputImage.do", {
 					file: "data:" + datapair[0] + ","
 						+ datapair[1]
 				}, function (text) {
@@ -267,7 +267,7 @@
 			} else {
 				$.closeModal();
 
-				$.post("../../../file/inputImage.do", {
+				$.post("../../file/inputImage.do", {
 					file: "data:" + datapair[0] + ","
 						+ datapair[1]
 				}, function (text) {
@@ -432,11 +432,15 @@
 					var error = "";
 					var img1 = $("#img1").attr("name");
 					if (img1 == 0) {
-						error = "身份证正面照照片不能空!";
+						error = "请上传身份证正面照片!";
 					}
 					var img2 = $("#img2").attr("name");
 					if (img2 == 0) {
-						error = "身份证反面照照片不能空!";
+						error = "请上传身份证反面照照片!";
+					}
+					var img3 = $("#displayarea").attr("name");
+					if (img3 == 0) {
+						error = "请填写手写签名!";
 					}
 					if ($('#phone').val() == "") {
 						error = "手机号码不能为空!";
@@ -451,7 +455,7 @@
 						});
 
 					} else {
-						var arrays = new Array(img1, img2);
+						var arrays = new Array(img1, img2, img3);
 						console.log('保存图片数组的id' + arrays);
 
 						console.log("arrays=" + arrays);

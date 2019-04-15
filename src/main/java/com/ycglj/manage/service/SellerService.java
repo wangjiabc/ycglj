@@ -22,7 +22,17 @@ public interface SellerService {
 	
 	public List<Sellers> getAllCampusAdmin();
 	
+	public int getCampusAdminCount(String campusAdmin);
+		
 	public int selectMaxCityId();
 	
 	public int selectRepeatAdmin(String campusAdmin);
+	
+	int insertSellective(Sellers seller);
+
+	int updateSellective(Sellers sellers);
+	
+	int selectCountCampusAdmin(String campusAdmin);
+	
+	int deleteSellective(String campusAdmin);
 }

@@ -9,7 +9,11 @@ public class Sellers {
 	
 	private Short type;
 	
+	private Short state;
+	
 	private Integer cityId;
+	
+	private Integer area;
 	
 	private Integer telePhone;
 	
@@ -91,6 +95,22 @@ public class Sellers {
 
 	public void setRegisterTime(Date registerTime) {
 		this.registerTime = registerTime;
+	}
+
+	public Short getState() {
+		return state;
+	}
+
+	public void setState(Short state) {
+		this.state = state;
+	}
+
+	public Integer getArea() {
+		return area;
+	}
+
+	public void setArea(Integer area) {
+		this.area = area;
 	}
 
 

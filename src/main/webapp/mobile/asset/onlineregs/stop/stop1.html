@@ -293,54 +293,54 @@
 
 		}
 		function saveImg() {
-					//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
-					var datapair = $("#signature").jSignature(
-						"getData", "image");
-					var i = new Image();
-					i.src = "data:" + datapair[0] + ","
-						+ datapair[1];
-					$(i).appendTo($("#displayarea"));
-					if ($("#signature").jSignature('getData',
-						'native').length > 0) {
+			//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
+			var datapair = $("#signature").jSignature(
+				"getData", "image");
+			var i = new Image();
+			i.src = "data:" + datapair[0] + ","
+				+ datapair[1];
+			$(i).appendTo($("#displayarea"));
+			if ($("#signature").jSignature('getData',
+				'native').length > 0) {
 
-						$.post("../../../file/inputImage.do", {
-							file: "data:" + datapair[0] + ","
-								+ datapair[1]
-						}, function (text) {
-							console.log(text);
-							var result = JSON.parse(text);
+				$.post("../../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+						+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
 
-							var data = result.state;
+					var data = result.state;
 
-							var img = result.url;
+					var img = result.url;
 
-							var uuid = result.uuid;
+					var uuid = result.uuid;
 
-							$("#displayarea").attr("name", uuid);
-						});
+					$("#displayarea").attr("name", uuid);
+				});
 
-						$.closeModal();
-					} else {
-						$.closeModal();
+				$.closeModal();
+			} else {
+				$.closeModal();
 
-						$.post("../../../file/inputImage.do", {
-							file: "data:" + datapair[0] + ","
-								+ datapair[1]
-						}, function (text) {
-							console.log(text);
-							var result = JSON.parse(text);
+				$.post("../../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+						+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
 
-							var data = result.state;
+					var data = result.state;
 
-							var img = result.url;
+					var img = result.url;
 
-							var uuid = result.uuid;
+					var uuid = result.uuid;
 
-							$("#displayarea").attr("name", uuid);
-						});
+					$("#displayarea").attr("name", uuid);
+				});
 
-					}
-				}
+			}
+		}
 		function wxImgCallback(dataType, serverId) {
 			console.log("serverId=" + serverId);
 			//将serverId传给wx_upload.php的upload方法
@@ -449,15 +449,17 @@
 					console.log(" stopEndTime" + endTime);
 
 					var error = "";
-					var img1 = $("#img1").attr(
-						"name");
+					var img1 = $("#img1").attr("name");
 					if (img1 == 0) {
-						error = "身份证正面照照片不能空!";
+						error = "请上传身份证正面照照片!";
 					}
-					var img2 = $("#img2").attr(
-						"name");
+					var img2 = $("#img2").attr("name");
 					if (img2 == 0) {
-						error = "身份证反面照照片不能空!";
+						error = "请上传身份证反面照照片!";
+					}
+					var img3 = $("#displayarea").attr("name");
+					if (img3 == 0) {
+						error = "请填写手写签名!";
 					}
 					if (startTime == "" && endTime == "") {
 						error = "请选择停业日期！";
@@ -472,7 +474,7 @@
 						});
 
 					} else {
-						var arrays = new Array(img1, img2);
+						var arrays = new Array(img1, img2, img3);
 						console.log('保存图片数组的id' + arrays);
 						console.log("arrays=" + arrays);
 						var name = $('#name').val();

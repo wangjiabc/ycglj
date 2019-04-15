@@ -913,7 +913,7 @@ private SellerService sellerService;
 								title + "申请", "http://lzgfgs.com/ycglj/mobile/asset",
 								"尊敬的零售户" + name + ",您的" + title + "申请", result, time, "", "", "", "");
 					} else {
-						wechatSendMessageController.sendMessage(openId, "b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw",
+						wechatSendMessageController.sendMessage(transactOpenId2, "b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw",
 								// "1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
 								title + "申请", "http://lzgfgs.com/ycglj/mobile/asset", title + "申请", name, time, "未通过",
 								cause, "请修改后，重新提交", "");

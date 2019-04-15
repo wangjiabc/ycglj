@@ -39,6 +39,7 @@ import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.Crimal_Record_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Join;
+import com.ycglj.manage.model.Sellers;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.service.WeiXinService;
@@ -90,6 +91,17 @@ public class UserController {
 			String search,String authentication,String region,HttpServletRequest request){
 			
 			Map searchMap=new HashMap<>();
+			
+			HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
+			String type=session.getAttribute("type").toString();
+			String campusAdmin=session.getAttribute("campusAdmin").toString();
+
+			System.out.println("type="+type);
+			
+			if(!type.equals("0")){
+				Sellers sellers = sellerService.selectByCampusAdmin(campusAdmin);
+				searchMap.put("area = ", String.valueOf(sellers.getArea()));
+			}
 			
 			if(search!=null&&!search.trim().equals("")){
 				search="%"+search+"%";  
@@ -486,7 +498,7 @@ public class UserController {
 	Map<String, Object> getAllWeixinUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
 			Integer place,String search,HttpServletRequest request) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<com.ycglj.manage.model.Users> userlist;
+		List<com.ycglj.manage.model.Users> userlist = null;
 		
 		Integer campusId=1;
 
@@ -519,8 +531,30 @@ public class UserController {
 
 		int offset=(page-1)*limit;
 		
-        userlist=userService.getAllFullUser(campusId,limit,offset,sort,order,place,search);
+		int count = 0;
+		
+		String campusAdmin=session.getAttribute("campusAdmin").toString();
+		
+		String adminType=session.getAttribute("type").toString();
+		System.out.println("adminType=="+adminType);
+		
+		if (!adminType.equals(0)) {
 
+			Sellers sellers = sellerService.selectByCampusAdmin(campusAdmin);
+
+			Integer area=sellers.getArea();
+			
+			userlist = userService.getAllFullUser(campusId, limit, offset, sort, order, place,area,search);
+
+			count = userService.getUserFullCount(campusId, place,area,search);
+			
+		} else {
+			
+			userlist = userService.getAllFullUser(campusId, limit, offset, sort, order, place,null,search);
+
+			count = userService.getUserFullCount(campusId, place,null,search);
+		}
+		
         Iterator<com.ycglj.manage.model.Users> iterator=userlist.iterator();
         
         int i=0;
@@ -564,7 +598,7 @@ public class UserController {
 		
 		map.put("data", userlist);
 		
-		map.put("count", userService.getUserFullCount(campusId,place,search));
+		map.put("count", count);
 		
 		return map;
 	}

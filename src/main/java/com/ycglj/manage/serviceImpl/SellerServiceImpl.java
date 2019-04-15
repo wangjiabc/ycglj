@@ -78,4 +78,49 @@ public class SellerServiceImpl implements SellerService {
 		// TODO Auto-generated method stub
 		return sellerMapper.selectMaxCityId();
 	}
+
+
+
+
+	@Override
+	public int insertSellective(Sellers seller) {
+		// TODO Auto-generated method stub
+		return sellerMapper.insertSellective(seller);
+	}
+
+
+
+
+	@Override
+	public int updateSellective(Sellers sellers) {
+		// TODO Auto-generated method stub
+		return sellerMapper.updateSellective(sellers);
+	}
+
+
+
+
+	@Override
+	public int selectCountCampusAdmin(String campusAdmin) {
+		// TODO Auto-generated method stub
+		return sellerMapper.selectCountCampusAdmin(campusAdmin);
+	}
+
+
+
+
+	@Override
+	public int deleteSellective(String campusAdmin) {
+		// TODO Auto-generated method stub
+		return sellerMapper.deleteSellective(campusAdmin);
+	}
+
+
+
+
+	@Override
+	public int getCampusAdminCount(String campusAdmin) {
+		// TODO Auto-generated method stub
+		return sellerMapper.getCampusAdminCount(campusAdmin);
+	}
 }

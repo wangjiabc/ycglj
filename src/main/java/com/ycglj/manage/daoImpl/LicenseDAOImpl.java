@@ -289,8 +289,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		try{
 			//List list=SelectSqlJoinExe.get(this.getJdbcTemplate(), sql, objects,license_Position_Join);
 			
-			if(type==0){
-											
+							
 				Integer place=users.getPlace();
 				
 				Integer area=users.getArea();
@@ -343,8 +342,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 						
 					}
 				}
-				
-			}
+
 			
 			List list=this.getJdbcTemplate().query(sql,new allPositionCriminal());
 			int total=(int) SelectSqlJoinExe.getCount(this.getJdbcTemplate(), sql2, objects).get("");

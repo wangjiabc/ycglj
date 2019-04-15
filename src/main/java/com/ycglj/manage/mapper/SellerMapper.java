@@ -12,11 +12,17 @@ public interface SellerMapper {
 
 	Sellers selectByCampusAdmin(String campusAdmin);
 
+	int selectCountCampusAdmin(String campusAdmin);
+	
 	void updateLastLoginTime(@Param(value="date")Date date, @Param(value="campusAdmin") String campusAdmin
 			);
 
 	int insertSellective(Sellers seller);
 
+	int updateSellective(Sellers sellers);
+	
+	int deleteSellective(String campusAdmin);
+	
 	Sellers selectByCampusId(String campusAdmin);
 
 	List<Sellers> getCampusAdmin(String campusAdmin);
@@ -24,6 +30,8 @@ public interface SellerMapper {
 	List<Sellers> getAllCampusAdmin(); 
 	
 	int selectMaxCityId();
+	
+	int getCampusAdminCount(@Param(value="campusAdmin")String campusAdmin);
 	
 	int selectRepeatAdmin(@Param(value="campusAdmin") String campusAdmin);
 

@@ -102,6 +102,13 @@
 				<use xlink:href="#icon-paizhao"></use>
 			</svg></div>
 	</a>
+	<a class="weui-cell weui-cell_access" href="javascript:;">
+		<div class="weui-cell__bd">
+			<p>经营者姓名变更签字</p>
+		</div>
+		<div id="sign" class="weui-cell__ft">点击签名</div>
+	</a>
+	<div id="displayarea" name="0"></div>
 	<a id="legal" class="weui-cell weui-cell_access" href="javascript:;">
 		<div id="img3" name="" class="weui-panel__bd">
 		</div>
@@ -153,6 +160,7 @@
 	<script src="../../order/js/iconfont.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+	<script type="text/jscript" src="../../order/js/jSignature.min.noconflict.js"></script>
 
 	<script>
 		url = document.location.toString();
@@ -227,7 +235,55 @@
 		// 	setActionSheet("business", license);
 		// 	licenseImg.push("zz" + license);
 		// }
+		function saveImg() {
+			//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
+			var datapair = $("#signature").jSignature(
+				"getData", "image");
+			var i = new Image();
+			i.src = "data:" + datapair[0] + ","
+				+ datapair[1];
+			$(i).appendTo($("#displayarea"));
+			if ($("#signature").jSignature('getData',
+				'native').length > 0) {
 
+				$.post("../../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+						+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					$("#displayarea").attr("name", uuid);
+				});
+
+				$.closeModal();
+			} else {
+				$.closeModal();
+
+				$.post("../../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+						+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					$("#displayarea").attr("name", uuid);
+				});
+
+			}
+		}
 		function setActionSheet(dataType, license) {
 			var images = {
 				localId: [],
@@ -393,6 +449,34 @@
 			$('#family').click(function () {
 				setActionSheet("family");
 			})
+			$("#sign").click(function () {
+				$.modal({
+					title: "签名",
+					text: "<div id=\"signature\"></div>",
+					buttons: [{
+						text: "确定",
+						onClick: saveImg
+					}, {
+						text: "重置",
+						className: "primary",
+						onClick: function () {
+							$("#signature").jSignature("reset")
+						}
+					}, {
+						text: "取消",
+						className: "default",
+						onClick: function () {
+							$.closeModal()
+						}
+					},],
+					autoClose: false
+				});
+				$("#signature").jSignature('init', {
+					height: '200px',
+					width: '100%'
+				});
+
+			});
 			//提交
 			$("#submit").click(function () {
 				var changeName = "", changeValue = "";
@@ -403,20 +487,25 @@
 				var img3 = $("#img3").attr("name");
 				var img4 = $("#img4").attr("name");
 				var img5 = $("#img5").attr("name");
+				var sign = $('#displayarea').attr("name");
 				var arrays = new Array();
 				if (img1 != "") {
 					arrays.push(img1);
-				} else if (img2 != "") {
+				}
+				if (img2 != "") {
 					arrays.push(img2);
 				}
-				else if (img3 != "") {
+				if (img3 != "") {
 					arrays.push(img3);
 				}
-				else if (img4 != "") {
+				if (img4 != "") {
 					arrays.push(img4);
 				}
-				else if (img4 != "") {
-					arrays.push(img4);
+				if (img5 != "") {
+					arrays.push(img5);
+				}
+				if (sign != 0) {
+					arrays.push(sign);
 				}
 				if (name != "") {
 					changeName = "name"
@@ -426,31 +515,42 @@
 					changeName = "address"
 					changeValue = address
 				}
-
-				$.post(
-					"/ycglj/mobile/asset/updateAffire.do",
-					{
-						type: 7,
-						license: license,
-						arrays: JSON.stringify(arrays),
-						changeName: changeName,
-						changeValue: changeValue
-					},
-					function (text) {
-						console.log(text);
-						if (text == 1) {
-							$.alert({
-								title: "",
-								text: "成功",
-								onOK: function () {
-									//点击确认
-									location.href = "../sucess2.html";
-								}
-							});
-
-						} else {
+				if (arrays.length >= 3) {
+					$.alert({
+						title: "",
+						text: "不能同时变更多个业务",
+						onOK: function () {
+							//点击确认
 						}
 					});
+
+				} else {
+					console.log("上传的图片uuid:" + arrays.length);
+					$.post(
+						"/ycglj/mobile/asset/updateAffire.do",
+						{
+							type: 7,
+							license: license,
+							arrays: JSON.stringify(arrays),
+							changeName: changeName,
+							changeValue: changeValue
+						},
+						function (text) {
+							console.log(text);
+							if (text == 1) {
+								$.alert({
+									title: "",
+									text: "成功",
+									onOK: function () {
+										//点击确认
+										location.href = "../sucess2.html";
+									}
+								});
+
+							} else {
+							}
+						});
+				}
 			})
 		})
 	</script>

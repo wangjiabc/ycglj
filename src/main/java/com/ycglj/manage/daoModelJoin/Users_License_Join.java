@@ -62,6 +62,9 @@ public class Users_License_Join {
 	    @SQLString(name="business_state")
 		private String business_state;
 	    
+	    @SQLInteger(name="area")
+		private Integer area;
+	    
 		public void setId(Integer id){
 			this.id = id;
 		}
@@ -206,4 +209,11 @@ public class Users_License_Join {
 			return business_state;
 		}
 		
+		public void setArea(Integer area){
+			this.area = area;
+		}
+
+		public Integer getArea(){
+			return area;
+		}
 }

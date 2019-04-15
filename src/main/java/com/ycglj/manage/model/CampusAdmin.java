@@ -6,6 +6,7 @@ public class CampusAdmin {
 	private String campusAdmin;
 	private String password;
 	private Short type;
+	private Short state;
 	private Integer ctiyId;
 	private String campusName;
 	private Date lastLoginDate;
@@ -44,6 +45,12 @@ public class CampusAdmin {
 	}
 	public void setCampusName(String campusName) {
 		this.campusName = campusName;
+	}
+	public Short getState() {
+		return state;
+	}
+	public void setState(Short state) {
+		this.state = state;
 	}
 	
 }

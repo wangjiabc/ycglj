@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>角色管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../layuiadmin/style/admin.css" media="all">
+</head>
+<style>
+    img {
+        width: 25px;
+        height: 24px;
+    }
+</style>
+
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        角色筛选
+                    </div>
+                    <div class="layui-inline">
+                        <select name="rolename" lay-filter="LAY-user-adminrole-type">
+                            <option value="-1">全部角色</option>
+                            <option value="1">管理员</option>
+                            <option value="2">无权限</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <div style="padding-bottom: 10px;">
+                    <button class="layui-btn layuiadmin-btn-role" data-type="batchdel">删 除</button>
+                </div>
+
+                <table id="test" lay-filter="test"></table>
+                <script type="text/html" id="buttonTpl">
+                {{#  if(d.check == true){ }}
+                <button class="layui-btn layui-btn-xs">已审核</button>
+                {{#  } else { }}
+                <button class="layui-btn layui-btn-primary layui-btn-xs">未审核</button>
+                {{#  } }}
+            </script>
+                <script type="text/html" id="table-useradmin-admin">
+                    {{#   if(d.state == 1){ }}
+                    <img src="../../photo/super.png" alt="管理员" lay-event="manager">
+                    {{#  } else { }}
+                    <img src="../../photo/super1.png" alt="无权限" lay-event="noPermission">
+                    {{#  } }}
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编 辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删 除</a>
+            </script>
+            </div>
+        </div>
+    </div>
+    <script src="../../../layuiadmin/layui/layui.js"></script>
+    <script>
+        function getAreaName(area) {
+            switch (area) {
+                case 1:
+                    return "泸州市合江县"
+                    break;
+                case 2:
+                    return "泸州市江阳区"
+                    break;
+                case 3:
+                    return "泸州市龙马潭区"
+                    break;
+                case 4:
+                    return "泸州市纳溪区"
+                    break;
+                case 5:
+                    return "泸州市泸县"
+                    break;
+                case 6:
+                    return "泸州市古蔺县"
+                    break;
+                case 7:
+                    return "泸州市叙永县"
+                    break;
+                case null:
+                    return "暂无区域"
+                default:
+                    break;
+            }
+        }
+        function getState(state) {
+            switch (state) {
+                case 1:
+                    return "管理员"
+                    break;
+                case 2:
+                    return "无权限"
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        layui.config({
+            base: '../../../layuiadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'useradmin', 'table'], function () {
+            var $ = layui.$
+                , form = layui.form
+                , table = layui.table;
+            table.render({
+                elem: '#test'
+                , url: '/ycglj/seller/getCampusAdmin.do?'
+                , toolbar: '#toolbarDemo'
+                , title: '用户数据表'
+                , page: true
+                , cols: [[
+                    { type: 'checkbox' }
+                    , { field: 'campusAdmin', title: '角色名' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    , { field: 'address', edit: 'text', title: '地址' }
+                    , { field: 'area', title: '所属区域', templet: function (d) { return getAreaName(d.area) } }
+                    , { field: 'state', title: '拥有权限', templet: function (d) { return getState(d.state) } }
+                    , { title: '操作', toolbar: '#table-useradmin-admin' }
+                ]]
+
+            });
+            //监听单元格编辑
+            table.on('edit(test)', function (obj) {
+                var value = obj.value //得到修改后的值
+                    , data = obj.data //得到所在行所有键值
+                    , field = obj.field; //得到字段
+                console.log(obj);
+                $.ajax({
+                    type: "get",
+                    url: "/ycglj/seller/updateCampusAdmin.do?campusAdmin=" + data.campusAdmin + "&" + field + "=" + value,
+                    contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        if (data == 1) {
+                            layer.msg("修改成功", { icon: 1 });
+                        } else {
+                            layer.msg("修改失败", { icon: 2 });
+                        }
+                        table.reload('test');
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                })
+            });
+            table.on('edit(edit)', function (obj) {
+                console.log("aaa");
+            })
+            table.on('tool(test)', function (obj) {
+                if (obj.event === "edit") {
+                    console.log(obj.data.campusAdmin);
+                    layer.open({
+                        title: '修改所属区域',
+                        type: 2,
+                        content: '/ycglj/layuiadmin/set/user/updateAreaDialog.html?' + obj.data.campusAdmin,
+                        area: ['440px', '280px'],
+                        end: function () {
+                            table.reload('test');
+                        }
+                    });
+                }
+                if (obj.event === 'manager') {
+                    $.ajax({
+                        type: "get",
+                        url: "/ycglj/seller/updateCampusAdmin.do?state=2&campusAdmin=" + obj.data.campusAdmin,
+                        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                        data: {},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data == 1) {
+                                layer.msg("设置成功", { icon: 1 });
+                            }
+                            else {
+                                layer.msg("设置失败", { icon: 1 });
+                            }
+                            table.reload('test');
+                        },
+                        error: function (e) {
+                            parent.layui.layer.closeAll('iframe');
+                            console.log(e);
+                        }
+                    })
+                }
+                else if (obj.event === 'noPermission') {
+                    $.ajax({
+                        type: "get",
+                        url: "/ycglj/seller/updateCampusAdmin.do?state=1&campusAdmin=" + obj.data.campusAdmin,
+                        contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+                        data: {},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data == 1) {
+                                layer.msg("设置成功", { icon: 1 });
+                            }
+                            else {
+                                layer.msg("设置失败", { icon: 1 });
+                            }
+                            table.reload('test');
+                        },
+                        error: function (e) {
+                            parent.layui.layer.closeAll('iframe');
+                            console.log(e);
+                        }
+                    })
+                }
+            })
+            //搜索角色
+            form.on('select(test)', function (data) {
+                //执行重载
+                table.reload('test', {
+                    where: {
+                        role: data.value
+                    }
+                });
+            });
+
+            //事件
+            var active = {
+                batchdel: function () {
+                    var checkStatus = table.checkStatus('test')
+                        , checkData = checkStatus.data; //得到选中的数据
+
+                    if (checkData.length === 0) {
+                        return layer.msg('请选择数据');
+                    }
+
+                    layer.confirm('确定删除吗？', function (index) {
+
+                        //执行 Ajax 后重载
+
+                        admin.req({
+                            url: '/ycglj/seller/deleteCampusAdmin.do'
+                            //,……
+                        });
+
+                        table.reload('test');
+                        layer.msg('已删除');
+                    });
+                },
+                add: function () {
+                    layer.open({
+                        type: 2
+                        , title: '添加新角色'
+                        , content: 'roleform.html'
+                        , area: ['500px', '480px']
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
+                            var iframeWindow = window['layui-layer-iframe' + index]
+                                , submit = layero.find('iframe').contents().find("#LAY-user-role-submit");
+
+                            //监听提交
+                            iframeWindow.layui.form.on('submit(LAY-user-role-submit)', function (data) {
+                                var field = data.field; //获取提交的字段
+
+                                //提交 Ajax 成功后，更新
+                                admin.req({
+                                    url: '/ycglj/seller/updateCampusAdmin.do'
+                                    //,……
+                                });
+                                table.reload('test');
+                                layer.close(index); //关闭弹层
+                            });
+
+                            submit.trigger('click');
+                        }
+                    });
+                }
+            }
+            $('.layui-btn.layuiadmin-btn-role').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+    </script>
+</body>
+
+</html>

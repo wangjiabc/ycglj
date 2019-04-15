@@ -114,9 +114,21 @@ public class SellerController {
 				*/
 			
 			Sellers sellers = sellerService.selectByCampusAdmin(campusAdmin);
-						
+			
+			if(sellers==null||sellers.getCampusAdmin()==null||sellers.getCampusAdmin().equals("")){
+				map.put(Constants.STATUS, "notuser");
+				map.put(Constants.MESSAGE, "用户不存在");
+				return map;
+			}
+			
+			if(sellers.getState()==null||sellers.getState()!=1){
+				map.put(Constants.STATUS, "purview");
+				map.put(Constants.MESSAGE, "没有登陆权限");
+				return map;
+			}
+			
 			if (sellers != null) {
-			 if (sellers.getCampusAdmin().equals("admin")&&sellers.getPassword().equals(Md5.GetMD5Code(password))) {
+			 if (sellers.getPassword().equals(Md5.GetMD5Code(password))) {
 					map.put(Constants.STATUS, Constants.SUCCESS);
 					map.put(Constants.MESSAGE, "登陆成功");
 					map.put("type", sellers.getType());
@@ -183,20 +195,139 @@ public class SellerController {
 	
 	
 	@RequestMapping("/getCampusAdmin")
-	public @ResponseBody JSONArray getCampusAdmin(HttpServletRequest request){
+	public @ResponseBody Map getCampusAdmin(HttpServletRequest request){
 		List<Sellers> sellers;
 		
 		HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
 		String campusAdmin=session.getAttribute("campusAdmin").toString();
 		String type=session.getAttribute("type").toString();
 		
+		int total=0;
 		
 		if(type.equals("0")){
           sellers=sellerService.getAllCampusAdmin();
+          total=sellerService.getCampusAdminCount(campusAdmin);
 		}else {
 		  sellers=sellerService.getCampusAdmin(campusAdmin);
+		  total=sellerService.selectCountCampusAdmin(campusAdmin);
 		}
-		return (JSONArray) JSON.toJSON(sellers);
+		
+		Map map=new HashMap<>();
+		
+		map.put("code", "0");
+		
+		map.put("data", sellers);
+		
+		map.put("count", total);
+		
+		return map;
 		
 	}
+	
+	@RequestMapping("/updateCampusAdmin")
+	public @ResponseBody Integer updateCampusAdmin(@RequestParam String campusAdmin,
+			   String address,Integer area,
+			   Integer state,
+			HttpServletRequest request){
+		Sellers sellers=new Sellers();
+		
+		HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
+		String type=session.getAttribute("type").toString();
+		
+		int i=0;
+		
+		sellers.setCampusAdmin(campusAdmin);
+				
+		if(address!=null)
+			sellers.setAddress(address);
+		
+		if (type.equals("0")) {
+			
+			if (area != null)
+				sellers.setArea(area);
+			
+			if(state!=null)
+				sellers.setState(state.shortValue());
+			
+		}
+		
+
+		if(type.equals("0")||!campusAdmin.equals("admin")){
+          i=sellerService.updateSellective(sellers);
+		}else {
+		  return -1;
+		}
+		return i;
+		
+	}
+	
+	@RequestMapping("/updatePassword")
+	public @ResponseBody Map updatePassword(
+			@RequestParam String oldPassword,@RequestParam String password,HttpServletRequest request){
+		
+		HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
+
+		String campusAdmin=session.getAttribute("campusAdmin").toString();
+		
+		Sellers sellersOld = sellerService.selectByCampusAdmin(campusAdmin);
+				
+		Sellers sellers=new Sellers();
+		
+		sellers.setCampusAdmin(campusAdmin);
+		
+		int i=0;
+		
+		Map map=new HashMap<>();
+						
+		sellers.setPassword(Md5.GetMD5Code(password));
+		
+		if (sellersOld.getPassword().equals(Md5.GetMD5Code(oldPassword))) {
+			
+			i=sellerService.updateSellective(sellers);
+		
+		}else{
+			i=2;
+		}
+		
+		if(i==1){
+			map.put(Constants.STATUS, Constants.SUCCESS);
+			map.put(Constants.MESSAGE, "");
+		}
+		else if(i==2){
+			map.put(Constants.STATUS, "failure");
+			map.put(Constants.MESSAGE, "");			
+		}else{
+			map.put(Constants.STATUS, "error");
+			map.put(Constants.MESSAGE, "");		
+		}
+		
+		return map;
+		
+	}
+	
+	@RequestMapping("/deleteCampusAdmin")
+	public @ResponseBody Integer deleteCampusAdmin(@RequestParam String campusAdmin,
+			HttpServletRequest request){
+
+		HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
+		String type=session.getAttribute("type").toString();
+		
+		int i=0;
+
+		if(type.equals("0")){
+          i=sellerService.deleteSellective(campusAdmin);
+		}else {
+		  return -1;
+		}
+		return i;
+		
+	}
+	
+	@RequestMapping(value="/logout")
+	public  String logout(HttpServletRequest request){	
+		request.getSession().removeAttribute("campusAdmin");
+
+		return "redirect:/index.html";
+	}
+	
 }

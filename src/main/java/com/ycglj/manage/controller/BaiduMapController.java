@@ -38,7 +38,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.daoModel.Position;
+import com.ycglj.manage.model.Sellers;
 import com.ycglj.manage.model.Users;
+import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
@@ -55,9 +57,17 @@ public class BaiduMapController {
 	
 	private UserService userService;
 	
+	private SellerService sellerService;
+	
 	@Autowired
 	public void setUserService(UserService userService) {
 		this.userService = userService;
+	}
+
+
+	@Autowired
+	public void setSellerService(SellerService sellerService) {
+		this.sellerService = sellerService;
 	}
 	
 	@RequestMapping("/getAllAssetPosition")
@@ -91,7 +101,33 @@ public class BaiduMapController {
 			
 			users=userService.getUserByOnlyOpenId(openId);
 			
+		}else if(type==1){
+			
+			HttpSession session = request.getSession();
+			
+			String campusAdmin=session.getAttribute("campusAdmin").toString();
+			
+			String adminType=session.getAttribute("type").toString();
+			System.out.println("adminType=="+adminType);
+			if(!adminType.equals(0)){
+				
+				Sellers sellers=sellerService.selectByCampusAdmin(campusAdmin);
+			
+				MyTestUtil.print(sellers);
+				
+				users.setPlace(2);
+				
+				if(sellers.getArea()!=null){
+					users.setArea(sellers.getArea());
+				}else{
+					users.setArea(1);
+				}
+			}
 		}
+		System.out.println("type=="+type);
+		System.out.println("users==");
+		
+		MyTestUtil.print(users);
 		
 		if(startTime!=null){			
 			startDate=sdf.format(startTime);
