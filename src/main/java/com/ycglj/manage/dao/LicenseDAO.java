@@ -95,4 +95,6 @@ public interface LicenseDAO {
 	public Integer updateCheckPerson(Check_Person check_Person);
 	
 	public Integer deleteUserLicense(String license);
+	
+	public Map findLicenseByPoint(int limit,int offset,Double lng, Double lat,Double distance,String search); 
 }

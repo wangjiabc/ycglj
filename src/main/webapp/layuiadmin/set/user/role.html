@@ -51,9 +51,9 @@
             </script>
                 <script type="text/html" id="table-useradmin-admin">
                     {{#   if(d.state == 1){ }}
-                    <img src="../../photo/super.png" alt="管理员" lay-event="manager">
+                    <img src="../../photo/manager1.png" alt="管理员" lay-event="manager">
                     {{#  } else { }}
-                    <img src="../../photo/super1.png" alt="无权限" lay-event="noPermission">
+                    <img src="../../photo/manager.png" alt="无权限" lay-event="noPermission">
                     {{#  } }}
                 <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编 辑</a>
                 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删 除</a>
@@ -66,28 +66,28 @@
         function getAreaName(area) {
             switch (area) {
                 case 1:
-                    return "泸州市合江县"
+                    return "泸州市合江县烟草专卖局"
                     break;
                 case 2:
-                    return "泸州市江阳区"
+                    return "泸州市江阳区烟草专卖局"
                     break;
                 case 3:
-                    return "泸州市龙马潭区"
+                    return "泸州市龙马潭区烟草专卖局"
                     break;
                 case 4:
-                    return "泸州市纳溪区"
+                    return "泸州市纳溪区烟草专卖局"
                     break;
                 case 5:
-                    return "泸州市泸县"
+                    return "泸州市泸县烟草专卖局"
                     break;
                 case 6:
-                    return "泸州市古蔺县"
+                    return "泸州市古蔺县烟草专卖局"
                     break;
                 case 7:
-                    return "泸州市叙永县"
+                    return "泸州市叙永县烟草专卖局"
                     break;
                 case null:
-                    return "暂无区域"
+                    return "暂无"
                 default:
                     break;
             }
@@ -109,9 +109,10 @@
             base: '../../../layuiadmin/' //静态资源所在路径
         }).extend({
             index: 'lib/index' //主入口模块
-        }).use(['index', 'useradmin', 'table'], function () {
+        }).use(['index', 'useradmin', 'table', 'admin'], function () {
             var $ = layui.$
                 , form = layui.form
+                , admin = layui.admin
                 , table = layui.table;
             table.render({
                 elem: '#test'
@@ -122,8 +123,7 @@
                 , cols: [[
                     { type: 'checkbox' }
                     , { field: 'campusAdmin', title: '角色名' } //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
-                    , { field: 'address', edit: 'text', title: '地址' }
-                    , { field: 'area', title: '所属区域', templet: function (d) { return getAreaName(d.area) } }
+                    , { field: 'area', title: '所属单位', templet: function (d) { return getAreaName(d.area) } }
                     , { field: 'state', title: '拥有权限', templet: function (d) { return getState(d.state) } }
                     , { title: '操作', toolbar: '#table-useradmin-admin' }
                 ]]
@@ -235,18 +235,24 @@
                     if (checkData.length === 0) {
                         return layer.msg('请选择数据');
                     }
-
+                    // if(checkData.length > 2)
+                    console.log(checkData[0].campusAdmin);
+                    campusAdmin = checkData[0].campusAdmin
                     layer.confirm('确定删除吗？', function (index) {
 
                         //执行 Ajax 后重载
-
                         admin.req({
-                            url: '/ycglj/seller/deleteCampusAdmin.do'
+                            type: "GET",
+                            url: '/ycglj/seller/deleteCampusAdmin.do?campusAdmin=' + campusAdmin,
+                            done: function (res) {
+                                if (res == 1) {
+                                    layer.msg("删除成功", { icon: 1 });
+                                    console.log(res);
+                                }
+                            }
                             //,……
                         });
-
                         table.reload('test');
-                        layer.msg('已删除');
                     });
                 },
                 add: function () {

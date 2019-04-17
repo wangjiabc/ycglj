@@ -298,6 +298,8 @@
 					onOK: function () {
 						clng = e.point.lng;
 						clat = e.point.lat;
+						console.log(e);
+						console.log("clng="+clng+",clat="+clat);
 						//点击确认
 						map.clearOverlays();
 						addPoint(clng, clat);
@@ -566,42 +568,100 @@
 					var arrays = new Array(img0, img1, img2, img3);
 					console.log('保存图片数组的id' + arrays);
 
-					$.post("../../../assetRegister/insertNew.do",
+					$.get("/ycglj/baiduMap/findLicenseByPoint.do",
 						{
-							name: name,
-							id_number: idcard,
-							phone: phone,
-							address: address,
-							area: area,
-							business_state: business_state,
-							arrays: JSON.stringify(arrays),
+							limit:10,
+							offset:0,
 							lng: lng,
-							lat: lat
-						},
-						function (text) {
+							lat: lat,
+							distance:50
+						},function(text){
 							console.log(text);
-							if (text == 1) {
-								$.alert({
-									title: "",
-									text: "成功",
-									onOK: function () {
-										//点击确认
-										location.href = "sucess.html";
-									}
-								});
-							} else if (text == 4) {
-								$.alert({
-									title: "",
-									text: "人脸识别失败,请重新上传身份证照片和自拍照",
-									onOK: function () {
+							var data=JSON.parse(text);
+							var total=data.total;
+							console.log(total);
+							if(total>0){
+								$.confirm("50米内存在零售户,是否继续申请", function() {
+								  //点击确认后的回调函数
+									$.post("../../../assetRegister/insertNew.do",
+											{
+												name: name,
+												id_number: idcard,
+												phone: phone,
+												address: address,
+												area: area,
+												business_state: business_state,
+												arrays: JSON.stringify(arrays),
+												lng: lng,
+												lat: lat
+											},
+											function (text) {
+												console.log(text);
+												if (text == 1) {
+													$.alert({
+														title: "",
+														text: "成功",
+														onOK: function () {
+															//点击确认
+															location.href = "sucess.html";
+														}
+													});
+												} else if (text == 4) {
+													$.alert({
+														title: "",
+														text: "人脸识别失败,请重新上传身份证照片和自拍照",
+														onOK: function () {
 
-									}
-								});
-							} else {
+														}
+													});
+												} else {
 
+												}
+											});
+								  }, function() {
+								  //点击取消后的回调函数
+								  });
+							}else{
+								$.post("../../../assetRegister/insertNew.do",
+										{
+											name: name,
+											id_number: idcard,
+											phone: phone,
+											address: address,
+											area: area,
+											business_state: business_state,
+											arrays: JSON.stringify(arrays),
+											lng: lng,
+											lat: lat
+										},
+										function (text) {
+											console.log(text);
+											if (text == 1) {
+												$.alert({
+													title: "",
+													text: "成功",
+													onOK: function () {
+														//点击确认
+														location.href = "sucess.html";
+													}
+												});
+											} else if (text == 4) {
+												$.alert({
+													title: "",
+													text: "人脸识别失败,请重新上传身份证照片和自拍照",
+													onOK: function () {
+
+													}
+												});
+											} else {
+
+											}
+										});
 							}
-						});
-				}
+
+					});
+				   }
+
 			})
 		})
 	</script>

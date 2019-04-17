@@ -157,7 +157,13 @@
 				</div>
 			</div>
 		</div>
-
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">最近零售点</label></div>
+				<div id="distanceLicense" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
 		<div class="weui-cells weui-cells_form menu_list">
 			<!-- <div id="crimal" class="weui-cell weui-cell_access"> -->
 			<div class="weui-flex current">
@@ -526,6 +532,7 @@
 				var obj = text.roomInfo;
 				var license = obj.license;
 				init(text);
+				console.log(text.distanceLicense);				
 				var distance = null;
 				console.log(obj.name + "   " + obj.detail + "  " + obj.lng + "   "
 					+ obj.lat);
@@ -534,6 +541,9 @@
 					addPoint(obj.lng, obj.lat);
 				}
 
+				if(text.distanceLicense.name!=null)
+					$("#distanceLicense").html(text.distanceLicense.name+"("+getLicenseDistance(obj.lng, obj.lat,text.distanceLicense.lng,text.distanceLicense.lat)+")");
+				
 				if (obj.wgs84_lng != "" && obj.wgs84_lat != "") {
 					$("#navigation").on(
 						"click",
@@ -789,6 +799,14 @@
 		return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
 	}
 
+	function getLicenseDistance(lng1,lat1,lng2, lat2) {
+		console.log(lng1,lat1,lng2, lat2);
+		var pointA = new BMap.Point(lng1, lat1); // 创建点坐标A--大渡口区
+		var pointB = new BMap.Point(lng2, lat2); // 创建点坐标B--江北区
+		var d = map.getDistance(pointA, pointB) / 1000;
+		return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
+	}
+	
 	url = document.location.toString();
 
 	$.ajax({

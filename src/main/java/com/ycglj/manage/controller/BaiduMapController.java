@@ -647,4 +647,10 @@ public class BaiduMapController {
         
 	}
 	
+	@RequestMapping("findLicenseByPoint")
+	public @ResponseBody Map findLicenseByPoint(@RequestParam int limit, @RequestParam int offset, @RequestParam Double lng, @RequestParam Double lat, @RequestParam Double distance, String search){
+		
+		return licenseDAO.findLicenseByPoint(limit, offset, lng, lat, distance, search);
+		
+	}
 }

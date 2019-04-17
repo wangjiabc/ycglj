@@ -390,6 +390,32 @@ private SellerService sellerService;
 			
 			map.put("rows", list);
 			
+			Temp_Users temp_Users=new Temp_Users();
+
+			Users_License_Position_Join users_License_Position_Join2=new Users_License_Position_Join();
+			
+			temp_Users=(Temp_Users) list.get(0);
+			
+			if(temp_Users.getLng()!=null){
+				
+				Double lng=temp_Users.getLng();
+				Double lat=temp_Users.getLat();
+				
+				Map pointMap=licenseDAO.findLicenseByPoint(2, 0, lng, lat, Double.valueOf(1000000), "");
+				
+				List list3=(List) pointMap.get("rows");
+				
+				try{
+					users_License_Position_Join2=(Users_License_Position_Join) list3.get(0);
+				}catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+
+			}
+			
+			map.put("distanceLicense", users_License_Position_Join2);
+			
 			return map;
 	}
 	

@@ -130,6 +130,13 @@
 		</div>
 	</div>
 	<div id="allmap"></div>
+	<div class="weui-cells weui-cells_form">
+		<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">最近零售点</label></div>
+				<div id="distanceLicense" class="weui-cell__bd">
+				</div>
+		</div>
+	</div>
 	<div class="weui-flex" style="bottom:0;width:100%;">
 		<!-- <div class="weui-flex__item">
 			<a id="accept" href="javascript:;" class="weui-btn weui-btn_primary">受 理</a>
@@ -411,6 +418,10 @@
 			var data = JSON.parse(xhm.responseText);
 			console.log("changename:" + data.change.name);
 			initdata(data, 2);
+			console.log(data);
+			if(data.distanceLicense.name!=null)
+				$("#distanceLicense").html(data.distanceLicense.name+"("+getLicenseDistance(data.roomInfo.lng, data.roomInfo.lat,data.distanceLicense.lng,data.distanceLicense.lat)+")");
+			
 			type = data.roomInfo.authentication;
 		}
 		console.log(url);
@@ -502,6 +513,10 @@
 				data = JSON.parse(data);
 				agree = data.rows[0].agree;
 				initdata(data, 1);
+				console.log(data.distanceLicense);
+				if(data.distanceLicense.name!=null)
+					$("#distanceLicense").html(data.distanceLicense.name+"("+getLicenseDistance(data.rows[0].lng, data.rows[0].lat,data.distanceLicense.lng,data.distanceLicense.lat)+")");
+				
 				initmap(data.rows[0].lng, data.rows[0].lat);
 			}
 		});
@@ -617,6 +632,14 @@
 
 	}
 
+	function getLicenseDistance(lng1,lat1,lng2, lat2) {
+			var map = new BMap.Map("allmap");    // 创建Map实例
+			var pointA = new BMap.Point(lng1, lat1); // 创建点坐标A--大渡口区
+			var pointB = new BMap.Point(lng2, lat2); // 创建点坐标B--江北区
+			var d = map.getDistance(pointA, pointB) / 1000;
+			return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
+	}	
+		
 	//图片预览插件
 	var im = {};
 	/**

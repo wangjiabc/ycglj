@@ -1973,6 +1973,78 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 		return i;
 	}
 
+	@Override
+	public Map findLicenseByPoint(int limit, int offset, Double lng, Double lat, Double distance, String search) {
+		// TODO Auto-generated method stub
+				String sql0="SELECT TOP "+limit+" * "+			   
+							"FROM [User_License] left join  [Position]"+
+							"on [User_License].license = [Position].license "+
+							"left join  [Users]"+
+							"on [User_License].open_id = [Users].open_id "+
+							"WHERE ";
+
+				String sql1="geography::STGeomFromText('POINT(' + cast(cast([lng] as decimal(20,12)) as varchar(50)) + ' '"+  
+							"+ cast(cast([lat] as decimal(20,12)) as varchar(50)) +')', 4326).STDistance(  "+
+							"geography::STGeomFromText('POINT("+lng+"  "+lat+")', 4326))<"+distance+" ";
+				
+				String sql10=" ORDER BY   "+
+							"SQRT(("+lng+"-lng)*("+lng+"-lng)+("+lat+"-lat)*("+lat+"-lat))  ";		
+				
+				String sql01="AND "+
+						"[User_License].license not in( select top "+offset+" [User_License].license "+
+						"FROM [User_License] left join  [Position]"+
+						"on [User_License].license = [Position].license "+
+						"left join  [Users]"+
+						"on [User_License].open_id = [Users].open_id "+
+						"WHERE ";
+				
+				String sql02="geography::STGeomFromText('POINT(' + cast(cast([lng] as decimal(20,12)) as varchar(50)) + ' '"+  
+						"+ cast(cast([lat] as decimal(20,12)) as varchar(50)) +')', 4326).STDistance(  "+
+						"geography::STGeomFromText('POINT("+lng+"  "+lat+")', 4326))<"+distance+" ";
+				
+				String sql;
+				
+				String sql2="SELECT COUNT(*) "+
+						"FROM [User_License] left join  [Position]"+
+						"on [User_License].license = [Position].license "+
+						"left join  [Users]"+
+						"on [User_License].open_id = [Users].open_id "+
+						"WHERE ";
+				
+				if(search==null||search.equals("")){
+					sql=sql0+sql1+sql01+sql1+sql10+")"+sql10;
+					sql2=sql2+sql02;
+				}else{
+					sql=sql0+"([User_License].Address like '%"+search+"%' or [Users].name like '%"+search+"%')"+" AND "+sql1;
+					sql2=sql2+"([User_License].Address like '%"+search+"%' or [Users].name like '%"+search+"%')"+" AND "+sql02;
+				}
+				
+				System.out.println("sql="+sql);
+				
+				User_License user_License=new User_License();
+				
+				Position position=new Position();		
+				
+				Users users=new Users();
+				
+				Object[] objects={user_License,position,users};
+				
+				Map map=new HashMap<>();
+				
+				Users_License_Position_Join users_License_Position_Join=new Users_License_Position_Join();
+				
+				try{
+					List list=SelectSqlJoinExe.get(this.getJdbcTemplate(), sql, objects,users_License_Position_Join);
+					int total=(int) SelectSqlJoinExe.getCount(this.getJdbcTemplate(), sql2, objects).get("");
+					map.put("rows", list);
+					map.put("total", total);
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+
+				return map;
+	}
+
 
 	
 }

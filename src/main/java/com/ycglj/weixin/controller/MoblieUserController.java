@@ -416,6 +416,30 @@ public class MoblieUserController {
 			e.printStackTrace();
 		}
 		
+		Users_License_Position_Join users_License_Position_Join2=new Users_License_Position_Join();
+		
+		if(users_License_Position_Join.getLng()!=null){
+			
+			Double lng=users_License_Position_Join.getLng();
+			Double lat=users_License_Position_Join.getLat();
+			
+			Map pointMap=licenseDAO.findLicenseByPoint(2, 0, lng, lat, Double.valueOf(1000000), "");
+			
+			List list=(List) pointMap.get("rows");
+			
+			try{
+				users_License_Position_Join2=(Users_License_Position_Join) list.get(0);
+				if(users_License_Position_Join2.getLicense().equals(license))
+					users_License_Position_Join2=(Users_License_Position_Join) list.get(1);
+			}catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+						
+		}
+		
+		map.put("distanceLicense", users_License_Position_Join2);
+		
 		List list=licenseDAO.getAllCaseByLicense(license);
 		
 		Iterator iterator=list.iterator();
