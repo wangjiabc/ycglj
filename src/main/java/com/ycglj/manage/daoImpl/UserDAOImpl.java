@@ -227,7 +227,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 
 	//后台修改电话号码
 	@Override
-	public Integer updateUserPhone(Users users,User_License user_License) {
+	public Integer updateUserPhone(Users users,User_License user_License,String user_license) {
 		// TODO Auto-generated method stub
 		int i=0;
 		
@@ -252,6 +252,41 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 	    User_License user_License2=(User_License) list.get(0);
 	    
 	    String oldLicense=user_License2.getLicense();
+	    
+	    if(users.getName()!=null&&!users.getName().equals("")){
+
+	    	Users users2=new Users();
+	    	
+	    	users2.setName(users.getName());
+	    
+	    	users2.setWhere(where);
+	    	
+	    	i=UpdateExe.get(this.getJdbcTemplate(), users2);
+			
+			if(i<1){
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+			}
+	    }
+	    
+	    if(users.getId_number()!=null&&!users.getId_number().equals("")){
+
+	    	Users users2=new Users();
+	    	
+	    	users2.setId_number(users.getId_number());
+	    
+	    	users2.setWhere(where);
+	    	
+	    	i=UpdateExe.get(this.getJdbcTemplate(), users2);
+			
+			if(i<1){
+				
+				TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+				
+			}
+	    }
+	    
 	    
 	    if(users.getPhone()!=null&&!users.getPhone().equals("")){
 	    	
@@ -315,13 +350,15 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 
 	    String license=user_License.getLicense();
 	    
-		if(license!=null&&!license.equals("")){
+		if(license!=null&&!license.equals("")&&!oldLicense.equals(license)){
 			
 			String[] where4={"license=",oldLicense};
 			
 			User_License user_License4=new User_License();
 			
 			user_License4.setLicense(license);
+			
+			System.out.println("license="+license);
 			
 			user_License4.setWhere(where4);
 			
@@ -395,10 +432,10 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 				|| user_License.getBusiness_state() != null || user_License.getLicense_end_date() != null) {
 
 			if(license!=null&&!license.equals("")){
-				String[] where6 = { "license=", license };
+				String[] where6 = { "license=", user_license };
 				user_License.setWhere(where6);
 			}else{
-				String[] where6 = { "license=", oldLicense };
+				String[] where6 = { "license=", user_license };
 				user_License.setWhere(where6);
 			}
 
@@ -1089,6 +1126,30 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		if(count>0){
 			check_Person.setWhere(where);
 			i=UpdateExe.get(this.getJdbcTemplate(), check_Person);
+		}
+		
+		return i;
+	}
+
+	@Override
+	public Integer insertCheck_Person(Check_Person check_Person) {
+		// TODO Auto-generated method stub
+		
+		Check_Person check_Person2=new Check_Person();
+		
+		check_Person2.setLimit(1);
+		check_Person2.setOffset(0);
+		check_Person2.setNotIn("id");
+		
+		String[] where={"phone=",check_Person.getPhone()};
+		check_Person2.setWhere(where);
+		
+		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), check_Person2).get("");
+		
+		int i=0;
+		if(count>0){
+			check_Person.setWhere(where);
+			i=UpdateExe.get(this.getJdbcTemplate(), check_Person);
 		}else if(check_Person.getPhone()!=null&&!check_Person.getPhone().equals("")){
 			MyTestUtil.print(check_Person);
 			i=InsertExe.get(this.getJdbcTemplate(), check_Person);
@@ -1096,7 +1157,7 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		
 		return i;
 	}
-
+	
 	@Override
 	public Map<String, Object> getAllTempUserJoin(Integer limit, Integer offset, String sort, String order,
 			Map<String, String> search) {

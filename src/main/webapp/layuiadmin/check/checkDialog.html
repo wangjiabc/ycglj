@@ -75,7 +75,7 @@
             layui.form.on('submit(save)', function (data) {
                 $.ajax({
                     type: "get",
-                    url: "/ycglj/user/updateCheckPerson.do?phone=" + data.field.phone + "&name=" + data.field.name + "&unit=" + data.field.unit + "&department=" + data.field.department + "&duty=" + data.field.duty + "&card_number=" + data.field.card_number,
+                    url: "/ycglj/user/insertCheckPerson.do?phone=" + data.field.phone + "&name=" + data.field.name + "&unit=" + data.field.unit + "&department=" + data.field.department + "&duty=" + data.field.duty + "&card_number=" + data.field.card_number,
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     async:false,

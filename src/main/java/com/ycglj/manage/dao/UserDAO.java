@@ -29,7 +29,7 @@ public interface UserDAO {
 	
     public Integer updateUser(Users users);
    
-    public Integer updateUserPhone(Users users,User_License user_License);
+    public Integer updateUserPhone(Users users,User_License user_License,String user_license);
     
     public Map<String,Object> getAllUser(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
 
@@ -88,6 +88,8 @@ public interface UserDAO {
 	public Integer insertTempUser(Temp_Users temp_Users);
 	
 	public Integer updateCheck_Person(Check_Person check_Person);
+	
+	public Integer insertCheck_Person(Check_Person check_Person);
 	
 	public Map<String,Object> getAllTempUserJoin(Integer limit, Integer offset, String sort,String order,Map<String, String> search);
     

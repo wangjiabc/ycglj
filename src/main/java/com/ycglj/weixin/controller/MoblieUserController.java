@@ -660,7 +660,9 @@ public class MoblieUserController {
 			return -5;
 		}
 		if(place==2){
-			if(business==4){
+			if(business==2){
+				
+			}else if(business==4){
 				Check_Person check_Person=new Check_Person();
 				check_Person.setLimit(1);
 				check_Person.setOffset(0);
@@ -678,10 +680,10 @@ public class MoblieUserController {
 				}
 				if(region!=null&&!region.equals("")){
 					if(!region.equals(users_License_Position_Join.getRegion())){
-						return -5;
+						return -6;
 					}
 				}else{
-					return -5;
+					return -6;
 				}
 					
 			}else{
@@ -783,10 +785,26 @@ public class MoblieUserController {
 		
 		com.ycglj.manage.model.Users users=userService.getUserByOnlyOpenId(openId);
 		
-		int place=users.getPlace();
+		Integer business=users.getBusiness();
 		
-		if(place<3){
+		Map search=new HashMap<>();
+		
+		search.put("[User_License].license=", license);
+		
+		List list2=(List) licenseDAO.getAllLicense_Position(1, 0, null, null, "and", search).get("rows");
+		
+		Users_License_Position_Join users_License_Position_Join=(Users_License_Position_Join) list2.get(0);
+		
+		Integer area=users.getArea();
+		
+		if(business!=2){
 			return -2;
+		}if(area!=null&&!area.equals("")){
+			if(area!=users_License_Position_Join.getArea()){
+				return -3;
+			}
+		}else{
+			return -3;
 		}
 		
 		UUID uuid=UUID.randomUUID();

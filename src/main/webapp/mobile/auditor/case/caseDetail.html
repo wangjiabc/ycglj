@@ -368,8 +368,16 @@
 									lng: longitude,
 									lat: latitude,
 									remark: ""
-								}, function (text) {
-									
+								}, function (text) {									
+									if(text==-2){
+										alert("你没有修改权限");
+									}else if(text==-3){
+										alert("你所在的区域没有修改权限");
+									}else if(text<1){
+										alert("修改失败");
+									}else{
+										window.location.href = window.location.href;
+									}
 								});
 							}
 						},

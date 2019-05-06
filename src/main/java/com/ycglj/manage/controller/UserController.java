@@ -185,12 +185,12 @@ public class UserController {
 	
 	
 	@RequestMapping("updateUser")
-	public @ResponseBody Integer updateUser(@RequestParam String openId,String name,String idNumber,
-			String phone,String license,String address,String region,String business_status,String license_end_time,HttpServletRequest request) {
+	public @ResponseBody Integer updateUser(@RequestParam String openId,@RequestParam String user_license,String name,String idNumber,
+			String phone,String license,String address,String region,String business_state,String license_end_time,HttpServletRequest request) {
 		// TODO Auto-generated method stub
 
 		System.out.println("openId="+openId);
-		
+		System.out.println("business_state="+business_state);
 		Users users = new Users();
 
 		users.setOpen_id(openId);
@@ -227,8 +227,8 @@ public class UserController {
 		if(region!=null&&!region.equals(""))
 			user_License.setRegion(region);
 		
-		if(business_status!=null&&!business_status.equals(""))
-			user_License.setBusiness_state(business_status);
+		if(business_state!=null&&!business_state.equals(""))
+			user_License.setBusiness_state(business_state);
 		
 		if(license_end_time!=null&&!license_end_time.equals("")){
 			DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
@@ -240,7 +240,7 @@ public class UserController {
 			}
 		}
 		
-		return userDao.updateUserPhone(users,user_License);
+		return userDao.updateUserPhone(users,user_License,user_license);
 		
 	}
 	
@@ -952,5 +952,22 @@ public class UserController {
 	
 	}
 
+    @RequestMapping("/insertCheckPerson")
+	public @ResponseBody Integer insertCheckPerson(@RequestParam String phone,
+			String name,String unit,String department,String duty,String card_number,
+			HttpServletRequest request){
+		
+		   Check_Person check_Person=new Check_Person();
+		   
+		   check_Person.setPhone(phone);
+		   check_Person.setName(name);
+		   check_Person.setUnit(unit);
+		   check_Person.setDepartment(department);
+		   check_Person.setDuty(duty);
+		   check_Person.setCard_number(card_number);
+		   
+		   return userDao.updateCheck_Person(check_Person);
+	
+	}
     
 }
