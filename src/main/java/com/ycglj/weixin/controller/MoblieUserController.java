@@ -726,7 +726,7 @@ public class MoblieUserController {
 					content = content + "," + ayString;
 				} else if (i != 0 && i % 2 != 0) {
 					content = content + ayString + "条";
-					int number = Integer.parseInt(ayString);
+					double number = Double.parseDouble(ayString);
 					crimal_Case.setLicense(license);
 					crimal_Case.setCrimal_id(uuid.toString());
 					crimal_Case.setOpen_id(openId);
@@ -834,7 +834,7 @@ public class MoblieUserController {
 					content = content + "," + ayString;
 				} else if (i != 0 && i % 2 != 0) {
 					content = content + ayString + "条";
-					int number = Integer.parseInt(ayString);
+					double number = Double.parseDouble(ayString);
 					crimal_Case.setLicense(license);
 					crimal_Case.setCrimal_id(uuid.toString());
 					crimal_Case.setOpen_id(openId);
@@ -915,7 +915,7 @@ public class MoblieUserController {
 					content = content + "," + ayString;
 				} else if (i != 0 && i % 2 != 0) {
 					content = content + ayString + "条";
-					int number = Integer.parseInt(ayString);
+					double number = Double.parseDouble(ayString);
 					crimal_Case.setLicense(phone);
 					crimal_Case.setCrimal_id(uuid.toString());
 					crimal_Case.setOpen_id(openId);

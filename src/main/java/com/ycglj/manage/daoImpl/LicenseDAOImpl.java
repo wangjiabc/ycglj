@@ -1104,7 +1104,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			Crimal_Case crimal_Case=iterator.next();
 			
-			int case_number=crimal_Case.getCriminal_number();
+			double case_number=crimal_Case.getCriminal_number();
 			String license=crimal_Case.getLicense();
 			String criminal_type=crimal_Case.getCriminal_type();
 			Date criminal_time=crimal_Case.getCriminal_time();
@@ -1194,7 +1194,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 			
 			old_crimal_Case=(Crimal_Case) oldList.get(0);
 			
-			int case_number=crimal_Case.getCriminal_number();
+			double case_number=crimal_Case.getCriminal_number();
 			String license=crimal_Case.getLicense();
 			String criminal_type=crimal_Case.getCriminal_type();
 			Date criminal_time=crimal_Case.getCriminal_time();
@@ -1222,7 +1222,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 
 					Law_Case law_Case2=new Law_Case();
 					
-					int current_number=law_Case.getCriminal_number()+(crimal_Case.getCriminal_number()-old_crimal_Case.getCriminal_number());
+					double current_number=law_Case.getCriminal_number()+(crimal_Case.getCriminal_number()-old_crimal_Case.getCriminal_number());
 					
 					law_Case2.setCriminal_number(current_number);
 					law_Case2.setDate(date);
@@ -1260,7 +1260,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 
 		iterator=crimalCaseList.iterator();
 		
-		int criminal_number=0;
+		double criminal_number=0;
 		
 		while (iterator.hasNext()) {
 

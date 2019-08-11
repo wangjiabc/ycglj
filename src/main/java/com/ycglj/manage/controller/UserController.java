@@ -731,9 +731,25 @@ public class UserController {
 			searchMap.put("[Crimal_Record].phone like ","%"+search+"%");
 			searchMap.put("[Users].name like ","%"+search+"%");
 		}		
-					
+		
+		
 		HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
 
+
+		String campusAdmin=session.getAttribute("campusAdmin").toString();
+		
+		Integer adminType=Integer.parseInt(session.getAttribute("type").toString());
+		System.out.println("adminType=="+adminType);
+		
+		if (adminType!=0) {
+			
+			Sellers sellers=sellerService.selectByCampusAdmin(campusAdmin);
+			
+			int area=sellers.getArea();
+			
+			searchMap.put("[User_License].area=",String.valueOf(area));
+		}
+		
 		int offset=(page-1)*limit;
 		
         map=licenseDAO.getAllCrimalRecordJoin(limit, offset, sort, order,searchMap);

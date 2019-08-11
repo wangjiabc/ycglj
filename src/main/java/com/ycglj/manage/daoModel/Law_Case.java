@@ -17,8 +17,8 @@ public class Law_Case implements Serializable{
     @SQLString(name="criminal_type")
 	private String criminal_type;
 
-    @SQLInteger(name="criminal_number")
-	private Integer criminal_number;
+    @SQLDouble(name="criminal_number")
+	private Double criminal_number;
 
     @SQLDateTime(name="criminal_time")
 	private Date criminal_time;
@@ -42,11 +42,11 @@ public class Law_Case implements Serializable{
 		return criminal_type;
 	}
 
-	public void setCriminal_number(Integer criminal_number){
+	public void setCriminal_number(Double criminal_number){
 		this.criminal_number = criminal_number;
 	}
 
-	public Integer getCriminal_number(){
+	public Double getCriminal_number(){
 		return criminal_number;
 	}
 

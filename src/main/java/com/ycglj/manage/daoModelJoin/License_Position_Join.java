@@ -48,8 +48,8 @@ public class License_Position_Join implements Serializable{
     @SQLString(name="business_state")
 	private String business_state;
     
-    @SQLInteger(name="criminal_number")
-	private Integer criminal_number;
+    @SQLDouble(name="criminal_number")
+	private Double criminal_number;
     
 	public void setLicense(String license){
 		this.license = license;
@@ -147,11 +147,11 @@ public class License_Position_Join implements Serializable{
 		return business_state;
 	}
 
-	public void setCriminal_number(Integer criminal_number){
+	public void setCriminal_number(Double criminal_number){
 		this.criminal_number = criminal_number;
 	}
 
-	public Integer getCriminal_number(){
+	public Double getCriminal_number(){
 		return criminal_number;
 	}
 
