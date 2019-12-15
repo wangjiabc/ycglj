@@ -81,10 +81,10 @@
                 }
                 // layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
                 // layer.msg(field);
-
+				console.log(data.phone);
                 $.ajax({
                     type: "get",
-                    url: "/ycglj/user/updateCheckPerson.do?phone=" + data.phone + "&" + field + "=" + value,
+                    url: "/ycglj/user/updateCheckPerson.do?card_number="+data.card_number+"&" + field + "=" + value,
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
                     data: {},
                     dataType: "json",

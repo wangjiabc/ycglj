@@ -145,13 +145,16 @@
 
             });
             layui.form.on('submit(save)', function (data) {
-                console.log(data.field);
+                console.log("&region=" + data.field.region + "&business_state=" + data.field.business_status + "&license_end_date=" + license_end_time + "&area=" + data.field.area);
                 console.log("in" + license_end_time);
                 $.ajax({
-                    type: "get",
-                    url: "/ycglj/user/insertUser.do?name=" + data.field.name + "&idNumber=" + data.field.number + "&phone=" + data.field.phone + "&license=" + data.field.license + "&address=" + data.field.address + "&region=" + data.field.region + "&business_state=" + data.field.business_status + "&license_end_date=" + license_end_time + "&area=" + data.field.area,
+                    type: "post",
+                    url: "/ycglj/user/insertUser.do",
                     contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-                    data: {},
+                    data: {name:data.field.name,
+                    	idNumber:data.field.number,phone:data.field.phone,license:data.field.license,
+                    	address:data.field.address,region:data.field.region,business_state:data.field.business_status,
+                    	license_end_date:license_end_time,area:data.field.area},
                     dataType: "json",
                     success: function (data) {
                         if (data == 1) {
@@ -174,7 +177,7 @@
                     }
                 })
             })
-            return false;
+           // return false;
         })
 
     </script>

@@ -230,5 +230,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 
+	@Override
+	public int updateUsersInfoWithPhone(Map map) {
+		// TODO Auto-generated method stub
+		return usersMapper.updateUsersInfoWithPhone(map);
+	}
+
+
 
 }

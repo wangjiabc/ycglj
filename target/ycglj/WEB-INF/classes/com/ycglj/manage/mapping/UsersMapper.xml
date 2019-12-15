@@ -565,6 +565,19 @@
        </where>
     </update>
     
+    <update id="updateUsersInfoWithPhone" parameterType="java.util.Map">
+      update usersinfo
+      <set>
+       <if test="phone!= null">
+		 phone=#{phone,jdbcType=VARCHAR},
+		</if>
+         up_time=#{upTime,jdbcType=TIMESTAMP},
+      </set>
+      <where>
+		  phone=#{oldPhone,jdbcType=VARCHAR}
+       </where>
+    </update>
+    
     <select id="getUserByAssetCharter" resultMap="BaseResultMap" useCache="false">
 		select
 		users.id,users.open_id,total_amount,

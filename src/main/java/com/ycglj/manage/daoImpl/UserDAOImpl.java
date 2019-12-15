@@ -1116,14 +1116,15 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 		check_Person2.setLimit(1);
 		check_Person2.setOffset(0);
 		check_Person2.setNotIn("id");
-		
-		String[] where={"phone=",check_Person.getPhone()};
+		System.out.print("card_number="+check_Person.getCard_number());
+		String[] where={"card_number=",check_Person.getCard_number()};
 		check_Person2.setWhere(where);
 		
 		int count=(int) SelectExe.getCount(this.getJdbcTemplate(), check_Person2).get("");
 		
 		int i=0;
 		if(count>0){
+			check_Person.setCard_number(null);
 			check_Person.setWhere(where);
 			i=UpdateExe.get(this.getJdbcTemplate(), check_Person);
 		}

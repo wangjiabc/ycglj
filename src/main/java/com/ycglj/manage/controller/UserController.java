@@ -90,6 +90,8 @@ public class UserController {
 	public @ResponseBody Map<String, Object> getAllUser(@RequestParam Integer limit,@RequestParam Integer page,String sort,String order,
 			String search,String authentication,String region,HttpServletRequest request){
 			
+			System.out.print("region="+region);
+		
 			Map searchMap=new HashMap<>();
 			
 			HttpSession session=request.getSession();  //取得session的type变量，判断是否为公众号管理员
@@ -140,7 +142,7 @@ public class UserController {
 	
     @RequestMapping("insertUser")
 	public @ResponseBody Integer insertUser(@RequestParam String license,@RequestParam String name,String idNumber,
-			@RequestParam String phone,String address,String region,String business_status,String license_end_time,
+			@RequestParam String phone,String address,String region,String business_state,String license_end_date,
 			Integer area,HttpServletRequest request) {
     	
     	Users users = new Users();
@@ -165,19 +167,24 @@ public class UserController {
     	//SimpleDateFormat sdf  =   new  SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " ); 
     	DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
     	
-    	if(business_status!=null&&!business_status.equals("")){
-    		user_License.setBusiness_state(business_status);
+    	if(business_state!=null&&!business_state.equals("")){
+    		user_License.setBusiness_state(business_state);
     		user_License.setBusiness_date(new Date());
     	}
     	
-    	if(license_end_time!=null&&!license_end_time.equals("")&&license_end_time.equals("undefined")){
+    	System.out.println("license_end_date===="+license_end_date);
+    	
+    	if(license_end_date!=null&&!license_end_date.equals("")){
     		try {
-				user_License.setLicense_end_date(fmt.parse(license_end_time));
+				user_License.setLicense_end_date(fmt.parse(license_end_date));
+				System.out.println("fmt.parse(license_end_date)===="+fmt.parse(license_end_date));
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
+    	
+    	MyTestUtil.print(user_License);
     	
     	return userDao.insertUser(users, user_License);
     	
@@ -954,7 +961,7 @@ public class UserController {
 	public @ResponseBody Integer updateCheckPerson(@RequestParam String phone,
 			String name,String unit,String department,String duty,String card_number,
 			HttpServletRequest request){
-		
+			System.out.print("phone="+phone);
 		   Check_Person check_Person=new Check_Person();
 		   
 		   check_Person.setPhone(phone);
@@ -964,8 +971,30 @@ public class UserController {
 		   check_Person.setDuty(duty);
 		   check_Person.setCard_number(card_number);
 		   
-		   return userDao.updateCheck_Person(check_Person);
+		   Check_Person check_Person2=new Check_Person();
+		   check_Person2.setLimit(2);
+		   check_Person2.setOffset(0);
+		   check_Person2.setNotIn("id");
+		   String[] where={"card_number=",card_number};
+		   check_Person2.setWhere(where);
+		   List list=userDao.getAllCheck_Person(check_Person2);
+		   
+		   int i=userDao.updateCheck_Person(check_Person);
 	
+		   if(i>0){
+			  
+			if (list.size() > 0) {
+				Check_Person check_Person3 = (Check_Person) list.get(0);
+				MyTestUtil.print(check_Person3);
+				if (!phone.equals(check_Person3.getPhone())) {
+					Map map=new HashMap<>();
+					map.put("phone", phone);
+					map.put("oldPhone", check_Person3.getPhone());
+					userService.updateUsersInfoWithPhone(map);
+				}
+			}			
+		   }
+		   return i;
 	}
 
     @RequestMapping("/insertCheckPerson")

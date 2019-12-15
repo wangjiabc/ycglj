@@ -67,4 +67,6 @@ public interface UserService {
     Users getUserByAssetCharter(String charter, String phone);
     
     int getCountUserByOpenId(String openId);
+    
+    int updateUsersInfoWithPhone(Map map);
 }

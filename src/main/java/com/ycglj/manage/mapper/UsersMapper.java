@@ -37,6 +37,8 @@ public interface UsersMapper {
     
     int updateUsersInfo(Users users);
     
+    int updateUsersInfoWithPhone(Map map);
+    
     int getCountUserByOpenId(String openId);
     
     Users getUserByOnlyOpenId(String openId);
