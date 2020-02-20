@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<style type="text/css">
+    .user {
+        padding: 0 0 0 5px;
+        background-color: #f5f5f5;
+    }
+
+    .headimgUrl {
+        border-radius: 50%;
+    }
+
+    .nickName {
+        position: absolute;
+        display: inline-block;
+        padding: 2px 0 0 8px;
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 100px;
+    }
+</style>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>注册步骤条</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="../demo/css/normalize.css">
+    <link rel="stylesheet" href="../demo/css/main.css">
+    <link rel="stylesheet" href="../demo/css/jquery.steps.css">
+
+    <link rel="stylesheet" href="../../weixinUI/example.css" />
+    <!--jquery weui-->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+
+    <script src="../demo/js/modernizr-2.6.2.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="../demo/js/jquery.cookie-1.3.1.js"></script>
+    <script src="../demo/js/jquery.steps.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+    <script type='text/javascript' src='js/fastclick.js' charset='utf-8'></script>
+    <script type='text/javascript' src='js/swiper.js' charset='utf-8'></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
+    <script type="text/javascript" src="/ycglj/mobile/singleton.js"></script>
+
+    <script type="text/javascript">
+        var campusId = 1;
+        var redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + APPID + "&redirect_uri=" + DOMAIN + "/ycglj/mobile/asset/userassetset.html&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect";
+    </script>
+
+    <script type="text/javascript" src="js/userassetset.js"></script>
+
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+    <header>
+        <h1>放一张图</h1>
+        <nav>
+
+        </nav>
+    </header>
+
+    <div class="content">
+        <div id="wizard">
+            <!-- 头部步骤条 -->
+            <div>创建账号</div>
+            <!-- 页面内容 -->
+            <section>
+                <!-- <div class="mainElement">
+                    <div class="user" style="height:44px;">
+                        <img class="headimgUrl" src="" width="44px" height="44px">
+                        <p class="nickName"></p>
+                    </div>
+
+                    <div style="height:2px; background-color:#c0c0c0"></div>
+                </div> -->
+
+                <div class="weui-cells weui-cells_form">
+                    <div class="weui-cell" id="w1">
+                        <div class="weui-cell__hd"><label class="weui-label">姓名</label></div>
+                        <div class="weui-cell__bd">
+                            <input class="weui_input" class="required" id="name" name="name" type="text" placeholder="请输入您的姓名">
+                        </div>
+                    </div>
+                    <div class="weui-cell" id="w2">
+                        <div class="weui-cell__hd"><label class="weui-label">手机号</label></div>
+                        <div class="weui-cell__bd">
+                            <input class="weui_input" class="required" id="phone" name="phone" type="number" pattern="[0-9]*"
+                                placeholder="请输入手机号码">
+                        </div>
+                    </div>
+                    <label for="weuiAgree" class="weui-agree">
+                        <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox">
+                        <span class="weui-agree__text">
+                            阅读并同意<a href="javascript:void(0);">《相关条款》</a>
+                        </span>
+                    </label>
+                    <!-- <div class="weui_cell">
+                        <div class="weui_cell_hd"><label class="weui_label">验证码</label></div>
+                        <div class="weui_cell_bd weui_cell_primary">
+                            <input class="weui_input" class="required" name="regtlx" id="regtlx" type="number" pattern="[0-9]*"
+                                placeholder="请输入验证码">
+                        </div>
+                        <div class="weui_cell_ft">
+                            <a href="javascript:" class="weui_btn weui_btn_mini weui_btn_default" id="bt01">发送验证码</a>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="weui_dialog_alert" id="dialog2" style="display: none;">
+                    <div class="weui_mask"></div>
+                    <div class="weui_dialog">
+                        <div class="weui_dialog_hd"><strong class="weui_dialog_title"></strong></div>
+                        <div class="weui_dialog_bd"></div>
+                        <div class="weui_dialog_ft">
+                            <a href="javascript:;" class="weui_btn_dialog primary">确定</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- 
+                <div class="weui_btn_area">
+                    <a class="weui_btn weui_btn_primary" href="javascript:" id="showTooltips">确定</a>
+                </div> -->
+                <div class="footer">
+
+                    <!--  
+                        <div class="swiper-container swiper-container-horizontal swiper-container-android">
+                            <div class="swiper-wrapper" style="transform: translate3d(-1800px, 0px, 0px); transition-duration: 0ms;"><div class="swiper-slide swiper-slide-duplicate swiper-slide-next" data-swiper-slide-index="2" style="width: 450px;"></div>
+                              <div class="swiper-slide" ><img src="1.jpg" alt=""></div>
+                            </div>
+                          <div class="swiper-pagination swiper-pagination-bullets"><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span></div>
+                          </div>
+                        -->
+                </div>
+            </section>
+            <div>实名认证</div>
+            <section>
+                <div class="weui_cells weui_cells_form">
+                    <div class="weui_cell" id="w1">
+                        <div class="weui_cell_hd"><label class="weui_label">姓名</label></div>
+                        <div class="weui_cell_bd weui_cell_primary name">
+                            <input class="weui_input" id="name" type="text" placeholder="请输入您的姓名">
+                        </div>
+                        <div class="weui_cell_ft">
+                            <i class="weui_icon_warn"></i>
+                        </div>
+                    </div>
+                    <div class="weui_cell " id="w2">
+                        <div class="weui_cell_hd"><label class="weui_label">手机号</label></div>
+                        <div class="weui_cell_bd weui_cell_primary phone">
+                            <input class="weui_input" id="phone" type="number" pattern="[0-9]*" placeholder="请输入手机号码">
+                        </div>
+                        <div class="weui_cell_ft">
+                            <i class="weui_icon_warn"></i>
+                        </div>
+                    </div>
+                    <div class="weui_cell">
+                        <div class="weui_cell_hd"><label class="weui_label">验证码</label></div>
+                        <div class="weui_cell_bd weui_cell_primary">
+                            <input class="weui_input" id="regtlx" type="number" pattern="[0-9]*" placeholder="请输入验证码">
+                        </div>
+                        <div class="weui_cell_ft">
+                            <a href="javascript:" class="weui_btn weui_btn_mini weui_btn_default" id="bt01">发送验证码</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div>注册完成</div>
+            <section>
+                <div class="weui-msg">
+                    <div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
+                    <div class="weui-msg__text-area">
+                        <h2 class="weui-msg__title">操作成功</h2>
+                        <p class="weui-msg__desc">内容详情，可根据实际需要安排，如果换行则不超过规定长度，居中展现<a href="javascript:void(0);">文字链接</a></p>
+                    </div>
+                    <div class="weui-msg__opr-area">
+                        <p class="weui-btn-area">
+                            <a href="javascript:;" class="weui-btn weui-btn_primary">推荐操作</a>
+                            <a href="javascript:;" class="weui-btn weui-btn_default">辅助操作</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+
+    $(function () {
+        FastClick.attach(document.body);
+    });
+
+    $(".primary").on("click", function () {
+        $("#dialog2").attr("style", "display:none");
+    });
+
+</script>
+<script type="text/javascript">
+
+
+    $(".swiper-container").swiper({
+        loop: true,
+        autoplay: 3000
+    });
+
+    var bt01 = document.getElementById("bt01");
+
+    var isClick = true;
+
+    bt01.onclick = function () {
+        var name = document.getElementById("name").value;
+        var phone = document.getElementById("phone").value;
+
+        if (isClick) {
+            isClick = false; //不能点击此按钮 
+            if (name == null || name == "") {
+                $("#dialog2").attr("style", "display:block");
+                $(".weui_dialog_title").html("请输入姓名");
+                isClick = true;   //返回后能够重新点击发送的按钮 
+                return false;
+            }
+
+            if (phone == null || phone == "") {
+                $("#dialog2").attr("style", "display:block");
+                $(".weui_dialog_title").html("请输入手机号");
+                isClick = true;   //返回后能够重新点击发送的按钮 
+                return false;
+            }
+
+            var xhm = new XMLHttpRequest();
+            xhm.open("GET", "/ycglj/mobile/assetRegister/getValidate.do?phone=" + phone + "&name=" + name, false);
+            xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhm.send();
+            var json = xhm.responseText;
+
+            if (json == 1) {
+
+                isClick = false; //当点击后倒计时时候不能点击此按钮 
+                var time = 60; //倒计时60秒 
+                var timer = setInterval(fun1, 1000); //设置定时器 
+
+                function fun1() {
+                    time--;
+                    if (time >= 0) {
+                        bt01.innerHTML = time + "s后重新发送";
+                    } else {
+                        bt01.innerHTML = "重新发送验证码";
+                        isClick = true;   //倒计时结束能够重新点击发送的按钮 
+                        clearTimeout(timer); //清除定时器 
+                        time = 60; //设置循环重新开始条件 
+                    }
+                }
+
+            } else if (json == 2) {
+                $("#dialog2").attr("style", "display:block");
+                $(".weui_dialog_title").html("姓名不存在");
+                isClick = true;   //返回后能够重新点击发送的按钮 
+            } else {
+                $("#dialog2").attr("style", "display:block");
+                $(".weui_dialog_title").html("验证码发送失败");
+                isClick = true;   //返回后能够重新点击发送的按钮 
+            }
+
+
+        }
+    }
+
+
+</script>
+<script>
+    $(function () {
+        var result = true;
+        $("#wizard").steps({
+            headerTag: "div",// 指定头部对应什么HTML标签
+            bodyTag: "section", // 指定步骤内容对应的HTML标签
+            transitionEffect: "slideLeft",//切换动画
+            labels: {
+                finish: "注册完成", // 修改按钮得文本
+                next: "下一步", // 下一步按钮的文本
+                previous: "上一步", // 上一步按钮的文本
+            },
+            //步骤切换的监听 返回值为true则能直接下一步 否则变红
+            onStepChanging: function (event, currentIndex, newIndex) {
+                console.log(result);
+                console.log("上一步index" + currentIndex + ",下一步index" + newIndex);
+
+                if (currentIndex == 0) {//第一步操作
+                    result = true;
+                    // console.log('result' + result);
+                    // $.ajax({
+                    //     type: 'POST',
+                    //     url: 'http://doc.88hao.cn/mock/27/calendar',
+                    //     success: function (data) {
+                    //         //验证成功则能跳到步骤二
+                    //         // if (data.statusCode == 200) {
+                    //         result = true;
+                    //         // }
+                    //     },
+                    //     error: function (e) {
+                    //         result = false;
+                    //         console.log(e);
+                    //     }
+
+                    // });
+                }
+                if (newIndex == 2) {//第二步操作
+                    result = false;
+                }
+                return result;
+            },
+            //完成时的监听
+            onFinishing: function (event, currentIndex) {
+                // form.validate().settings.ignore = ":disabled";
+                console.log('event' + event);
+                console.log('currentIndex' + currentIndex);
+                // return form.valid();
+            },
+            //完成后的监听
+            onFinished: function (event, currentIndex) {
+                alert("注册完成 打开主页面");
+            }
+        });
+    });
+</script>
+
+</html>
