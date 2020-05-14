@@ -1,12 +1,8 @@
 package com.ycglj.manage.daoImpl;
 
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,30 +12,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ycglj.manage.daoModel.*;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.alibaba.druid.sql.ast.statement.SQLIfStatement.Else;
-import com.google.common.collect.Lists;
 import com.ycglj.manage.dao.LicenseDAO;
-import com.ycglj.manage.daoModel.Check_Person;
-import com.ycglj.manage.daoModel.Crimal_Case;
-import com.ycglj.manage.daoModel.Crimal_Record;
-import com.ycglj.manage.daoModel.Crimal_Record_UpLog;
-import com.ycglj.manage.daoModel.FileSelfBelong;
-import com.ycglj.manage.daoModel.Law_Case;
-import com.ycglj.manage.daoModel.Not_License;
-import com.ycglj.manage.daoModel.Position;
-import com.ycglj.manage.daoModel.Temp_Change;
-import com.ycglj.manage.daoModel.Temp_User_License;
-import com.ycglj.manage.daoModel.User_License;
-import com.ycglj.manage.daoModel.Users;
-import com.ycglj.manage.daoModel.WeiXin_User;
-import com.ycglj.manage.daoModel.Weight_Log;
 import com.ycglj.manage.daoModelJoin.Crimal_Record_Join;
 import com.ycglj.manage.daoModelJoin.License_Position_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
@@ -51,13 +30,10 @@ import com.ycglj.manage.daoSQL.SelectJoinExe;
 import com.ycglj.manage.daoSQL.SelectJoinExe2;
 import com.ycglj.manage.daoSQL.SelectSqlJoinExe;
 import com.ycglj.manage.daoSQL.UpdateExe;
-import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.manage.tools.TransMapToString;
-
-import cn.jpush.api.report.UsersResult.User;
 
 public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	
@@ -1806,7 +1782,7 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 	}
 
 	@Override
-	public Integer deleteLicense(String operate_user,User_License user_License) {
+	public Integer deleteLicense(String operate_user, User_License user_License) {
 		// TODO Auto-generated method stub
 		int i;
 		

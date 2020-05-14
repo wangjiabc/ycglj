@@ -132,9 +132,9 @@
 	<div id="allmap"></div>
 	<div class="weui-cells weui-cells_form">
 		<div class="weui-cell">
-				<div class="weui-cell__hd"><label class="weui-label">最近零售点</label></div>
-				<div id="distanceLicense" class="weui-cell__bd">
-				</div>
+			<div class="weui-cell__hd"><label class="weui-label">最近零售点</label></div>
+			<div id="distanceLicense" class="weui-cell__bd">
+			</div>
 		</div>
 	</div>
 	<div class="weui-flex" style="bottom:0;width:100%;">
@@ -213,6 +213,10 @@
 		}
 		//其他业务
 		else if (type == 2) {
+			console.log('其他业务',data);
+			if (getQueryString('agree')==1) {
+				$('#commit').text("同 意");
+			}
 			$('#allmap').remove();
 			$('#clear').remove();
 			$('#hide_navigation').remove();
@@ -258,6 +262,9 @@
 		}
 		//恢复营业
 		else if (type == 3) {
+			if (data.rows[0].agree == 1) {
+				$('#commit').text("同 意");
+			}
 			$('#allmap').remove();
 			$('#clear').remove();
 			$('#hide_navigation').remove();
@@ -378,7 +385,8 @@
 
 	var openId = getQueryString("openId");
 	var license = getQueryString("license");
-	var time1, time2;
+	var agree = getQueryString("agree");
+	var time1 = "", time2 = "";
 	$("#date").calendar({
 		onChange: function (p, values, displayValues) {
 			console.log(displayValues);
@@ -419,43 +427,69 @@
 			console.log("changename:" + data.change.name);
 			initdata(data, 2);
 			console.log(data);
-			if(data.distanceLicense.name!=null)
-				$("#distanceLicense").html(data.distanceLicense.name+"("+getLicenseDistance(data.roomInfo.lng, data.roomInfo.lat,data.distanceLicense.lng,data.distanceLicense.lat)+")");
-			
+			if (data.distanceLicense.name != null)
+				$("#distanceLicense").html(data.distanceLicense.name + "(" + getLicenseDistance(data.roomInfo.lng, data.roomInfo.lat, data.distanceLicense.lng, data.distanceLicense.lat) + ")");
+
 			type = data.roomInfo.authentication;
 		}
 		console.log(url);
 		$('#commit').click(function () {
 			type = getQueryString("type");
-			$.ajax({
-				url: "../../../asset/transact.do?license=" + license + "&type=" + type + "&name=" + $('#name').text() + "&agree=1",
-				type: "GET",
-				success: function (data) {
-					console.log(data);
-					if (data == 0) {
+			agree = getQueryString("agree");
+			//受理
+			if (agree == 0) {
+				$.ajax({
+					url: "../../../asset/agreeAll.do",
+					data: {
+						openId: openId,
+						agree: 1,
+						name: $('#name').text(),
+						type:type
+					},
+					type: "post",
+					success: function (data) {
 						$.alert({
 							title: "信息",
-							text: "受理失败~!",
-							onOK: function () {
-								//点击确认
-								location.href = "index.html";
-							}
-						});
-					} else {
-						$.alert({
-							title: "信息",
-							text: "受理成功~!",
+							text: "受理成功~!请进行审核并办理业务",
 							onOK: function () {
 								//点击确认
 								location.href = "index.html";
 							}
 						});
 					}
-				},
-				error: function (e) {
-					$.alert("发生错误！");
-				}
-			});
+				});
+			}
+			else if (agree == 1) {
+				$.ajax({
+					url: "../../../asset/transact.do?license=" + license + "&type=" + type + "&name=" + $('#name').text() + "&agree=1",
+					type: "GET",
+					success: function (data) {
+						console.log(data);
+						if (data == 0) {
+							$.alert({
+								title: "信息",
+								text: "办理失败~!",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						} else {
+							$.alert({
+								title: "信息",
+								text: "办理成功~!",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						}
+					},
+					error: function (e) {
+						$.alert("发生错误！");
+					}
+				});
+			}
 		})
 		$('#refuse').click(function () {
 			type = getQueryString("type");
@@ -514,9 +548,9 @@
 				agree = data.rows[0].agree;
 				initdata(data, 1);
 				console.log(data.distanceLicense);
-				if(data.distanceLicense.name!=null)
-					$("#distanceLicense").html(data.distanceLicense.name+"("+getLicenseDistance(data.rows[0].lng, data.rows[0].lat,data.distanceLicense.lng,data.distanceLicense.lat)+")");
-				
+				if (data.distanceLicense.name != null)
+					$("#distanceLicense").html(data.distanceLicense.name + "(" + getLicenseDistance(data.rows[0].lng, data.rows[0].lat, data.distanceLicense.lng, data.distanceLicense.lat) + ")");
+
 				initmap(data.rows[0].lng, data.rows[0].lat);
 			}
 		});
@@ -550,6 +584,21 @@
 				}
 				//同意
 				else if (agree == 1) {
+					if ($('#license').val() == "" || $('#license').val() == null) {
+						$.alert({
+							title: "",
+							text: "许可证号不能为空!"
+						});
+						return;
+					}
+					console.log("time", time1);
+					if (time1 == "" || time2 == "") {
+						$.alert({
+							title: "",
+							text: "日期不能为空!"
+						});
+						return;
+					}
 					$.ajax({
 						url: "../../../asset/newTransact.do",
 						data: {
@@ -632,14 +681,14 @@
 
 	}
 
-	function getLicenseDistance(lng1,lat1,lng2, lat2) {
-			var map = new BMap.Map("allmap");    // 创建Map实例
-			var pointA = new BMap.Point(lng1, lat1); // 创建点坐标A--大渡口区
-			var pointB = new BMap.Point(lng2, lat2); // 创建点坐标B--江北区
-			var d = map.getDistance(pointA, pointB) / 1000;
-			return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
-	}	
-		
+	function getLicenseDistance(lng1, lat1, lng2, lat2) {
+		var map = new BMap.Map("allmap");    // 创建Map实例
+		var pointA = new BMap.Point(lng1, lat1); // 创建点坐标A--大渡口区
+		var pointB = new BMap.Point(lng2, lat2); // 创建点坐标B--江北区
+		var d = map.getDistance(pointA, pointB) / 1000;
+		return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
+	}
+
 	//图片预览插件
 	var im = {};
 	/**

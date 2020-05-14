@@ -65,6 +65,17 @@ public class Temp_User_License implements Serializable{
     @SQLDateTime(name="operate_date")
 	private Date operate_date;
 
+	@SQLInteger(name="agree")
+	private Integer agree;
+
+	public Integer getAgree() {
+		return agree;
+	}
+
+	public void setAgree(Integer agree) {
+		this.agree = agree;
+	}
+
 	public void setOpen_id(String open_id){
 		this.open_id = open_id;
 	}

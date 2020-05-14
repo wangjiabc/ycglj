@@ -7,19 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.ycglj.manage.daoModel.*;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.manage.tools.TransMapToString;
-import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.daoSQL.DeleteExe;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.daoModel.Order_Date;
-import com.ycglj.manage.daoModel.Order_User;
-import com.ycglj.manage.daoModel.User_License;
-import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoSQL.InsertExe;
 import com.ycglj.manage.daoSQL.SelectExe;
 import com.ycglj.manage.daoSQL.SelectJoinExe;

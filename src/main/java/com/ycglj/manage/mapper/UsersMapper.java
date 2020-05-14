@@ -1,4 +1,4 @@
-﻿package com.ycglj.manage.mapper;
+package com.ycglj.manage.mapper;
 
 import java.util.List;
 import java.util.Map;
@@ -108,4 +108,6 @@ public interface UsersMapper {
 	List<String> getUserByType(Map<String, Object> paramMap);
 	
 	Users getUserByAssetCharter(@Param(value="charter")String charter, @Param(value="phone")String phone);
+
+    int updateUsesLicenseByOpenId(String openId);
 }

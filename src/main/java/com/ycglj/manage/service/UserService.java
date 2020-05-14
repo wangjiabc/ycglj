@@ -69,4 +69,6 @@ public interface UserService {
     int getCountUserByOpenId(String openId);
     
     int updateUsersInfoWithPhone(Map map);
+//
+//	List<Users> getUserListByOnlyOpenId(String openId);
 }

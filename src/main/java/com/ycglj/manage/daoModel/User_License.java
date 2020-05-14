@@ -62,6 +62,9 @@ public class User_License implements Serializable{
     @SQLDateTime(name="application_date")
 	private Date application_date;
 
+	@SQLInteger(name="agree")
+	private Integer agree;
+
 	public void setOpen_id(String open_id){
 		this.open_id = open_id;
 	}
@@ -198,7 +201,13 @@ public class User_License implements Serializable{
 		return application_date;
 	}
 
+	public Integer getAgree() {
+		return agree;
+	}
 
+	public void setAgree(Integer agree) {
+		this.agree = agree;
+	}
 
 
 /*

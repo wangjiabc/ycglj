@@ -2,11 +2,11 @@ package com.ycglj.manage.face;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.ycglj.manage.dao.UserDAO;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.sqlserver.context.Connect;

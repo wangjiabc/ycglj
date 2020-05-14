@@ -1,13 +1,11 @@
 package com.ycglj.weixin.insweptcontroller;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ycglj.manage.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;  
@@ -28,18 +27,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;  
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.druid.sql.ast.statement.SQLIfStatement.Else;
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.User_Data;
-import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.file.ImageFileFactory;
 import com.ycglj.manage.file.ImageLicenseFactory;
 import com.ycglj.manage.model.Photo;
 import com.ycglj.manage.service.PhotoService;
-import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.service.WeiXinService;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.manage.tools.CopyFile;

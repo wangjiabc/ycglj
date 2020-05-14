@@ -1,4 +1,4 @@
-﻿package com.ycglj.manage.serviceImpl;
+package com.ycglj.manage.serviceImpl;
 
 import java.util.Date;
 import java.util.List;

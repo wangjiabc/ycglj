@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.activemq.filter.function.makeListFunction;
-import org.apache.http.message.BasicNameValuePair;
+import com.ycglj.manage.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -28,20 +26,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.PreMessage;
 import com.ycglj.manage.daoModel.Temp_Users;
 import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.face.RegisterCompare;
-import com.ycglj.manage.model.Sellers;
 import com.ycglj.manage.model.Users;
 
-import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.singleton.Singleton;
-import com.ycglj.manage.tools.Constants;
-import com.ycglj.manage.tools.IdcardUtil;
-import com.ycglj.manage.tools.Md5;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.manage.tools.verifycode.Captcha;
 import com.ycglj.manage.tools.verifycode.SpecCaptcha;
@@ -377,8 +369,8 @@ public class AssetUserRegisterController {
 		  }
 	  
         long face=new RegisterCompare().match(openId,request);
-       
-        if(face<80){
+//
+        if(face<70){
         	return 4;
         }
         
@@ -524,10 +516,9 @@ public class AssetUserRegisterController {
 													
 							while (iterator.hasNext()) {
 								
-								com.ycglj.manage.model.Users users=(com.ycglj.manage.model.Users) iterator.next();
+								Users users=(Users) iterator.next();
 								
 								String transactOpenId=users.getOpenId();
-								
 								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 										"新办申请",

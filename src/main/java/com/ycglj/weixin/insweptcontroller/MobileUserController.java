@@ -8,29 +8,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.ycglj.manage.dao.UserDAO;
-import com.ycglj.manage.daoModel.Temp_Change;
-import com.ycglj.manage.daoModel.Temp_User_License;
-import com.ycglj.manage.daoModel.User_License;
-import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.model.Users;
 import com.ycglj.manage.service.UserService;
-import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 import com.ycglj.weixin.controller.WechatSendMessageController;
 
@@ -106,8 +100,9 @@ public class MobileUserController {
 	                    list.add(uuid);
 	                }
 
-	                up=userDao.updateUserDataAffirm(openId,list,3);
-	                
+//	                up=userDao.updateUserDataAffirm(openId,list,3);
+	                up=userDao.updateUserDataAffirm(openId,list,9);
+
 	                //上传成功
 	                if(up>0){
 	                	
@@ -155,7 +150,7 @@ public class MobileUserController {
 	           								com.ycglj.manage.model.Users users=(com.ycglj.manage.model.Users) iterator.next();
 	           								
 	           								String transactOpenId=users.getOpenId();
-	           								
+
 	           								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
 	           										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 	           										"延续申请",

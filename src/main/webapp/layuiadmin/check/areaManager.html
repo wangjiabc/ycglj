@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>地区管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+</head>
+<style>
+    .layui-inline {
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+</style>
+
+<body>
+    <div class="layui-inline">
+        <input type="text" id="code" lay-verify="code" autocomplete="off" placeholder="请输入编码" class="layui-input">
+    </div>
+    <div class="layui-inline">
+        <input type="text" id="name" lay-verify="name" autocomplete="off" placeholder="请输入名称" class="layui-input">
+    </div>
+    <div class="layui-inline">
+        <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="search">
+            <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+        </button>
+    </div>
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+    
+    <script src="../layui/layui.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script>
+        layui.use(['table', 'laytpl', 'layer', 'util'], function () {
+            var table = layui.table,
+                layer = layui.layer,
+                laytpl = layui.laytpl,
+                util = layui.util;
+            table.render({
+                elem: '#test', url: '/ycglj/baiduMap/Area/area.do?', 
+                title: '地区信息表', 
+                page: true, 
+                toolbar: '#toolbarDemo', 
+                where:{code:"",name:""}, 
+                cols: [[
+                    { type: 'checkbox' },
+                    { field: 'code', title: '编码', edit: 'text',align:'center' }, 
+                    { field: 'name', title: '名称',edit: 'text',align:'center'}
+                ]]
+            });
+            //监听搜索
+            layui.form.on('submit(search)', function (data) {
+                //input值
+                var code = $('#code').val();
+                var name = $('#name').val();
+                var field = data.field;
+                table.reload('test', {
+                    where: field,
+                    url: '/ycglj/baiduMap/Area/area.do?',
+                    where:{
+                    	code:code,
+                    	name:name
+                    }
+                });
+            });
+        })
+    </script>
+</body>
+
+</html>

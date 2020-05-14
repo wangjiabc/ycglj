@@ -1,4 +1,4 @@
-﻿package com.ycglj.manage.tools;
+package com.ycglj.manage.tools;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

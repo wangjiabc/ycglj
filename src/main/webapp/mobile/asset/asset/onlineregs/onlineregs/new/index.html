@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+       Remove this if you use the .htaccess -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+	<link rel="stylesheet" href="../../../asset/css/icon.css">
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+	<!--  mobile Safari, FireFox, Opera Mobile  -->
+	<!-- <script src="js/modernizr.js"></script> -->
+	<!--[if lt IE 9]>
+    <script type="text/javascript" src="libs/flashcanvas.js"></script>
+    <![endif]-->
+	<style type="text/css">
+		/* div {
+			margin-top: 1em;
+			margin-bottom: 1em;
+		} */
+		body,
+		html,
+		#allmap {
+			width: 100%;
+			height: 70%;
+			margin: 0;
+			font-family: "微软雅黑";
+		}
+
+		input {
+			padding: .5em;
+			margin: .5em;
+		}
+
+		select {
+			padding: .5em;
+			margin: .5em;
+		}
+
+		html.touch #scrollgrabber {
+			float: right;
+			width: 4%;
+			margin-right: 2%;
+			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAFCAAAAACh79lDAAAAAXNSR0IArs4c6QAAABJJREFUCB1jmMmQxjCT4T/DfwAPLgOXlrt3IwAAAABJRU5ErkJggg==)
+		}
+
+		html.borderradius #scrollgrabber {
+			border-radius: 1em;
+		}
+
+		.icon {
+			width: 2em;
+			height: 2em;
+			vertical-align: -0.15em;
+			fill: currentColor;
+			overflow: hidden;
+		}
+
+		.text {
+			width: 100%;
+			color: red;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="text">
+		<p>*申请烟草专卖零售许可证，应当具备下列条件:</p>
+		<p>(一)有与经营烟草制品零售业务相适应的资金;</p>
+		<p>(二)有与住所相独立的固定经营场所;</p>
+		<p>(三)符合当地烟草制品零售点合理布局的要求;</p>
+		<p>(四)国家烟草专卖局规定的其他条件。</p>
+	</div>
+	<div class="weui-cells__title">您的基本信息</div>
+	<div class="weui-cell">
+		<div class="weui-cell__hd"><label for="date" class="weui-label">姓 名</label></div>
+		<div class="weui-cell__bd">
+			<input class="weui-input" id="name" type="text" placeholder="请输入您的姓名">
+		</div>
+	</div>
+	<div class="weui-cell">
+		<div class="weui-cell__hd"><label class="weui-label">身份证号</label></div>
+		<div class="weui-cell__bd">
+			<input class="weui-input" id="idcard" type="text" placeholder="请输入您的身份证号">
+		</div>
+	</div>
+	<div class="weui-cell">
+		<div class="weui-cell__hd"><label class="weui-label">联系电话</label></div>
+		<div class="weui-cell__bd">
+			<input class="weui-input" id="phone" type="text" placeholder="请输入您的联系电话">
+		</div>
+	</div>
+	<div class="weui-cell">
+		<div class="weui-cell__hd"><label class="weui-label">经营场所地址</label></div>
+		<div class="weui-cell__bd">
+			<input class="weui-input" id="address" type="text" placeholder="请输入您的经营场所地址">
+		</div>
+	</div>
+	<div class="weui-cell">
+		<select class="weui-select" id="select">
+			<option selected="" value="0">请选择区域</option>
+			<option value="1">泸州市合江县</option>
+			<option value="2">泸州市江阳区</option>
+			<option value="3">泸州市龙马潭区</option>
+			<option value="4">泸州市纳溪区</option>
+			<option value="5">泸州市泸县</option>
+			<option value="6">泸州市古蔺县</option>
+			<option value="7">泸州市叙永县</option>
+		</select>
+	</div>
+	<div class="weui-cell">
+		<select class="weui-select" id="select1">
+			<option selected="" value="0">请选择业态</option>
+			<option value="食杂店">食杂店</option>
+			<option value="便利店">便利店</option>
+			<option value="超市">超市</option>
+			<option value="商场">商场</option>
+			<option value="烟酒店">烟酒店</option>
+			<option value="娱乐服务">娱乐服务</option>
+			<option value="路边摊">路边摊</option>
+			<option value="其它">其它</option>
+		</select>
+	</div>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('self')" href="javascript:;">
+		<div id="img0" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>自拍正面头像免冠照</p>
+		</div>
+		<div id="self" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('identity')" href="javascript:;">
+		<div id="img1" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>身份证正面照照片</p>
+		</div>
+		<div id="identity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('conIdentity')" href="javascript:;">
+		<div id="img2" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>身份证反面照照片</p>
+		</div>
+		<div id="conIdentity" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<!-- <span name='more'> -->
+	<!-- </span> -->
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('business')" href="javascript:;">
+		<div id="img3" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>工商营业执照照片</p>
+		</div>
+		<div id="business" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('other')" href="javascript:;">
+		<div id="img4" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>其它照片</p>
+		</div>
+		<div id="business" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<a id="map" class="weui-cell weui-cell_access menu_list" href="javascript:;">
+		<div class="weui-cell__bd weui-flex__item">
+			<p>选择经营场所位置(可手动拖动点调整位置)</p>
+		</div>
+		<div class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-map"></use>
+			</svg></div>
+	</a>
+	<div id="allmap" style="display: none"></div>
+	<!-- style="display: none" -->
+	</div>
+
+
+
+	<div class="weui-flex">
+		<div class="weui-flex__item">
+			<a id="submit" href="javascript:;" class="weui-btn weui-btn_primary">提 交</a>
+		</div>
+	</div>
+
+	<div id="scrollgrabber"></div>
+	<script type="text/javascript"
+		src="https://api.map.baidu.com/api?v=2.0&ak=cR98TwX2FnKTpANIOYhMYMot9a4ioxjc"></script>
+	<script type="text/javascript" src="https://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+	<script src="../../order/js/iconfont.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+	<!-- <script type="text/javascript" src="js/index1.js"></script> -->
+	<script>
+		$('#map').click(function () {
+			$('#allmap').fadeToggle();
+		})
+
+	</script>
+	<script>
+		function getQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]); return null;
+		}
+		function getByteLen(val) {    //传入一个字符串
+			var len = 0;
+			for (var i = 0; i < val.length; i++) {
+				if (val[i].match(/[^\x00-\xff]/ig) != null) //全角 
+					len += 2; //如果是全角，占用两个字节  如果mysql中某字段是text, 如果设置编码为utf-8,那么一个中文是占3个字节, gbk是两个字节
+				else
+					len += 1; //半角占用一个字节
+			}
+			return len;
+		}
+		//百度地图转换微信地图经纬度
+		function bMapTransWechatMap(lng, lat) {
+			var PI = 3.1415926535897932384626;
+			let x_pi = PI * 3000.0 / 180.0;
+			let x = lng - 0.0065; let y = lat - 0.006;
+			let z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+			let theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+			let lngs = z * Math.cos(theta);
+			let lats = z * Math.sin(theta);
+			return { lng: lngs, lat: lats };
+		}
+
+		/**
+		 * GCJ02 转换为 WGS84
+		 * @param lng
+		 * @param lat
+		 * @returns {*[]}
+		 */
+		function gcj02towgs84(lng, lat) {
+			var PI = 3.1415926535897932384626;
+			var a = 6378245.0;
+			var ee = 0.00669342162296594323;
+			var dlat = transformlat(lng - 105.0, lat - 35.0);
+			var dlng = transformlng(lng - 105.0, lat - 35.0);
+			var radlat = lat / 180.0 * PI;
+			var magic = Math.sin(radlat);
+			magic = 1 - ee * magic * magic;
+			var sqrtmagic = Math.sqrt(magic);
+			dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
+			dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
+			mglat = lat + dlat;
+			mglng = lng + dlng;
+			return { lng: lng * 2 - mglng, lat: lat * 2 - mglat };
+		}
+		function transformlat(lng, lat) {
+			var PI = 3.1415926535897932384626;
+			var ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lng * lat + 0.2 * Math.sqrt(Math.abs(lng));
+			ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
+			ret += (20.0 * Math.sin(lat * PI) + 40.0 * Math.sin(lat / 3.0 * PI)) * 2.0 / 3.0;
+			ret += (160.0 * Math.sin(lat / 12.0 * PI) + 320 * Math.sin(lat * PI / 30.0)) * 2.0 / 3.0;
+			return ret
+		}
+
+		function transformlng(lng, lat) {
+			var PI = 3.1415926535897932384626;
+			var ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * Math.sqrt(Math.abs(lng));
+			ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
+			ret += (20.0 * Math.sin(lng * PI) + 40.0 * Math.sin(lng / 3.0 * PI)) * 2.0 / 3.0;
+			ret += (150.0 * Math.sin(lng / 12.0 * PI) + 300.0 * Math.sin(lng / 30.0 * PI)) * 2.0 / 3.0;
+			return ret
+		}
+		var clng, clat;
+		function addPoint(lng, lat) {
+			var point = new BMap.Point(lng, lat);
+			map.centerAndZoom(point, 14);
+			var str = "我的位置";
+			var opts = {
+				position: point,    // 指定文本标注所在的地理位置
+				offset: new BMap.Size(-getByteLen(str) * 3, 5)    //设置文本偏移量
+			}
+			var label = new BMap.Label(str, opts);  // 创建文本标注对象
+			label.setStyle({
+				fontSize: "12px",
+				height: "20px",
+				lineHeight: "20px",
+				fontFamily: "微软雅黑"
+			});
+			map.addOverlay(label);
+			var marker = new BMap.Marker(point); // 创建点
+			map.addOverlay(marker); //增加点
+			var geolocationControl = new BMap.GeolocationControl();
+			map.addControl(geolocationControl);
+			marker.enableDragging(); //标注可拖拽
+			// 开启事件监听
+			marker.addEventListener("dragend", function (e) {
+				$.confirm({
+					title: '提示',
+					text: '是否修改零售户到当前位置?',
+					onOK: function () {
+						clng = e.point.lng;
+						clat = e.point.lat;
+						console.log(e);
+						console.log("clng=" + clng + ",clat=" + clat);
+						//点击确认
+						map.clearOverlays();
+						addPoint(clng, clat);
+					},
+					onCancel: function () {
+						map.clearOverlays();
+						addPoint(lng, lat);
+					}
+				});
+			});
+		}
+
+
+
+		// 百度地图API功能
+		var map = new BMap.Map("allmap");    // 创建Map实例
+
+		var lng = getQueryString("longitude");
+		var lat = getQueryString("latitude");
+		addPoint(lng, lat);
+	</script>
+	<script>
+		url = document.location.toString();
+		$.ajax({
+			url: "../../../../wechat/sign.do",
+			data: {
+				campusId: 1,
+				url: url
+			},
+			async: false,
+			type: "GET",
+			success: function (data) {
+				var ticket = JSON.parse(data);
+
+				wx.config({
+					debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+					appId: ticket.appId,
+					timestamp: ticket.timestamp,
+					nonceStr: ticket.nonceStr,
+					signature: ticket.signature,
+					jsApiList: ['checkJsApi', 'onMenuShareTimeline',
+						'onMenuShareAppMessage', 'onMenuShareQQ',
+						'onMenuShareWeibo', 'hideMenuItems',
+						'showMenuItems', 'hideAllNonBaseMenuItem',
+						'showAllNonBaseMenuItem', 'translateVoice',
+						'startRecord', 'stopRecord', 'onRecordEnd',
+						'playVoice', 'pauseVoice', 'stopVoice',
+						'uploadVoice', 'downloadVoice', 'chooseImage',
+						'previewImage', 'uploadImage', 'downloadImage',
+						'getNetworkType', 'openLocation', 'getLocation',
+						'hideOptionMenu', 'showOptionMenu', 'closeWindow',
+						'scanQRCode', 'chooseWXPay',
+						'openProductSpecificView', 'addCard', 'chooseCard',
+						'openCard']
+				});
+
+			}
+		});
+
+
+		var licenseImg = [];
+
+		// $.post('/ycglj/mobile/user/getUserAuthen.do', {
+
+		// }, function (data) {
+		// 	if (data == 3) {
+		// 		$.alert({
+		// 			title: "提示",
+		// 			text: "你的资料正在审核中,不能重复提交",
+		// 			onOK: function () {
+		// 				//点击确认
+		// 				location.href = "/ycglj/mobile/asset";
+		// 			}
+		// 		});
+		// 	} else if (data == 1) {
+		// 		$.alert({
+		// 			title: "提示",
+		// 			text: "你的资料审核",
+		// 			onOK: function () {
+		// 				//点击确认
+		// 				location.href = "/ycglj/mobile/asset";
+		// 			}
+		// 		});
+		// 	}
+		// });
+
+		function setActionSheet(dataType) {
+			var images = {
+				localId: [],
+				serverId: []
+			};
+			var sourceType;
+			if (dataType == "self") {
+				sourceType = ['camera'];
+			} else {
+				sourceType = ['album', 'camera'];
+			}
+			wx.chooseImage({
+				sourceType: sourceType,
+				success: function (res) {
+					images.localId = res.localIds;
+					console.log('已选择 '
+						+ res.localIds.length
+						+ ' 张图片');
+
+					var i = 0, length = images.localId.length;
+					images.serverId = [];
+					function upload() {
+						wx.uploadImage({
+							localId: images.localId[i]
+								.toString(),
+							isShowProgressTips: images.localId[i]
+								.toString(),
+							success: function (
+								res) {
+								i++;
+								console
+									.log('已上传：'
+										+ i
+										+ '/'
+										+ length);
+								//返回图片的服务器端ID res.serverId,然后调用wxImgCallback函数进行下载图片操作
+								wxImgCallback(
+									dataType,
+									res.serverId
+								);
+								//   images.serverId.push(res.serverId);
+								if (i < length) {
+									upload();
+								}
+							},
+							fail: function (
+								res) {
+								console
+									.log(res);
+							}
+						});
+					}
+					upload();
+				}
+			});
+
+		}
+
+		function wxImgCallback(dataType, serverId) {
+			console.log("serverId=" + serverId);
+			//将serverId传给wx_upload.php的upload方法
+			var url = "../../../file/upload.do";
+			$.get(
+				url,
+				{
+					campusId: 1,
+					serverId: serverId,
+					dataType: dataType,
+					classType: "user"
+				},
+				function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					if (data == 0) {
+						alert("上传图片失败!");
+						console.log(data.msg);
+					} else if (data == 1) {
+						//存储到服务器成功后的处理
+						// location.reload();
+
+						var panel = document.createElement("div");
+						panel.setAttribute("class", "weui-panel__bd");
+						var a = document.createElement("a");
+						a.setAttribute("class", "weui_grid");
+						var a = document.createElement("a");
+						a.setAttribute("href", "javascript:void(0);");
+						a.setAttribute("class", "weui-media-box weui-media-box_appmsg");
+						var div = document.createElement("div");
+						div.setAttribute("class", "weui-media-box__hd");
+						src = img;
+						var img = document.createElement("img");
+						img.setAttribute("class", "weui-media-box__thumb");
+						img.setAttribute("src", src);
+
+						div.appendChild(img);
+
+						div2 = document.createElement("div");
+						div2.setAttribute("class", "weui-media-box__bd");
+						p = document.createElement("p");
+						p.setAttribute("class", "weui-media-box__desc");
+						div2.appendChild(p);
+						a.appendChild(div);
+						a.appendChild(div2);
+						panel.appendChild(a);
+
+						if (dataType == "self") {
+							document.getElementById("img0").innerHTML = "";
+							$("#img0").attr("name", uuid);
+							$("#img0").append(panel);
+						} else if (dataType == "identity") {
+							document.getElementById("img1").innerHTML = "";
+							$("#img1").attr("name", uuid);
+							$("#img1").append(panel);
+						} else if (dataType == "conIdentity") {
+							document.getElementById("img2").innerHTML = "";
+							$("#img2").attr("name", uuid);
+							$("#img2").append(panel);
+						} else if (dataType == "business") {
+							document.getElementById("img3").innerHTML = "";
+							$("#img3").attr("name", uuid);
+							$("#img3").append(panel);
+						} else if (dataType == "other") {
+							document.getElementById("img4").innerHTML = "";
+							$("#img4").attr("name", uuid);
+							$("#img4").append(panel);
+						}
+					}
+				});
+		}
+
+		$(document).ready(function () {
+			//提交
+			$("#submit").click(function () {
+				if (clng != undefined) {
+					lng = clng;
+					lat = clat;
+				}
+				var name = $('#name').val();
+				var idcard = $('#idcard').val();
+				var phone = $('#phone').val();
+				var address = $('#address').val();
+				var area = $('#select').val();
+				var business_state = $('#select1').val();
+				// location.href = "../sucess.html";
+				var error = "";
+				var img0 = $("#img0").attr("name");
+				if (img0 == 0) {
+					error = "自拍照不能为空!";
+				}
+				var img1 = $("#img1").attr("name");
+				if (img1 == 0) {
+					error = "身份证正面照照片不能为空!";
+				}
+				var img2 = $("#img2").attr("name");
+				if (img2 == 0) {
+					error = "身份证反面照照片不能为空!";
+				}
+				var img3 = $("#img3").attr("name");
+				if (img3 == 0) {
+					error = "工商营业执照不能为空!";
+				}
+				if (name == "" && idcard == "" && phone == "" && address == "" && area == "" && business_state == "") {
+					error = "请填写完整信息";
+				}
+
+				if (error != "") {
+
+					$.alert({
+						title: "",
+						text: error,
+						onOK: function () {
+							//点击确认
+						}
+					});
+
+				} else {
+					$(this).unbind("click");		
+					$("#submit").addClass("weui-btn_disabled");
+					$("#submit").addClass("weui-btn_loading");
+					$("#submit").prepend('<i class="weui-loading"></i>');
+					var arrays = new Array(img0, img1, img2, img3, img4);
+					console.log('保存图片数组的id' + arrays);
+
+					$.get("/ycglj/baiduMap/findLicenseByPoint.do",
+						{
+							limit: 10,
+							offset: 0,
+							lng: lng,
+							lat: lat,
+							distance: 50
+						}, function (text) {
+							console.log(text);
+							var data = JSON.parse(text);
+							var total = data.total;
+							console.log(total);
+							if (total > 0) {
+								$.confirm("50米内存在零售户,是否继续申请", function () {
+									//点击确认后的回调函数
+									$.post("../../../assetRegister/insertNew.do",
+										{
+											name: name,
+											id_number: idcard,
+											phone: phone,
+											address: address,
+											area: area,
+											business_state: business_state,
+											arrays: JSON.stringify(arrays),
+											lng: lng,
+											lat: lat
+										},
+										function (text) {
+											console.log(text);
+												$("#submit").removeClass("weui-btn_loading");
+												$("#submit").empty();
+											if (text == 1) {
+												$("#submit").removeClass("weui-btn_disabled");
+												$.alert({
+													title: "",
+													text: "成功",
+													onOK: function () {
+														//点击确认
+														$.alert({
+															title: "添加成功!",
+															text: success,
+															onOK: function () {
+																//点击确认
+																location.href = "sucess.html";
+															}
+														});
+													}
+												});
+											} else if (text == 4) {
+												$.alert({
+													title: "",
+													text: "人脸识别失败,请重新上传身份证照片和自拍照",
+													onOK: function () {
+
+													}
+												});
+											} else {
+
+											}
+										});
+								}, function () {
+									//点击取消后的回调函数
+								});
+							} else {
+								$.post("../../../assetRegister/insertNew.do",
+									{
+										name: name,
+										id_number: idcard,
+										phone: phone,
+										address: address,
+										area: area,
+										business_state: business_state,
+										arrays: JSON.stringify(arrays),
+										lng: lng,
+										lat: lat
+									},
+									function (text) {
+										console.log(text);
+										if (text == 1) {
+											// $("#submit").removeClass("weui-btn_loading");
+											// $("#submit").empty();
+											$.alert({
+												title: "",
+												text: "成功",
+												onOK: function () {
+													//点击确认
+													location.href = "sucess.html";
+												}
+											});
+										} else if (text == 4) {
+											$.alert({
+												title: "",
+												text: "人脸识别失败,请重新上传身份证照片和自拍照",
+												onOK: function () {
+													$("#submit").removeClass("weui-btn_disabled");
+												}
+											});
+										} else {
+
+										}
+									});
+							}
+
+						});
+				}
+
+			})
+		})
+	</script>
+</body>
+
+</html>

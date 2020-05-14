@@ -1,6 +1,5 @@
 package com.ycglj.weixin.controller;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.bouncycastle.jce.provider.asymmetric.ec.Signature.ecCVCDSA;
+import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.*;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
+import com.ycglj.manage.mapper.UsersMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -24,17 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.dao.UserDAO;
-import com.ycglj.manage.daoModel.Check_Person;
-import com.ycglj.manage.daoModel.Position;
-import com.ycglj.manage.daoModel.Temp_Change;
-import com.ycglj.manage.daoModel.Temp_User_License;
-import com.ycglj.manage.daoModel.Temp_Users;
-import com.ycglj.manage.daoModel.User_Data;
-import com.ycglj.manage.daoModel.User_License;
-import com.ycglj.manage.daoModel.Users;
-import com.ycglj.manage.daoModel.WeiXin_User;
-import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.SellerService;
@@ -86,6 +77,9 @@ private SellerService sellerService;
 	OrderDAO orderDao=(OrderDAO) applicationContext.getBean("orderdao");
 	
 	LicenseDAO licenseDAO=(LicenseDAO) applicationContext.getBean("licensedao");
+
+	@Autowired
+	private UsersMapper usersMapper;
 	
 	@RequestMapping(value="updateAffire")
 	public @ResponseBody Integer uploadFilesSpecifyPath(@RequestParam String license,@RequestParam Integer type,@RequestParam String arrays,
@@ -175,7 +169,7 @@ private SellerService sellerService;
 					user_License.setWhere(where);
 					user_License.setAuthentication(type);
 					user_License.setApplication_date(new Date());
-					
+					user_License.setAgree(0);	//默认是未受理
 					up=userDao.updateUserLicense(user_License);
 			 }
 			
@@ -238,7 +232,8 @@ private SellerService sellerService;
 								String[] where={"license=",license};
 								
 								temp_User_License.setWhere(where);
-								
+
+								temp_User_License.setAgree(0);	//默认为0
 								licenseDAO.updateTempUserLicense(temp_User_License);
 								
 							}else if(type==7){
@@ -282,13 +277,21 @@ private SellerService sellerService;
 								com.ycglj.manage.model.Users users=(com.ycglj.manage.model.Users) iterator.next();
 								
 								String transactOpenId=users.getOpenId();
-								
+								//原模板
 								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
 										title+"申请",
 										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
 										title+"申请",name2, title, time, "已提交", "", 
 										"");
+
+								//自己的模板
+/*								wechatSendMessageController.sendMessage(transactOpenId, "GURvjkRmTG4auVjTqmHNmlmR4BEpDSHo3RCdIyeX5Qw", //申请待审核通知
+										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+										"新办申请",
+										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
+										"新办申请",name, "新办烟草专卖零售许可证", time, "已提交", "",
+										"");*/
 							}
 							
 						}
@@ -311,7 +314,6 @@ private SellerService sellerService;
 	@RequestMapping("getAllTransactUser")
 	public @ResponseBody Map<String, Object> getAllTransactUser(@RequestParam Integer limit,@RequestParam Integer offset,String sort,String order,
 			String search,String area,HttpServletRequest request){
-		
 		Map searchMap=new HashMap<>();
 		
 		searchMap.put("authentication > ", "3");
@@ -328,42 +330,52 @@ private SellerService sellerService;
 		//int offset=(page-1)*limit;
 		
 		Map map=userDao.getAllUserJoin(limit, offset, sort,order, searchMap);
+
 		
 		Map map2=new HashMap<>();
 		
 		List list=(List) map.get("data");
 		
 		int total=(int) map.get("count");
-		
+
+
 		map2.put("rows", list);
 		
 		map2.put("total", total);
 		
 		return map2;
-		
+
 	}
-			
+
 	@RequestMapping("getAllNewUser")
 	public @ResponseBody Map<String, Object> getAllNewUser(@RequestParam Integer limit,@RequestParam Integer offset,String sort,String order,
-			String search,String area,HttpServletRequest request){
-			
-			Map searchMap=new HashMap<>();
-			
-			searchMap.put("agree != ", "2");
-			
-			if(search!=null&&!search.trim().equals("")){
-				search="%"+search+"%";  
-				searchMap.put("name like ", search);
-			}		
-						
-			if(area!=null&&!area.trim().equals("")){
-				searchMap.put("area =", area);
-			}	
-			
-			//int offset=(page-1)*limit;
-			
-			return userDao.getAllTempUserJoin(limit, offset, sort, order, searchMap);
-				
+														   String search,HttpServletRequest request){
+
+		HttpSession session = request.getSession();
+
+		String openId=session.getAttribute("openId").toString();
+
+		Map searchMap=new HashMap<>();
+
+		searchMap.put("agree != ", "2");
+
+		if(search!=null&&!search.trim().equals("")){
+			search="%"+search+"%";
+			searchMap.put("name like ", search);
+		}
+
+		/*
+		 * if(area!=null&&!area.trim().equals("")){ searchMap.put("area =", area); }
+		 */
+
+
+		//int offset=(page-1)*limit;
+
+
+		com.ycglj.manage.model.Users user = userService.getUserByOnlyOpenId(openId);
+
+		return userDao.getAllTempUser(limit, offset, sort, order, searchMap,openId,user.getArea());
+
 	}
 	
 	@RequestMapping("getNewUser")
@@ -418,7 +430,7 @@ private SellerService sellerService;
 			
 			return map;
 	}
-	
+
 	@RequestMapping("agreeNew")
 	public @ResponseBody Integer agreeNew(@RequestParam String openId,@RequestParam Integer agree,
 			String cause,HttpServletRequest request){
@@ -494,8 +506,148 @@ private SellerService sellerService;
 		return up;
 		
 	}
-			
-	
+
+
+	@RequestMapping("agreeAll")
+	public @ResponseBody Integer agreeAll(@RequestParam String openId,@RequestParam Integer agree,
+										  String cause,HttpServletRequest request,@RequestParam Integer type){
+
+//		case 4:
+//		return "停业"
+//		break;
+//		case 5:
+//		return "补办"
+//		break;
+//		case 6:
+//		return "恢复营业"
+//		break;
+//		case 7:
+//		return "变更"
+//		break;
+//		case 8:
+//		return "歇业"
+//		break;
+//		case 9:
+//		return "延续"
+
+
+//		Temp_Users temp_Users=new Temp_Users();
+//
+//		temp_Users.setAgree(agree);
+//		temp_Users.setLimit(1);
+//		temp_Users.setOffset(0);
+//		temp_Users.setNotIn("open_id");
+//
+//		if(cause!=null&&!cause.equals(""))
+//			temp_Users.setCause(cause);
+//
+//		String[] where={"open_id=",openId};
+//
+//		temp_Users.setWhere(where);
+
+//		int up=userDao.updateTempUsers(temp_Users);
+		int up  =0;
+		if(type == 6){	//恢复营业
+			Temp_User_License temp_user_license = new Temp_User_License();
+			temp_user_license.setAgree(agree);
+			temp_user_license.setLimit(1);
+			temp_user_license.setOffset(0);
+			temp_user_license.setNotIn("open_id");
+			String[] where={"open_id=",openId};
+			temp_user_license.setWhere(where);
+			up = userDao.updateTempUserLicense(temp_user_license);
+		}else {
+			User_License user_license = new User_License();
+			user_license.setAgree(agree);
+			user_license.setLimit(1);
+			user_license.setOffset(0);
+			user_license.setNotIn("open_id");
+			String[] where={"open_id=",openId};
+			user_license.setWhere(where);
+			up = userDao.updateUserLicense(user_license);
+		}
+
+
+		try {
+
+			WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+//			Temp_Users temp_Users2=userDao.getTempUsers(temp_Users);
+			com.ycglj.manage.model.Users users = usersMapper.getUserByOnlyOpenId(openId);
+
+			Runnable r = new Runnable() {
+
+				@Override
+				public void run() {
+
+					String name1 = null;
+					if(type == 4){
+						name1 = "停业";
+					}
+					if(type == 5){
+						name1 = "补办";
+					}
+					if(type == 6){
+						name1 = "恢复营业";
+					}
+					if(type == 7){
+						name1 = "变更";
+					}
+					if(type == 8){
+						name1 = "歇业";
+					}
+					if(type == 9){
+						name1 = "延续";
+					}
+
+					String title = "";
+					String templateID="";
+
+					if(agree==1){
+						title= name1 + "受理申请通知";
+						templateID="moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY"; // 申请待审核通知
+					}else{
+						title="你好"+users.getName()+"，你的"+name1+"申请信息审核失败";
+						templateID="b1ujoxmvkW9112uTDWWy7TZ7cgd4IWI86MaPN55OLqw"; //申请驳回通知
+					}
+
+					Date date = new Date();
+					SimpleDateFormat sdf = new SimpleDateFormat(" yyyy-MM-dd HH:mm:ss ");
+					String time = sdf.format(date);
+
+					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+					if(agree==1){
+						wechatSendMessageController.sendMessage(openId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
+								//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+								title,
+								"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
+								title,users.getName(), title, time, "已受理", "",
+								"");
+					}else{
+						wechatSendMessageController.sendMessage(openId, templateID,
+								// "1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+								title , "http://lzgfgs.com/ycglj/mobile/asset",
+								title,users.getName(), time, "未通过", cause, "请修改后，重新提交", "");
+					}
+				}
+			};
+
+			Thread t = new Thread(r);
+			t.start();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return up;
+
+	}
+
+
+
+
 	@RequestMapping(value="newTransact")
 	public @ResponseBody Integer newTransact(@RequestParam String openId,@RequestParam String license,
 			@RequestParam String startTime,@RequestParam String endTime,@RequestParam Integer area,
@@ -646,7 +798,7 @@ private SellerService sellerService;
 				user_License.setLimit(1);
 				user_License.setOffset(0);
 				user_License.setNotIn("license");
-
+				user_License.setAgree(0);	//停业后设置值为0
 				String[] where = { "license=", license };
 
 				user_License.setWhere(where);
@@ -826,6 +978,36 @@ private SellerService sellerService;
 				transactOpenId = user_License.getOpen_id();
 
 				i = licenseDAO.deleteUserLicense(license);
+
+			}else if(type == 9){
+				User_License user_License = new User_License();
+
+				user_License.setLimit(1);
+				user_License.setOffset(0);
+				user_License.setNotIn("license");
+
+				String[] where = { "license=", license };
+
+				user_License.setWhere(where);
+
+				List list = userDao.getUserLicenseById(user_License);
+
+				try {
+					user_License = (User_License) list.get(0);
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+				}
+
+				transactOpenId = user_License.getOpen_id();
+
+				User_License user_License2 = new User_License();
+
+				user_License2.setAuthentication(1);
+
+				user_License2.setWhere(where);
+
+				i = userDao.updateOnlyLicense(user_License2);
 
 			}
 

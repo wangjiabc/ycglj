@@ -5,19 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.ycglj.manage.daoModel.Check_Person;
-import com.ycglj.manage.daoModel.Crimal_Case;
-import com.ycglj.manage.daoModel.Crimal_Record;
-import com.ycglj.manage.daoModel.FileSelfBelong;
-import com.ycglj.manage.daoModel.Law_Case;
-import com.ycglj.manage.daoModel.Not_License;
-import com.ycglj.manage.daoModel.Position;
-import com.ycglj.manage.daoModel.Temp_Change;
-import com.ycglj.manage.daoModel.Temp_User_License;
-import com.ycglj.manage.daoModel.User_License;
-import com.ycglj.manage.daoModel.Weight_Log;
+import com.ycglj.manage.daoModel.*;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
 
 public interface LicenseDAO {
@@ -78,7 +66,7 @@ public interface LicenseDAO {
 	
 	public Map getThreeLawCaseByDate(String startTime,String endTime);
 	
-	public Integer deleteLicense(String operate_user,User_License user_License);
+	public Integer deleteLicense(String operate_user, User_License user_License);
 	
 	public Integer insertLicense(Temp_User_License temp_User_License);
 	

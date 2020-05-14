@@ -14,22 +14,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.ycglj.manage.mapper.UsersMapper;
-import com.ycglj.manage.dao.UserDAO;
-import com.ycglj.manage.daoModel.Users;
-import com.ycglj.manage.daoModelJoin.Users_License_Join;
-import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
-
-import cn.jpush.api.report.UsersResult.User;
 
 public class MobileAssetIsLoginFilter implements Filter{
 	

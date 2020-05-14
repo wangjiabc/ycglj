@@ -1,6 +1,5 @@
 package com.ycglj.weixin.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,25 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.ycglj.manage.dao.UserDAO;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.PreMessage;
 import com.ycglj.manage.mapper.MessageListMapper;
 import com.ycglj.manage.mapper.UsersMapper;
@@ -37,13 +28,11 @@ import com.ycglj.manage.model.Users;
 import com.ycglj.manage.model.WeiXin;
 import com.ycglj.manage.service.UserService;
 import com.ycglj.manage.service.WeiXinService;
-import com.ycglj.manage.serviceImpl.UserServiceImpl;
 import com.ycglj.manage.singleton.Singleton;
 import com.ycglj.sqlserver.context.Connect;
 import com.ycglj.weixin.MessageTemplate.ChatTemplateProcessor;
 import com.ycglj.weixin.MessageTemplate.TemplateData;
 import com.ycglj.weixin.MessageTemplate.WxTemplate;
-import com.ycglj.sqlserver.context.Connect;
 
 import common.HttpClient;
 

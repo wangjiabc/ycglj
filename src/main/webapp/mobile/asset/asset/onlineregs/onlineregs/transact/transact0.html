@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+       Remove this if you use the .htaccess -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+	<link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+	<script type="text/javascript"
+		src="https://api.map.baidu.com/api?v=2.0&ak=cR98TwX2FnKTpANIOYhMYMot9a4ioxjc"></script>
+	<script type="text/javascript" src="https://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+	<script src="../../../../js/previewImage.min.js"></script>
+</head>
+<style>
+	html,
+	body {
+		height: 100%;
+		width: 100%;
+		margin: 0;
+		font-family: "微软雅黑";
+	}
+
+	#allmap {
+		height: 40%;
+		width: 100%;
+	}
+</style>
+
+<body>
+	<form action="" novalidate>
+		<div class="weui-cells weui-cells_form oldAddress">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">地 址</label></div>
+				<div id="address" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form oldName">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">姓 名</label></div>
+				<div id="name" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">手机号</label></div>
+				<div id="phone" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">申请时间</label></div>
+				<div id="time" class="weui-cell__bd">
+				</div>
+			</div>
+		</div>
+		<div class="weui-cells weui-cells_form">
+			<div class="weui-cell">
+				<div class="weui-cell__hd"><label class="weui-label">业态</label></div>
+				<div class="weui-cell__bd">
+					<select class="weui-select" id="business_state">
+						<option value="食杂店">食杂店</option>
+						<option value="便利店">便利店</option>
+						<option value="超市">超市</option>
+						<option value="商场">商场</option>
+						<option value="烟酒店">烟酒店</option>
+						<option value="娱乐服务">娱乐服务</option>
+						<option value="路边摊">路边摊</option>
+						<option value="其它">其它</option>
+					</select>
+				</div>
+				<!-- <div id="business_state" class="weui-cell__bd">
+				</div> -->
+			</div>
+		</div>
+		<div id="clear">
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cell">
+					<div class="weui-cell__hd"><label class="weui-label">许可证号</label></div>
+					<input class="weui-input" id="license" type="text" placeholder="请设置许可证号">
+				</div>
+			</div>
+			<div class="weui-cells weui-cells_form">
+				<div class="weui-cells__title">请设置许可证有限期限</div>
+				<div class="weui-cell">
+					<div class="weui-cell__hd"><label for="date" class="weui-label">日期</label></div>
+					<div class="weui-cell__bd">
+						<input class="weui-input" id="date" type="text">
+					</div>
+					<div style="text-align: center" class="weui-cell__hd"><label for="date1"
+							class="weui-label">至</label>
+					</div>
+					<div class="weui-cell__bd">
+						<input class="weui-input" id="date1" type="text">
+					</div>
+				</div>
+			</div>
+			<div class="weui-cells weui-cells_form" style="margin-bottom: 20px;">
+				<div class="weui-cell__bd">
+					<select class="weui-select" id="select1">
+						<option selected="" value="0">请选择区域:</option>
+						<option value="1">泸州市合江县</option>
+						<option value="2">泸州市江阳区</option>
+						<option value="3">泸州市龙马潭区</option>
+						<option value="4">泸州市纳溪区</option>
+						<option value="5">泸州市泸县</option>
+						<option value="6">泸州市古蔺县</option>
+						<option value="7">泸州市叙永县</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="weui-panel weui-panel_access">
+		<div class="weui-panel__hd">资料</div>
+		<div id="img" class="weui-panel__bd">
+		</div>
+	</div>
+	<div id="hide_navigation" class="weui-cell weui-cell_access" style="width:100%;">
+		<div class="weui-cell__bd">零售户申请位置</div>
+		<div class="weui-cell__ft" style="font-size: 0">
+			<span id="navigation" class="weui-btn weui-btn_mini weui-btn_primary">导航路线</span>
+		</div>
+	</div>
+	<div id="allmap"></div>
+	<div class="weui-cells weui-cells_form">
+		<div class="weui-cell">
+			<div class="weui-cell__hd"><label class="weui-label">最近零售点</label></div>
+			<div id="distanceLicense" class="weui-cell__bd">
+			</div>
+		</div>
+	</div>
+	<div class="weui-flex" style="bottom:0;width:100%;">
+		<!-- <div class="weui-flex__item">
+			<a id="accept" href="javascript:;" class="weui-btn weui-btn_primary">受 理</a>
+		</div> -->
+		<div class="weui-flex__item">
+			<a id="commit" href="javascript:;" class="weui-btn weui-btn_primary">受 理</a>
+		</div>
+		<div class="weui-flex__item refuse">
+			<a id="refuse" href="javascript:;" class="weui-btn weui-btn_warn">拒 绝</a>
+		</div>
+	</div>
+</body>
+<script src="../../../../js/previewImage.min.js"></script>
+<script>
+	//百度地图转换微信地图经纬度
+	function bMapTransWechatMap(lng, lat) {
+		var PI = 3.1415926535897932384626;
+		let x_pi = PI * 3000.0 / 180.0;
+		let x = lng - 0.0065; let y = lat - 0.006;
+		let z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_pi);
+		let theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_pi);
+		let lngs = z * Math.cos(theta);
+		let lats = z * Math.sin(theta);
+		return { lng: lngs, lat: lats };
+	}
+	//截取地址字符串
+	function getQueryString(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null)
+			return unescape(r[2]);
+		return null;
+	}
+	function changeValue(data) {
+		console.log("name:" + data.change.name);
+		if (data.change.name == "name") {
+			var html = '<div class="weui-cells weui-cells_form">' +
+				'<div class="weui-cell">' +
+				'<div class="weui-cell__hd"><label class="weui-label">变更姓名</label></div>' +
+				'<div id="newAddress" class="weui-cell__bd">' + data.change.value + '</div></div></div>'
+			$('.oldName').append(html);
+		}
+		else if (data.change.name == "address") {
+			var html = '<div class="weui-cells weui-cells_form">' +
+				'<div class="weui-cell">' +
+				'<div class="weui-cell__hd"><label class="weui-label">变更地址</label></div>' +
+				'<div id="newAddress" class="weui-cell__bd">' + data.change.value + '</div></div></div>'
+			$('.oldAddress').append(html);
+		}
+	}
+	//初始化数据
+	function initdata(data, type) {
+		//新办
+		if (type == 1) {
+			if (data.rows[0].agree == 1) {
+				$('#commit').text("同 意");
+			} else {
+				$('#clear').remove();
+			}
+			$('#name').text(data.rows[0].name)
+			$('#phone').text(data.rows[0].phone)
+			$('#address').text(data.rows[0].address);
+			// $('#address').attr("placeholder", data.rows[0].address);
+			$('#time').text(actionTime(data.rows[0].date))
+			$('#business_state').val(data.rows[0].business_state)
+			$('#select1').val(data.rows[0].area)
+			$('.weui-panel_access').remove();
+			//照片信息显示
+			for (let index = 0; index < data.fileBytes.length; index++) {
+				var uri = data.fileBytes[index].compressUri;
+				src = "/ycglj/" + uri;
+				$('form').append('<div class="weui-uploader__file"><img class="image" src="' + src + '" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>');
+			}
+		}
+		//其他业务
+		else if (type == 2) {
+			$('#allmap').remove();
+			$('#clear').remove();
+			$('#hide_navigation').remove();
+			$('#name').text(data.roomInfo.name);
+			$('#address').text(data.roomInfo.address);
+			changeValue(data);
+			$('#phone').text(data.roomInfo.phone);
+			// $('#address').attr("placeholder", data.roomInfo.address);
+			$('#time').text(actionTime(data.roomInfo.application_date))
+			if (data.roomInfo.authentication == 4) {
+				$('#time').text(actionTime(data.roomInfo.stop_start_date) + "至" + actionTime(data.roomInfo.stop_end_data))
+			}
+			$('form').append(
+				'<div class="weui-cells weui-cells_form">' +
+				'<div class="weui-cell">' +
+				'<div class="weui-cell__hd"><label class="weui-label">身份证号</label></div>' +
+				'<div class="weui-cell__bd">' + data.roomInfo.id_number +
+				'</div></div></div>' +
+				'<div class="weui-cells weui-cells_form">' +
+				'<div class="weui-cell">' +
+				'<div class="weui-cell__hd"><label class="weui-label">业务类型</label></div>' +
+				'<div class="weui-cell__bd">' + getTypeName(data.roomInfo.authentication) +
+				'</div></div></div>' +
+				'<div class="weui-cells weui-cells_form">' +
+				'<div class="weui-cell">' +
+				'<div class="weui-cell__hd"><label class="weui-label">许可证号</label></div>' +
+				'<div class="weui-cell__bd">' + data.roomInfo.license +
+				'</div></div></div>'
+			);
+			console.log(data.fileBytes2);
+			for (let index = 0; index < data.fileBytes2.length; index++) {
+				var uri = data.fileBytes2[index].compressUri;
+				src = "/ycglj/" + uri;
+				$('#img').append(
+					'<div class="weui-cell__bd">' +
+					'<div class="weui-cell">' +
+					'<div class="weui-cell__hd"><img src="' + src + '" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>' +
+					'<div class="weui-cell__bd"><p></p></div>' +
+					'</div>' +
+					'</div>'
+				);
+			}
+		}
+		//恢复营业
+		else if (type == 3) {
+			$('#allmap').remove();
+			$('#clear').remove();
+			$('#hide_navigation').remove();
+			$('#name').text(data.rows[0].name);
+			$('#phone').text(data.rows[0].phone);
+			$('#address').text(data.rows[0].address);
+			// $('#address').attr("placeholder", data.rows[0].address);
+			$('#business_state').text(getTypeName(data.rows[0].business_state));
+			$('#time').text(actionTime(data.rows[0].date))
+			for (let index = 0; index < data.fileBytes2.length; index++) {
+				var uri = data.fileBytes2[index].compressUri;
+				src = "/ycglj/" + uri;
+				$('#img').append(
+					'<div class="weui-cell__bd">' +
+					'<div class="weui-cell">' +
+					'<div class="weui-cell__hd"><img src="' + src + '" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>' +
+					'<div class="weui-cell__bd"><p></p></div>' +
+					'</div>' +
+					'</div>'
+				);
+			}
+		}
+	}
+	//业务类型
+	function getTypeName(type) {
+		switch (type) {
+			case 4:
+				return "停业"
+				break;
+			case 5:
+				return "补办"
+				break;
+			case 6:
+				return "恢复营业"
+				break;
+			case 7:
+				return "变更"
+				break;
+			case 8:
+				return "歇业"
+				break;
+			case 9:
+				return "延续"
+				break;
+			default:
+				break;
+		}
+	}
+	//格式化时间戳
+	function actionTime(value) {
+		var date = new Date(value);
+		Y = date.getFullYear() + '-';
+		M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+		D = date.getDate() + ' ';
+		h = date.getHours() + ':';
+		m = date.getMinutes() + ':';
+		s = date.getSeconds();
+		return Y + M + D + h + m + s;
+	}
+	//地图显示
+	function initmap(lng, lat) {
+		// 百度地图API功能
+		var map = new BMap.Map("allmap");    // 创建Map实例
+		var point = new BMap.Point(lng, lat);
+		map.centerAndZoom(point, 14);
+		var marker = new BMap.Marker(point); // 创建点
+		map.addOverlay(marker); //增加点
+		url = document.location.toString();
+		$.ajax({
+			url: "../../../../wechat/sign.do",
+			data: {
+				campusId: 1,
+				url: url
+			},
+			async: false,
+			type: "GET",
+			success: function (data) {
+				var ticket = JSON.parse(data);
+				wx.config({
+					debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+					appId: ticket.appId,
+					timestamp: ticket.timestamp,
+					nonceStr: ticket.nonceStr,
+					signature: ticket.signature,
+					jsApiList: ['checkJsApi', 'onMenuShareTimeline',
+						'onMenuShareAppMessage', 'onMenuShareQQ',
+						'onMenuShareWeibo', 'hideMenuItems', 'showMenuItems',
+						'hideAllNonBaseMenuItem', 'showAllNonBaseMenuItem',
+						'translateVoice', 'startRecord', 'stopRecord',
+						'onRecordEnd', 'playVoice', 'pauseVoice', 'stopVoice',
+						'uploadVoice', 'downloadVoice', 'chooseImage',
+						'previewImage', 'uploadImage', 'downloadImage',
+						'getNetworkType', 'openLocation', 'getLocation',
+						'hideOptionMenu', 'showOptionMenu', 'closeWindow',
+						'scanQRCode', 'chooseWXPay', 'openProductSpecificView',
+						'addCard', 'chooseCard', 'openCard']
+				});
+			}
+		});
+		if (lng != "" && lat != "") {
+			$("#navigation").on("click", function () {
+				wechatLat = bMapTransWechatMap(lng, lat).lat;
+				wechatLng = bMapTransWechatMap(lng, lat).lng;
+				console.log(wechatLat, wechatLng);
+				wx.openLocation({
+					latitude: wechatLat, // 纬度，浮点数，范围为90 ~ -90
+					longitude: wechatLng, // 经度，浮点数，范围为180 ~ -180。
+					name: '零售商户申请地理位置', // 位置名
+					address: '', // 地址详情说明
+					scale: 14, // 地图缩放级别,整形值,范围从1~28。默认为最大
+					infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+				});
+			});
+		} else {
+			$("#navigation").hide();
+		}
+	}
+
+	var openId = getQueryString("openId");
+	var license = getQueryString("license");
+	var time1="", time2="";
+	$("#date").calendar({
+		onChange: function (p, values, displayValues) {
+			console.log(displayValues);
+			time1 = displayValues;
+		}
+	});
+	$("#date1").calendar({
+		onChange: function (p, values, displayValues) {
+			console.log(displayValues);
+			time2 = displayValues;
+		}
+	});
+	//其它业务
+	if (license > 0) {
+		//恢复营业
+		console.log(getQueryString("type"));
+		//办理恢复营业
+		var url = "";
+		var type = getQueryString("type");
+		if (getQueryString("type") == 6) {
+			url = "../../../asset/getResumeUser.do?openId=" + openId;
+			var xhm = new XMLHttpRequest();
+			xhm.open("GET", url, false);
+			xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhm.send();
+			var data = JSON.parse(xhm.responseText);
+			initdata(data, 3);
+			type = data.rows[0].authentication;
+		}
+		//办理其它业务
+		else {
+			url = "../../../user/getRoomInfoByGUID.do?license=" + license;
+			var xhm = new XMLHttpRequest();
+			xhm.open("GET", url, false);
+			xhm.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhm.send();
+			var data = JSON.parse(xhm.responseText);
+			console.log("changename:" + data.change.name);
+			initdata(data, 2);
+			console.log(data);
+			if (data.distanceLicense.name != null)
+				$("#distanceLicense").html(data.distanceLicense.name + "(" + getLicenseDistance(data.roomInfo.lng, data.roomInfo.lat, data.distanceLicense.lng, data.distanceLicense.lat) + ")");
+
+			type = data.roomInfo.authentication;
+		}
+		console.log(url);
+		$('#commit').click(function () {
+			type = getQueryString("type");
+			$.ajax({
+				url: "../../../asset/transact.do?license=" + license + "&type=" + type + "&name=" + $('#name').text() + "&agree=1",
+				type: "GET",
+				success: function (data) {
+					console.log(data);
+					if (data == 0) {
+						$.alert({
+							title: "信息",
+							text: "受理失败~!",
+							onOK: function () {
+								//点击确认
+								location.href = "index.html";
+							}
+						});
+					} else {
+						$.alert({
+							title: "信息",
+							text: "受理成功~!",
+							onOK: function () {
+								//点击确认
+								location.href = "index.html";
+							}
+						});
+					}
+				},
+				error: function (e) {
+					$.alert("发生错误！");
+				}
+			});
+		})
+		$('#refuse').click(function () {
+			type = getQueryString("type");
+			$.prompt("请输入拒绝受理的原因", function (text) {
+				//点击确认后的回调函数
+				//text 是用户输入的内容
+				$.ajax({
+					url: "../../../asset/transact.do?license=" + license + "&type=" + type + "&name=" + $('#name').text() + "&agree=2" + "&cause=" + text,
+					type: "GET",
+					success: function (data) {
+						console.log(data);
+						if (data == 0) {
+							$.alert({
+								title: "信息",
+								text: "拒绝失败~!",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						} else {
+							$.alert({
+								title: "信息",
+								text: "拒绝成功~!",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						}
+					},
+					error: function (e) {
+						$.alert("发生错误！");
+					}
+				});
+			}, function () {
+				//点击取消后的回调函数
+				// location.href = "index.html";
+			});
+
+		})
+	}
+	//新办
+	else {
+		license = $('#license').val();
+		var agree = 0;
+		$.ajax({
+			url: "../../getNewUser.do",
+			data: {
+				openId: openId
+			},
+			type: "GET",
+			success: function (data) {
+				console.log("data=" + data);
+				data = JSON.parse(data);
+				agree = data.rows[0].agree;
+				initdata(data, 1);
+				console.log(data.distanceLicense);
+				if (data.distanceLicense.name != null)
+					$("#distanceLicense").html(data.distanceLicense.name + "(" + getLicenseDistance(data.rows[0].lng, data.rows[0].lat, data.distanceLicense.lng, data.distanceLicense.lat) + ")");
+
+				initmap(data.rows[0].lng, data.rows[0].lat);
+			}
+		});
+
+		$('#commit').click(function () {
+			var msg = "";
+			//提交验证
+			{
+				// console.log(time1);
+				//受理
+				if (agree == 0) {
+					$.ajax({
+						url: "../../../asset/agreeNew.do",
+						data: {
+							openId: openId,
+							agree: 1,
+							name: $('#name').text()
+						},
+						type: "post",
+						success: function (data) {
+							$.alert({
+								title: "信息",
+								text: "受理成功~!请进行审核并办理业务",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						}
+					});
+				}
+				//同意
+				else if (agree == 1) {
+					if ($('#license').val() == "" || $('#license').val() == null) {
+						$.alert({
+							title: "",
+							text: "许可证号不能为空!"
+						});
+						return;
+					}
+					console.log("time",time1);
+					if (time1 == "" || time2 == "") {
+						$.alert({
+							title: "",
+							text: "日期不能为空!"
+						});
+						return;
+					}
+					$.ajax({
+						url: "../../../asset/newTransact.do",
+						data: {
+							openId: openId,
+							address: $('#address').val(),
+							license: $('#license').val(),
+							startTime: time1[0],
+							endTime: time2[0],
+							area: $('#select1').val(),
+							business_state: $('#business_state').val(),
+							region: $("#select1").val(),
+							name: $('#name').text()
+						},
+						type: "post",
+						success: function (data) {
+							$.alert({
+								title: "信息",
+								text: "办理成功~!",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						}
+					});
+				}
+				else if (agree == 2) {
+					$.alert({
+						title: "信息",
+						text: "请让用户重新提交~!",
+						onOK: function () {
+							//点击确认
+							location.href = "index.html";
+						}
+					});
+				}
+				else {
+
+				}
+			}
+
+		})
+
+		$('#refuse').click(function () {
+			var msg = "";
+			//提交验证
+			{
+				//拒绝办理
+				// if (agree == 0) {
+				$.prompt("请输入拒绝受理的原因", function (text) {
+					//点击确认后的回调函数
+					//text 是用户输入的内容
+					$.ajax({
+						url: "../../../asset/agreeNew.do",
+						data: {
+							openId: openId,
+							agree: 2,
+							cause: text,
+							name: $('#name').text()
+						},
+						type: "post",
+						success: function (data) {
+							console.log(data);
+							$.alert({
+								title: "信息",
+								text: "已拒绝!",
+								onOK: function () {
+									//点击确认
+									location.href = "index.html";
+								}
+							});
+						}
+					});
+				}, function () {
+					//点击取消后的回调函数
+					// location.href = "index.html";
+				});
+			}
+		})
+
+	}
+
+	function getLicenseDistance(lng1, lat1, lng2, lat2) {
+		var map = new BMap.Map("allmap");    // 创建Map实例
+		var pointA = new BMap.Point(lng1, lat1); // 创建点坐标A--大渡口区
+		var pointB = new BMap.Point(lng2, lat2); // 创建点坐标B--江北区
+		var d = map.getDistance(pointA, pointB) / 1000;
+		return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
+	}
+
+	//图片预览插件
+	var im = {};
+	/**
+	 * 得到多个元素
+	 * @public
+	 */
+	im.all = function (selector, contextElement) {
+		var nodeList,
+			list = [];
+		if (contextElement) {
+			nodeList = contextElement.querySelectorAll(selector);
+		} else {
+			nodeList = document.querySelectorAll(selector);
+		}
+		if (nodeList && nodeList.length > 0) {
+			list = Array.prototype.slice.call(nodeList);
+		}
+		return list;
+	}
+
+	/**
+	 * 将事件委托给父元素
+	 * @public
+	 * @param  array     $el         父元素
+	 * @param  string    eventType  事件类型名称
+	 * @param  string    selector   目标的选择器
+	 * @param  function  fn
+	 */
+	im.delegate = function ($el, eventType, selector, fn) {
+		if (!$el) { return; }
+		$el.addEventListener(eventType, function (e) {
+			var targets = im.all(selector, $el);
+			if (!targets) {
+				return;
+			}
+			// findTarget:
+			for (var i = 0; i < targets.length; i++) {
+				var $node = e.target;
+				while ($node) {
+					if ($node == targets[i]) {
+						fn.call($node, e);
+						break; //findTarget;
+					}
+					$node = $node.parentNode;
+					if ($node == $el) {
+						break;
+					}
+				}
+			}
+		}, false);
+	};
+
+
+	im.delegate(document.querySelector('#img'), 'click', 'img', function () {
+		var urls = [];
+		var imgs = im.all('img', im.all('#img')[0]);
+		imgs.forEach(function (v, i) {
+			var str = v.src;
+			var url = str.replace(/\/compressFile/, "");
+			urls.push(url);
+		})
+
+		var thisStr = this.src;
+		var current = thisStr.replace(/\/compressFile/, "");
+		console.log(current);
+		var obj = {
+			urls: urls,
+			current: current
+		};
+		previewImage.start(obj);
+	});
+	var im2 = {};
+	/**
+	 * 得到多个元素
+	 * @public
+	 */
+	im2.all = function (selector, contextElement) {
+		var nodeList,
+			list = [];
+		if (contextElement) {
+			nodeList = contextElement.querySelectorAll(selector);
+		} else {
+			nodeList = document.querySelectorAll(selector);
+		}
+		if (nodeList && nodeList.length > 0) {
+			list = Array.prototype.slice.call(nodeList);
+		}
+		return list;
+	}
+
+	/**
+	 * 将事件委托给父元素
+	 * @public
+	 * @param  array     $el         父元素
+	 * @param  string    eventType  事件类型名称
+	 * @param  string    selector   目标的选择器
+	 * @param  function  fn
+	 */
+	im2.delegate = function ($el, eventType, selector, fn) {
+		if (!$el) { return; }
+		$el.addEventListener(eventType, function (e) {
+			var targets = im2.all(selector, $el);
+			if (!targets) {
+				return;
+			}
+			// findTarget:
+			for (var i = 0; i < targets.length; i++) {
+				var $node = e.target;
+				while ($node) {
+					if ($node == targets[i]) {
+						fn.call($node, e);
+						break; //findTarget;
+					}
+					$node = $node.parentNode;
+					if ($node == $el) {
+						break;
+					}
+				}
+			}
+		}, false);
+	};
+
+
+	im2.delegate(document.querySelector('.image'), 'click', 'img', function () {
+		var urls = [];
+		var imgs = im2.all('img', im2.all('.image')[0]);
+		imgs.forEach(function (v, i) {
+			var str = v.src;
+			var url = str.replace(/\/compressFile/, "");
+			urls.push(url);
+		})
+
+		var thisStr = this.src;
+		var current = thisStr.replace(/\/compressFile/, "");
+		console.log(current);
+		var obj = {
+			urls: urls,
+			current: current
+		};
+		previewImage.start(obj);
+	});
+</script>
+
+</html>

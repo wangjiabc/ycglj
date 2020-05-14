@@ -2,7 +2,6 @@ package com.ycglj.manage.filter;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;   
@@ -14,13 +13,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpSession;
 
+import com.ycglj.manage.dao.UserDAO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.WeiXin_User;
 import com.ycglj.manage.mapper.UsersMapper;
 import com.ycglj.manage.model.Users;

@@ -1,9 +1,6 @@
 package com.ycglj.manage.mytask;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,21 +8,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.message.BasicNameValuePair;
+import com.ycglj.manage.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Order_User;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.sqlserver.context.Connect;
 import com.ycglj.weixin.controller.WechatSendMessageController;
-
-import common.HttpClient;
 
 
 @Component("taskJob")  

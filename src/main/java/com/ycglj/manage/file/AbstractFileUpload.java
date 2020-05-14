@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.ycglj.manage.dao.UserDAO;
 import org.springframework.context.ApplicationContext;
 
 import com.ycglj.manage.dao.LicenseDAO;
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.FileSelfBelong;
 import com.ycglj.manage.daoModel.User_Data;
 import com.ycglj.manage.singleton.Singleton;

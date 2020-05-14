@@ -12,9 +12,9 @@
 	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 	<!--  mobile Safari, FireFox, Opera Mobile  -->
 	<!-- <script src="js/modernizr.js"></script> -->
-	<!--[if lt IE 9]>
-    <script type="text/javascript" src="libs/flashcanvas.js"></script>
-    <![endif]-->
+	<!--&lt;!&ndash;[if lt IE 9]>-->
+    <!--<script type="text/javascript" src="libs/flashcanvas.js"></script>-->
+    <!--<![endif]&ndash;&gt;-->
 	<style type="text/css">
 		/* div {
 			margin-top: 1em;
@@ -39,6 +39,27 @@
 			margin: .5em;
 		}
 
+		#signatureparent {
+			color: darkblue;
+			background-color: darkgrey;
+			/*max-width:600px;*/
+			padding: 20px;
+		}
+
+		/*This is the div within which the signature canvas is fitted*/
+		#signature {
+			/*height:250px;*/
+			/*width: 100%;*/
+			/*background-image: url("tianzige.jpg");*/
+			border: 2px dotted black;
+			background-color: lightgrey;
+		}
+
+		/* Drawing the 'gripper' for touch-enabled devices */
+		html.touch #content {
+			width: 100%;
+		}
+
 		html.touch #scrollgrabber {
 			float: right;
 			width: 4%;
@@ -49,7 +70,6 @@
 		html.borderradius #scrollgrabber {
 			border-radius: 1em;
 		}
-
 		.icon {
 			width: 2em;
 			height: 2em;
@@ -166,6 +186,27 @@
 				<use xlink:href="#icon-paizhao"></use>
 			</svg></div>
 	</a>
+	<a class="weui-cell weui-cell_access" onclick="setActionSheet('other')" href="javascript:;">
+		<div id="img4" name="0" class="weui-panel__bd">
+		</div>
+		<div class="weui-cell__bd">
+			<p>其它照片</p>
+		</div>
+		<div id="business" class="weui-cell__ft"><svg class="icon" aria-hidden="true">
+				<use xlink:href="#icon-paizhao"></use>
+			</svg></div>
+	</a>
+	<div class="weui-cells__title">申请人手写签名</div>
+	<div class="weui-cells">
+		<a class="weui-cell weui-cell_access" href="javascript:;">
+			<div class="weui-cell__bd">
+				<p>申请人签字</p>
+			</div>
+			<div id="sign" class="weui-cell__ft">点击签名</div>
+		</a>
+		<div id="displayarea" name="0"></div>
+	</div>
+	<div id="scrollgrabber"></div>
 	<a id="map" class="weui-cell weui-cell_access menu_list" href="javascript:;">
 		<div class="weui-cell__bd weui-flex__item">
 			<p>选择经营场所位置(可手动拖动点调整位置)</p>
@@ -194,7 +235,7 @@
 	<script src="../../order/js/iconfont.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
-	<!-- <script type="text/javascript" src="js/index1.js"></script> -->
+	<script type="text/jscript" src="../../order/js/jSignature.min.noconflict.js"></script>
 	<script>
 		$('#map').click(function () {
 			$('#allmap').fadeToggle();
@@ -299,7 +340,7 @@
 						clng = e.point.lng;
 						clat = e.point.lat;
 						console.log(e);
-						console.log("clng="+clng+",clat="+clat);
+						console.log("clng=" + clng + ",clat=" + clat);
 						//点击确认
 						map.clearOverlays();
 						addPoint(clng, clat);
@@ -443,7 +484,55 @@
 			});
 
 		}
+		function saveImg() {
+			//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
+			var datapair = $("#signature").jSignature(
+					"getData", "image");
+			var i = new Image();
+			i.src = "data:" + datapair[0] + ","
+					+ datapair[1];
+			$(i).appendTo($("#displayarea"));
+			if ($("#signature").jSignature('getData',
+					'native').length > 0) {
 
+				$.post("../../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+							+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					$("#displayarea").attr("name", uuid);
+				});
+
+				$.closeModal();
+			} else {
+				$.closeModal();
+
+				$.post("../../../file/inputImage.do", {
+					file: "data:" + datapair[0] + ","
+							+ datapair[1]
+				}, function (text) {
+					console.log(text);
+					var result = JSON.parse(text);
+
+					var data = result.state;
+
+					var img = result.url;
+
+					var uuid = result.uuid;
+
+					$("#displayarea").attr("name", uuid);
+				});
+
+			}
+		}
 		function wxImgCallback(dataType, serverId) {
 			console.log("serverId=" + serverId);
 			//将serverId传给wx_upload.php的upload方法
@@ -514,11 +603,42 @@
 							document.getElementById("img3").innerHTML = "";
 							$("#img3").attr("name", uuid);
 							$("#img3").append(panel);
+						} else if (dataType == "other") {
+							document.getElementById("img4").innerHTML = "";
+							$("#img4").attr("name", uuid);
+							$("#img4").append(panel);
 						}
 					}
 				});
 		}
+		$("#sign").click(function () {
+			$.modal({
+				title: "签名",
+				text: "<div id=\"signature\"></div>",
+				buttons: [{
+					text: "确定",
+					onClick: saveImg
+				}, {
+					text: "重置",
+					className: "primary",
+					onClick: function () {
+						$("#signature").jSignature("reset")
+					}
+				}, {
+					text: "取消",
+					className: "default",
+					onClick: function () {
+						$.closeModal()
+					}
+				},],
+				autoClose: false
+			});
+			$("#signature").jSignature('init', {
+				height: '200px',
+				width: '100%'
+			});
 
+		});
 		$(document).ready(function () {
 			//提交
 			$("#submit").click(function () {
@@ -547,11 +667,16 @@
 					error = "身份证反面照照片不能为空!";
 				}
 				var img3 = $("#img3").attr("name");
+				var img4 = $("#img4").attr("name");
 				if (img3 == 0) {
 					error = "工商营业执照不能为空!";
 				}
+				var img5 = $("#displayarea").attr("name");
+				if (img5 == 0) {
+					error = "请填写手写签名!";
+				}
 				if (name == "" && idcard == "" && phone == "" && address == "" && area == "" && business_state == "") {
-					error="请填写完整信息";
+					error = "请填写完整信息";
 				}
 
 				if (error != "") {
@@ -565,64 +690,28 @@
 					});
 
 				} else {
-					var arrays = new Array(img0, img1, img2, img3);
+					$(this).unbind("click");
+				$("#submit").addClass("weui-btn_loading");
+					$("#submit").prepend('<i class="weui-loading"></i>');
+					var arrays = new Array(img0, img1, img2, img3, img4,img5);
 					console.log('保存图片数组的id' + arrays);
 
 					$.get("/ycglj/baiduMap/findLicenseByPoint.do",
 						{
-							limit:10,
-							offset:0,
+							limit: 10,
+							offset: 0,
 							lng: lng,
 							lat: lat,
-							distance:50
-						},function(text){
+							distance: 50
+						}, function (text) {
 							console.log(text);
-							var data=JSON.parse(text);
-							var total=data.total;
+							var data = JSON.parse(text);
+							var total = data.total;
 							console.log(total);
-							if(total>0){
-								$.confirm("50米内存在零售户,是否继续申请", function() {
-								  //点击确认后的回调函数
+							if (total > 0) {
+								$.confirm("50米内存在零售户,是否继续申请", function () {
+									//点击确认后的回调函数
 									$.post("../../../assetRegister/insertNew.do",
-											{
-												name: name,
-												id_number: idcard,
-												phone: phone,
-												address: address,
-												area: area,
-												business_state: business_state,
-												arrays: JSON.stringify(arrays),
-												lng: lng,
-												lat: lat
-											},
-											function (text) {
-												console.log(text);
-												if (text == 1) {
-													$.alert({
-														title: "",
-														text: "成功",
-														onOK: function () {
-															//点击确认
-															location.href = "sucess.html";
-														}
-													});
-												} else if (text == 4) {
-													$.alert({
-														title: "",
-														text: "人脸识别失败,请重新上传身份证照片和自拍照",
-														onOK: function () {
-
-														}
-													});
-												} else {
-
-												}
-											});
-								  }, function() {
-								  //点击取消后的回调函数
-								  });
-							}else{
-								$.post("../../../assetRegister/insertNew.do",
 										{
 											name: name,
 											id_number: idcard,
@@ -637,6 +726,7 @@
 										function (text) {
 											console.log(text);
 											if (text == 1) {
+												 $("#submit").removeClass("weui-btn_loading");
 												$.alert({
 													title: "",
 													text: "成功",
@@ -657,10 +747,50 @@
 
 											}
 										});
+								}, function () {
+									//点击取消后的回调函数
+								});
+							} else {
+								$.post("../../../assetRegister/insertNew.do",
+									{
+										name: name,
+										id_number: idcard,
+										phone: phone,
+										address: address,
+										area: area,
+										business_state: business_state,
+										arrays: JSON.stringify(arrays),
+										lng: lng,
+										lat: lat
+									},
+									function (text) {
+									console.log(text);
+									$("#submit").removeClass("weui-btn_loading");
+										if (text == 1) {
+											$.alert({
+												title: "",
+												text: "成功",
+												onOK: function () {
+													//点击确认
+													location.href = "sucess.html";
+												}
+											});
+										} else if (text == 4) {
+											$.alert({
+												title: "",
+												text: "人脸识别失败,请重新上传身份证照片和自拍照",
+												onOK: function () {
+
+												}
+											});
+										} else {
+
+										}
+									});
 							}
 
-					});
-				   }
+						});
+				}
 
 			})
 		})

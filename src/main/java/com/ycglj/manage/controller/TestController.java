@@ -12,19 +12,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.ycglj.manage.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.dao.UserDAO;
-import com.ycglj.manage.daoModel.Order_Date;
 import com.ycglj.manage.daoModel.Order_User;
-import com.ycglj.manage.daoModel.Users;
 import com.ycglj.manage.daoModelJoin.User_Order_Join;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.tools.MyTestUtil;

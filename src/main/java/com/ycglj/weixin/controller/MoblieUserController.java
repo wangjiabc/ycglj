@@ -1,10 +1,8 @@
 package com.ycglj.weixin.controller;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,6 +14,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -26,24 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.dao.UserDAO;
-import com.ycglj.manage.daoModel.Check_Person;
-import com.ycglj.manage.daoModel.Crimal_Case;
-import com.ycglj.manage.daoModel.Crimal_Record;
-import com.ycglj.manage.daoModel.FileSelfBelong;
-import com.ycglj.manage.daoModel.Law_Case;
-import com.ycglj.manage.daoModel.Not_License;
-import com.ycglj.manage.daoModel.Position;
-import com.ycglj.manage.daoModel.Temp_Change;
-import com.ycglj.manage.daoModel.User_Data;
-import com.ycglj.manage.daoModel.User_License;
-import com.ycglj.manage.daoModel.Users;
-import com.ycglj.manage.daoModel.WeiXin_User;
-import com.ycglj.manage.daoModel.Weight_Log;
-import com.ycglj.manage.daoModelJoin.User_Order_Join;
-import com.ycglj.manage.daoModelJoin.Users_License_Join;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
-import com.ycglj.manage.daoSQL.SelectExe;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
@@ -469,11 +452,12 @@ public class MoblieUserController {
 		String[] where={"license=",license};
 		
 		temp_Change.setWhere(where);
-		
+
 		Temp_Change temp_Change2=licenseDAO.selectTempChange(temp_Change);
 		
 		map.put("change", temp_Change2);
-		
+
+
 		return map;
 		
 	}

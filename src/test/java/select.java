@@ -2,17 +2,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.ycglj.manage.dao.UserDAO;
 import org.apache.commons.collections.map.HashedMap;
-import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Users;
-import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 
 public class select {

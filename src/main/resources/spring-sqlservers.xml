@@ -64,7 +64,13 @@ http://www.springframework.org/schema/context
    <bean id="licensedao" class="com.ycglj.manage.daoImpl.LicenseDAOImpl">
         <property name="jdbcTemplate" ref="jdbcTemplate"></property>
    </bean>
-   
+   <bean id="areadao" class="com.ycglj.manage.daoImpl.AreaDAOImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate"></property>
+   </bean>
+   <bean id="navigationDAO" class="com.ycglj.manage.daoImpl.NavigationDAOImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate"></property>
+   </bean>
+
    <!-- 配置事务管理器 -->
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

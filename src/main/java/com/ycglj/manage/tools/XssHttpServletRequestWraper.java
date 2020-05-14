@@ -1,4 +1,4 @@
-﻿package com.ycglj.manage.tools;
+package com.ycglj.manage.tools;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;

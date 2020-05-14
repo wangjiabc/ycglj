@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ycglj.manage.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -21,15 +22,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.dao.UserDAO;
 import com.ycglj.manage.daoModel.Check_Person;
 import com.ycglj.manage.daoModel.WeiXin_User;
-import com.ycglj.manage.model.Sellers;
 import com.ycglj.manage.model.Users;
-import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
-import com.ycglj.manage.tools.Constants;
-import com.ycglj.manage.tools.Md5;
 import com.ycglj.manage.tools.verifycode.Captcha;
 import com.ycglj.manage.tools.verifycode.SpecCaptcha;
 import com.ycglj.sqlserver.context.Connect;

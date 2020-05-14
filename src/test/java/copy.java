@@ -1,20 +1,14 @@
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import com.ycglj.manage.dao.UserDAO;
+import com.ycglj.manage.daoModel.User_License;
 import org.springframework.context.ApplicationContext;
 
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
-import com.ycglj.manage.dao.UserDAO;
-import com.ycglj.manage.daoModel.FileSelfBelong;
-import com.ycglj.manage.daoModel.Position;
-import com.ycglj.manage.daoModel.User_Data;
-import com.ycglj.manage.daoModel.User_License;
 import com.ycglj.manage.daoModel.Users;
-import com.ycglj.manage.tools.MyTestUtil;
 import com.ycglj.sqlserver.context.Connect;
 
 import aaa.java.Test1;

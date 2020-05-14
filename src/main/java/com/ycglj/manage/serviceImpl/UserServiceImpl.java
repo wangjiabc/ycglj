@@ -1,4 +1,4 @@
-﻿package com.ycglj.manage.serviceImpl;
+package com.ycglj.manage.serviceImpl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -235,7 +235,4 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return usersMapper.updateUsersInfoWithPhone(map);
 	}
-
-
-
 }
