@@ -3,6 +3,7 @@ package com.ycglj.weixin.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +28,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ycglj.manage.dao.LicenseDAO;
 import com.ycglj.manage.dao.OrderDAO;
 import com.ycglj.manage.daoModelJoin.Users_License_Position_Join;
+import com.ycglj.manage.model.Users;
 import com.ycglj.manage.service.PhotoService;
 import com.ycglj.manage.service.SellerService;
 import com.ycglj.manage.service.UserService;
@@ -750,7 +752,74 @@ public class MoblieUserController {
 			crimal_Record.setLng(lng);
 		}
 		
-		return licenseDAO.insertIntoCrimalCase(crimalCaseList, crimal_Record);
+		int result=licenseDAO.insertIntoCrimalCase(crimalCaseList, crimal_Record);
+		
+		final int farea=area;
+		final String name=users.getName();
+		
+		Map lawSearchMap=new HashMap<>();
+		
+		lawSearchMap.put("[Crimal_Record].license = ",users_License_Position_Join.getLicense());
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(cal.get(Calendar.YEAR), 0, 1, 0, 0, 0);
+		sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+		String startTime = null;
+
+		String endTime = null;
+
+		startTime = sdf.format(cal.getTime());
+
+		cal.set(cal.get(Calendar.YEAR), 12, 0, 0, 0, 0);
+
+		endTime = sdf.format(cal.getTime());
+
+		lawSearchMap.put("convert(varchar(11),[Crimal_Record].date,120 ) >=", startTime);
+		lawSearchMap.put("convert(varchar(11),[Crimal_Record].date,120 ) <=", endTime);
+
+		System.out.println("searchMap=" + lawSearchMap);
+		
+		List lawCases=(List) licenseDAO.getCrimalRecord(lawSearchMap);
+				
+		if (result>0&&lawCases.size()>1) {
+			
+			Runnable r = new Runnable() {
+
+				@Override
+				public void run() {
+
+					List list = userService.getUserByTransact(farea);
+
+					Date date = new Date();
+					SimpleDateFormat sdf = new SimpleDateFormat(" yyyy-MM-dd HH:mm:ss ");
+					String time = sdf.format(date);
+
+					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
+
+					Iterator iterator = list.iterator();
+
+					while (iterator.hasNext()) {
+
+						com.ycglj.manage.model.Users users = (Users) iterator.next();
+
+						String transactOpenId = users.getOpenId();
+						wechatSendMessageController.sendMessage(transactOpenId,
+								"moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", // 申请待审核通知
+								// "1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
+								"新办申请", "http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html", "新办申请",
+								name, "新办烟草专卖零售许可证", time, "已提交", "", "");
+
+					}
+
+				}
+			};
+
+			Thread t = new Thread(r);
+			t.start();
+		}
+		
+		return result;
 
 	}
 	

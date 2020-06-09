@@ -1217,17 +1217,9 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
         temp_Users.setOffset(offset);
         temp_Users.setNotIn("id");
 
-        if (sort != null && !sort.equals("")) {
-
-        } else {
-            sort = "id";
-        }
-
-        if (order != null && order.equals("desc")) {
-            order = "desc";
-        } else {
-            order = "asc";
-        }
+        sort = "date";
+ 
+        order = "desc";
 
         temp_Users.setOrder(order);
         temp_Users.setSort(sort);

@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ycglj.manage.daoModel.*;
+
+import org.aspectj.weaver.ast.Literal;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -2019,6 +2021,25 @@ public class LicenseDAOImpl extends JdbcDaoSupport implements LicenseDAO{
 				}
 
 				return map;
+	}
+
+	@Override
+	public List getCrimalRecord(Map searchMap) {
+		// TODO Auto-generated method stub
+		
+		Crimal_Record crimal_Record=new Crimal_Record();
+		crimal_Record.setLimit(100);
+		crimal_Record.setOffset(0);
+		crimal_Record.setNotIn("id");
+		
+		if(searchMap!=null&&!searchMap.isEmpty()&&!searchMap.equals("")){
+			String[] where=TransMapToString.get(searchMap);
+			crimal_Record.setWhere(where);
+		}
+		
+		List list=SelectExe.get(this.getJdbcTemplate(), crimal_Record);
+		
+		return list;
 	}
 
 

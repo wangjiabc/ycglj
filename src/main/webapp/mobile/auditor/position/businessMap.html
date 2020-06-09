@@ -384,6 +384,9 @@
 		console.log(ticket);
 
 		for (var i = 0; i < ticket.length; i++) {
+			points.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
+			pointCollection = new BMap.PointCollection(points, options1);
+			/*
 			if (ticket[i].weight == 1) {
 				points0.push(new BMap.Point(ticket[i].lng, ticket[i].lat));
 				pointCollection0 = new BMap.PointCollection(points0, options5);
@@ -402,6 +405,7 @@
 					pointCollection3 = new BMap.PointCollection(points3, options6);
 				}
 			}
+			*/
 
 		}
 
