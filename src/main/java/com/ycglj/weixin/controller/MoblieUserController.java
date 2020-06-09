@@ -756,6 +756,7 @@ public class MoblieUserController {
 		
 		final int farea=area;
 		final String name=users.getName();
+		final String flicense=license;
 		
 		Map lawSearchMap=new HashMap<>();
 		
@@ -795,6 +796,10 @@ public class MoblieUserController {
 					SimpleDateFormat sdf = new SimpleDateFormat(" yyyy-MM-dd HH:mm:ss ");
 					String time = sdf.format(date);
 
+					SimpleDateFormat sdf2 = new SimpleDateFormat(" yyyyMMddHHmmss ");
+					
+					String time2=sdf2.format(date);
+					
 					WechatSendMessageController wechatSendMessageController = new WechatSendMessageController();
 
 					Iterator iterator = list.iterator();
@@ -805,10 +810,10 @@ public class MoblieUserController {
 
 						String transactOpenId = users.getOpenId();
 						wechatSendMessageController.sendMessage(transactOpenId,
-								"moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", // 申请待审核通知
+								"2xKSHzN_v-6TPjIQfhaWgR1EAI7-gDWvHfDS4uRqyBI", // 申请待审核通知
 								// "1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg",
-								"新办申请", "http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html", "新办申请",
-								name, "新办烟草专卖零售许可证", time, "已提交", "", "");
+								time2+"案由", "http://lzgfgs.com/ycglj/mobile/auditor/case/caseDetail.html?license="+flicense, "已记录",
+								name+"零售户一年内违规超过2次", "", time, "", "", "");
 
 					}
 
