@@ -419,7 +419,7 @@
 				//显示区域置空
 				$("#displayarea").empty();
 				$("#displayarea").attr("name", 0);
-				// $("#signature").jSignature("reset");
+				// $("#signature").("reset");
 
 			})
 			var license = [];
@@ -565,7 +565,7 @@
 				})
 
 			// $("#b3").click(function () {
-			//     if($(".signature").jSignature('getData', 'native').length>0){
+			//     if($(".signature").('getData', 'native').length>0){
 			//         alert("已签名");
 			//     }else
 			//     alert("未签名");
@@ -583,7 +583,7 @@
 						text: "重置",
 						className: "primary",
 						onClick: function () {
-							$("#signature").jSignature("reset")
+							$("#signature").("reset")
 						}
 					}, {
 						text: "取消",
@@ -594,7 +594,7 @@
 					},],
 					autoClose: false
 				});
-				$("#signature").jSignature('init', {
+				$("#signature").('init', {
 					height: '200px',
 					width: '100%'
 				});
@@ -603,13 +603,13 @@
 
 			function saveImg() {
 				//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
-				var datapair = $("#signature").jSignature(
+				var datapair = $("#signature").(
 					"getData", "image");
 				var i = new Image();
 				i.src = "data:" + datapair[0] + ","
 					+ datapair[1];
 				$(i).appendTo($("#displayarea"));
-				if ($("#signature").jSignature('getData',
+				if ($("#signature").('getData',
 					'native').length > 0) {
 
 					$.post("../../file/inputImage.do", {
@@ -653,7 +653,7 @@
 
 		})
 	</script>
-	<script type="text/jscript" src="js/jSignature.min.noconflict.js"></script>
+	<script type="text/jscript" src="js/.min.noconflict.js"></script>
 </body>
 
 </html>

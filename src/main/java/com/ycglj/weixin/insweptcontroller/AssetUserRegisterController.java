@@ -60,7 +60,7 @@ public class AssetUserRegisterController {
 	OrderDAO orderDao=(OrderDAO) applicationContext.getBean("orderdao");
 	
 	/*
-	 * 生成验证码类
+	 * 鐢熸垚楠岃瘉鐮佺被
 	 */
 	@RequestMapping(value="getYzm",method=RequestMethod.GET)
 	public void getYzm(HttpServletResponse response,HttpServletRequest request){
@@ -71,10 +71,10 @@ public class AssetUserRegisterController {
 	        response.setDateHeader("Expires", 0);  
 	        response.setContentType("image/jpeg");  
 	          
-	        //生成随机字串  
+	        //鐢熸垚闅忔満瀛椾覆  
 	        Captcha captcha = new SpecCaptcha(120,25,4); 
 
-	        //生成图片  
+	        //鐢熸垚鍥剧墖  
 	        captcha.out(response.getOutputStream());
             verifyCode=captcha.text().toLowerCase();
             HttpSession session = request.getSession();
@@ -92,17 +92,17 @@ public class AssetUserRegisterController {
 		int repeat=userService.selectRepeatUser(name);
 		
 		if(name.equals("")){
-			map.put("data", "用户名不能空");
+			map.put("data", "鐢ㄦ埛鍚嶄笉鑳界┖");
 			return map;
 		}
 		
 		
-		String regEx="[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";  
+		String regEx="[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~锛丂#锟�%鈥︹��&*锛堬級鈥斺��+|{}銆愩�戔�橈紱锛氣�濃�溾�欍�傦紝銆侊紵]";  
 		Pattern   p   =   Pattern.compile(regEx);     
 	    Matcher   m   =   p.matcher(name); 
 	      
 	    if(m.find()){
-	    	map.put("data", "用户名含有非法字符");
+	    	map.put("data", "鐢ㄦ埛鍚嶅惈鏈夐潪娉曞瓧绗�");
 			return map;
 	    }
 	    
@@ -117,7 +117,7 @@ public class AssetUserRegisterController {
 		Map<String, Object> map=new HashMap<>();
 		
 		if(IDNo.equals("")){
-			map.put("data", "身份证号码不能空");
+			map.put("data", "韬唤璇佸彿鐮佷笉鑳界┖");
 			return map;
 		}
 		
@@ -134,10 +134,10 @@ public class AssetUserRegisterController {
 	}
 
 	/**
-     * 电话号码验证
+     * 鐢佃瘽鍙风爜楠岃瘉
      * 
      * @param  str
-     * @return 验证通过返回true
+     * @return 楠岃瘉閫氳繃杩斿洖true
      */
 	 public static boolean isPhone(String str) { 
         Pattern p1 = null,p2 = null;
@@ -155,12 +155,12 @@ public class AssetUserRegisterController {
 	    Map<String, Object> map=new HashMap<>();
 		
 		if(telephone.equals("")){
-			map.put("data", "手机号码不能空");
+			map.put("data", "鎵嬫満鍙风爜涓嶈兘绌�");
 			return map;
 		}
 		
 		if(!isPhone(telephone)){
-			map.put("data", "请输入正确的手机号码");
+			map.put("data", "璇疯緭鍏ユ纭殑鎵嬫満鍙风爜");
 			return map;
 		}
 		
@@ -171,7 +171,7 @@ public class AssetUserRegisterController {
 	
 	
 
-	//生成短信验证码
+	//鐢熸垚鐭俊楠岃瘉鐮�
 	@RequestMapping(value="getValidate",method=RequestMethod.GET)
 	public @ResponseBody Integer getValidate(@RequestParam String phone,
 			@RequestParam String name,HttpServletResponse response,HttpServletRequest request){
@@ -208,7 +208,7 @@ public class AssetUserRegisterController {
             vcode = vcode + (int)(Math.random() * 9);
         }
 		
-		String Message="您正在进行手机验证,验证码是 : "+vcode+" , 5分钟内有效";
+		String Message="鎮ㄦ鍦ㄨ繘琛屾墜鏈洪獙璇�,楠岃瘉鐮佹槸 : "+vcode+" , 5鍒嗛挓鍐呮湁鏁�";
 		
 		System.out.println("phone="+phone);
 		System.out.println("Message="+Message);
@@ -230,7 +230,7 @@ public class AssetUserRegisterController {
 		return i;
 	}
 
-   //已存在的零售户微信号注册
+   //宸插瓨鍦ㄧ殑闆跺敭鎴峰井淇″彿娉ㄥ唽
    @RequestMapping("insert")
    public @ResponseBody Integer
    insert(HttpServletRequest request,@RequestParam String name,
@@ -348,7 +348,7 @@ public class AssetUserRegisterController {
 		}
    }
    
-   //新零售户注册
+   //鏂伴浂鍞埛娉ㄥ唽
    @RequestMapping("insertNew")
    public @ResponseBody Integer
    insertNew(HttpServletRequest request,@RequestParam String name,
@@ -368,16 +368,16 @@ public class AssetUserRegisterController {
         	 e.printStackTrace();
 		  }
 	  
-        long face=new RegisterCompare().match(openId,request);
+ /*       long face=new RegisterCompare().match(openId,request);
 //
         if(face<70){
         	return 4;
         }
-        
+   */     
 		JSONArray jsonArray = JSONArray.parseArray(arrays);
 
 		if (jsonArray != null && jsonArray.size() > 0) {
-			// 组合image名称，“;隔开”
+			// 缁勫悎image鍚嶇О锛屸��;闅斿紑鈥�
 			int up = 0;
 			System.out.println("length=" + jsonArray.size());
 			try {
@@ -392,7 +392,7 @@ public class AssetUserRegisterController {
 
 				up = userDao.updateUserDataAffirm(openId, list,3);
 
-				// 上传成功
+				// 涓婁紶鎴愬姛
 				if (up > 0) {
 
 				} else {
@@ -519,11 +519,11 @@ public class AssetUserRegisterController {
 								Users users=(Users) iterator.next();
 								
 								String transactOpenId=users.getOpenId();
-								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //申请待审核通知
+								wechatSendMessageController.sendMessage(transactOpenId, "moOQnWapjZo99FItokfrzEPGjBsmElvO1bIcIWyW6XY", //鐢宠寰呭鏍搁�氱煡
 										//"1vQfPSl4pSvi5UnmmDhVtueutq2R1w7XYRMts294URg", 
-										"新办申请",
+										"鏂板姙鐢宠",
 										"http://lzgfgs.com/ycglj/mobile/asset/onlineregs/transact/index.html",
-										"新办申请",name, "新办烟草专卖零售许可证", time, "已提交", "", 
+										"鏂板姙鐢宠",name, "鏂板姙鐑熻崏涓撳崠闆跺敭璁稿彲璇�", time, "宸叉彁浜�", "", 
 										"");
 
 							}

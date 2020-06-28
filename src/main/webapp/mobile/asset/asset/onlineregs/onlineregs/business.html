@@ -157,7 +157,7 @@
 	<script src="../order/js/iconfont.js"></script>
 	<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
-	<script type="text/jscript" src="../order/js/jSignature.min.noconflict.js"></script>
+	<script type="text/jscript" src="../order/js/.min.noconflict.js"></script>
 
 	<script>
 		function getQueryString(name) {
@@ -238,13 +238,13 @@
 		// }
 		function saveImg() {
 			//此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
-			var datapair = $("#signature").jSignature(
+			var datapair = $("#signature").(
 				"getData", "image");
 			var i = new Image();
 			i.src = "data:" + datapair[0] + ","
 				+ datapair[1];
 			$(i).appendTo($("#displayarea"));
-			if ($("#signature").jSignature('getData',
+			if ($("#signature").('getData',
 				'native').length > 0) {
 
 				$.post("../../file/inputImage.do", {
@@ -517,7 +517,7 @@
 					text: "重置",
 					className: "primary",
 					onClick: function () {
-						$("#signature").jSignature("reset")
+						$("#signature").("reset")
 					}
 				}, {
 					text: "取消",
@@ -528,7 +528,7 @@
 				},],
 				autoClose: false
 			});
-			$("#signature").jSignature('init', {
+			$("#signature").('init', {
 				height: '200px',
 				width: '100%'
 			});

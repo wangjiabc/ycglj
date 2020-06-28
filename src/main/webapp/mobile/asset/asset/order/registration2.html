@@ -159,11 +159,11 @@
 
             function saveImg() {
                 //此导出插件返回数组[MIMETYPE，签名的SVG的base64编码字符串划]
-                var datapair = $("#signature").jSignature("getData", "image")
+                var datapair = $("#signature").("getData", "image")
                 var i = new Image()
                 i.src = "data:" + datapair[0] + "," + datapair[1]
                 $(i).appendTo($("#displayarea"))
-                if ($("#signature").jSignature('getData', 'native').length > 0) {
+                if ($("#signature").('getData', 'native').length > 0) {
                 	 $.get("../../file/inputImage.do",{
                  		file:"data:" + datapair[0] + "," + datapair[1]
             		    }, function(text){
@@ -179,7 +179,7 @@
             $("#reset").click(function () {
                 //显示区域置空
                 $("#displayarea").empty();
-                // $("#signature").jSignature("reset");
+                // $("#signature").("reset");
 
             })
             //身份证正面
@@ -206,7 +206,7 @@
             })
 
             // $("#b3").click(function () {
-            //     if($(".signature").jSignature('getData', 'native').length>0){
+            //     if($(".signature").('getData', 'native').length>0){
             //         alert("已签名");
             //     }else
             //     alert("未签名");
@@ -232,16 +232,16 @@
                     text: "<div id=\"signature\"></div>",
                     buttons: [
                         { text: "确定", onClick: saveImg },
-                        { text: "重置", className: "primary", onClick: function () { $("#signature").jSignature("reset") } },
+                        { text: "重置", className: "primary", onClick: function () { $("#signature").("reset") } },
                         { text: "取消", className: "default", onClick: function () { $.closeModal() } },
                     ], autoClose: false
                 });
-                $("#signature").jSignature('init', { height: '200px', width: '100%' });
+                $("#signature").('init', { height: '200px', width: '100%' });
 
             })
         })
     </script>
-    <script src="js/jSignature.min.noconflict.js"></script>
+    <script src="js/.min.noconflict.js"></script>
     <script></script>
 </body>
 
