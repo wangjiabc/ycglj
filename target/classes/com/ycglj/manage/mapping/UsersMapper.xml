@@ -60,14 +60,7 @@
 
   <select id="getUserByOnlyOpenId" resultMap="BaseResultMap" useCache="false">
 		select
-		users.id,users.open_id,total_amount,
-		campus_id,subscribe,nickname, headimg_url,
-		language,province,groupid,country,
-		city,sex,remark,
-		subscribe_time,
-		usersinfo.name,users.place,	users.transact,users.area,users.business,
-		usersinfo.headship,usersinfo.email,	
-		address ,phone
+		*
 		from users
 		left join usersinfo
 		on
@@ -603,5 +596,35 @@
 		   users.open_id = #{openId,jdbcType=VARCHAR}
 		</where>
 	</select>
-    
+
+
+	<update id="updateUsesLicenseByOpenId" parameterType="com.ycglj.manage.daoModel.User_License">
+	update User_License
+	set	area = #{area,jdbcType=VARCHAR}
+	where open_id = #{openId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="getUserListByOnlyOpenId" resultMap="BaseResultMap" useCache="false">
+		select
+		id,users.open_id,
+		campus_id,subscribe,nickname, headimg_url,
+		language,province,groupid,country,
+		city,sex,remark,
+		usersinfo.name,users.place,users.transact,users.area,users.business,
+		usersinfo.headship,usersinfo.email,
+		total_amount,
+		subscribe_time,
+		address,phone
+		from users
+		left join usersinfo
+		on
+		users.open_id = usersinfo.open_id
+		<where>
+			users.transact>0
+			<if test="area != null">
+				and area=#{area,jdbcType=INTEGER}
+			</if>
+		</where>
+	</select>
+
 </mapper>
