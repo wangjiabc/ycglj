@@ -1111,17 +1111,23 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
         check_Person2.setLimit(1);
         check_Person2.setOffset(0);
         check_Person2.setNotIn("id");
-        System.out.print("card_number=" + check_Person.getCard_number());
+        System.out.println("card_number=" + check_Person.getCard_number());
         String[] where = {"card_number=", check_Person.getCard_number()};
         check_Person2.setWhere(where);
 
+        System.out.println("count====---------");
+        
         int count = (int) SelectExe.getCount(this.getJdbcTemplate(), check_Person2).get("");
 
+        System.out.println("count===="+count);
+        
         int i = 0;
         if (count > 0) {
             check_Person.setCard_number(null);
             check_Person.setWhere(where);
             i = UpdateExe.get(this.getJdbcTemplate(), check_Person);
+        }else {
+        	i=insertCheck_Person(check_Person);
         }
 
         return i;
@@ -1217,17 +1223,9 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
         temp_Users.setOffset(offset);
         temp_Users.setNotIn("id");
 
-        if (sort != null && !sort.equals("")) {
-
-        } else {
-            sort = "id";
-        }
-
-        if (order != null && order.equals("desc")) {
-            order = "desc";
-        } else {
-            order = "asc";
-        }
+        sort = "date";
+ 
+        order = "desc";
 
         temp_Users.setOrder(order);
         temp_Users.setSort(sort);

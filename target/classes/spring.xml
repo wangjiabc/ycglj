@@ -31,10 +31,10 @@ xmlns:task="http://www.springframework.org/schema/task"
 	<context:annotation-config />  
     <!--spring扫描注解的配置   -->  
     <context:component-scan base-package="com.ycglj.manage.mytask" /> 
-	
+	<!--  
 	<task:scheduled-tasks>   
         <task:scheduled ref="taskJob" method="job1" cron="0 0 10 * * ?"/>   
         <task:scheduled ref="taskJob" method="job2" cron="0 0 8 * * ?"/>
 	</task:scheduled-tasks>  
-	
+	-->
 </beans>

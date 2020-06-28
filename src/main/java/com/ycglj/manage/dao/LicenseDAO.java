@@ -85,4 +85,6 @@ public interface LicenseDAO {
 	public Integer deleteUserLicense(String license);
 	
 	public Map findLicenseByPoint(int limit,int offset,Double lng, Double lat,Double distance,String search); 
+	
+	public List getCrimalRecord(Map searchMap);
 }
