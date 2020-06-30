@@ -14,7 +14,7 @@
 		src="https://api.map.baidu.com/api?v=2.0&ak=cR98TwX2FnKTpANIOYhMYMot9a4ioxjc"></script>
 	<script type="text/javascript" src="https://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
-	<script src="../../../../js/previewImage.min.js"></script>
+	
 </head>
 <style>
 	html,
@@ -123,6 +123,7 @@
 		<div id="img" class="weui-panel__bd">
 		</div>
 	</div>
+<div id='img2'></div>
 	<div id="hide_navigation" class="weui-cell weui-cell_access" style="width:100%;">
 		<div class="weui-cell__bd">零售户申请位置</div>
 		<div class="weui-cell__ft" style="font-size: 0">
@@ -208,7 +209,7 @@
 			for (let index = 0; index < data.fileBytes.length; index++) {
 				var uri = data.fileBytes[index].compressUri;
 				src = "/ycglj/" + uri;
-				$('form').append('<div class="weui-uploader__file"><img class="image" src="' + src + '" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>');
+				$('#img2').append('<div class="weui-uploader__file"><img class="image" src="'+src+'" alt="" style="width:60px;height:60px;margin-right:5px;display:block"></div>');
 			}
 		}
 		//其他业务
@@ -689,147 +690,153 @@
 		return d.toFixed(2) + ' KM'; //获取两点距离,保留小数点后两位
 	}
 
-	//图片预览插件
-	var im = {};
-	/**
-	 * 得到多个元素
-	 * @public
-	 */
-	im.all = function (selector, contextElement) {
-		var nodeList,
-			list = [];
-		if (contextElement) {
-			nodeList = contextElement.querySelectorAll(selector);
-		} else {
-			nodeList = document.querySelectorAll(selector);
-		}
-		if (nodeList && nodeList.length > 0) {
-			list = Array.prototype.slice.call(nodeList);
-		}
-		return list;
-	}
-
-	/**
-	 * 将事件委托给父元素
-	 * @public
-	 * @param  array     $el         父元素
-	 * @param  string    eventType  事件类型名称
-	 * @param  string    selector   目标的选择器
-	 * @param  function  fn
-	 */
-	im.delegate = function ($el, eventType, selector, fn) {
-		if (!$el) { return; }
-		$el.addEventListener(eventType, function (e) {
-			var targets = im.all(selector, $el);
-			if (!targets) {
-				return;
-			}
-			// findTarget:
-			for (var i = 0; i < targets.length; i++) {
-				var $node = e.target;
-				while ($node) {
-					if ($node == targets[i]) {
-						fn.call($node, e);
-						break; //findTarget;
-					}
-					$node = $node.parentNode;
-					if ($node == $el) {
-						break;
-					}
-				}
-			}
-		}, false);
-	};
-
-
-	im.delegate(document.querySelector('#img'), 'click', 'img', function () {
-		var urls = [];
-		var imgs = im.all('img', im.all('#img')[0]);
-		imgs.forEach(function (v, i) {
-			var str = v.src;
-			var url = str.replace(/\/compressFile/, "");
-			urls.push(url);
-		})
-
-		var thisStr = this.src;
-		var current = thisStr.replace(/\/compressFile/, "");
-		console.log(current);
-		var obj = {
-			urls: urls,
-			current: current
-		};
-		previewImage.start(obj);
-	});
-	var im2 = {};
-	/**
-	 * 得到多个元素
-	 * @public
-	 */
-	im2.all = function (selector, contextElement) {
-		var nodeList,
-			list = [];
-		if (contextElement) {
-			nodeList = contextElement.querySelectorAll(selector);
-		} else {
-			nodeList = document.querySelectorAll(selector);
-		}
-		if (nodeList && nodeList.length > 0) {
-			list = Array.prototype.slice.call(nodeList);
-		}
-		return list;
-	}
-
-	/**
-	 * 将事件委托给父元素
-	 * @public
-	 * @param  array     $el         父元素
-	 * @param  string    eventType  事件类型名称
-	 * @param  string    selector   目标的选择器
-	 * @param  function  fn
-	 */
-	im2.delegate = function ($el, eventType, selector, fn) {
-		if (!$el) { return; }
-		$el.addEventListener(eventType, function (e) {
-			var targets = im2.all(selector, $el);
-			if (!targets) {
-				return;
-			}
-			// findTarget:
-			for (var i = 0; i < targets.length; i++) {
-				var $node = e.target;
-				while ($node) {
-					if ($node == targets[i]) {
-						fn.call($node, e);
-						break; //findTarget;
-					}
-					$node = $node.parentNode;
-					if ($node == $el) {
-						break;
-					}
-				}
-			}
-		}, false);
-	};
-
-
-	im2.delegate(document.querySelector('.image'), 'click', 'img', function () {
-		var urls = [];
-		var imgs = im2.all('img', im2.all('.image')[0]);
-		imgs.forEach(function (v, i) {
-			var str = v.src;
-			var url = str.replace(/\/compressFile/, "");
-			urls.push(url);
-		})
-
-		var thisStr = this.src;
-		var current = thisStr.replace(/\/compressFile/, "");
-		console.log(current);
-		var obj = {
-			urls: urls,
-			current: current
-		};
-		previewImage.start(obj);
-	});
 </script>
+<script src="../../../../js/previewImage.min.js"></script>
+<script>
 
+//图片预览插件
+var im = {};
+/**
+ * 得到多个元素
+ * @public
+ */
+im.all = function (selector, contextElement) {
+	var nodeList,
+		list = [];
+	if (contextElement) {
+		nodeList = contextElement.querySelectorAll(selector);
+	} else {
+		nodeList = document.querySelectorAll(selector);
+	}
+	if (nodeList && nodeList.length > 0) {
+		list = Array.prototype.slice.call(nodeList);
+	}
+	return list;
+}
+
+/**
+ * 将事件委托给父元素
+ * @public
+ * @param  array     $el         父元素
+ * @param  string    eventType  事件类型名称
+ * @param  string    selector   目标的选择器
+ * @param  function  fn
+ */
+im.delegate = function ($el, eventType, selector, fn) {
+	if (!$el) { return; }
+	$el.addEventListener(eventType, function (e) {
+		var targets = im.all(selector, $el);
+		if (!targets) {
+			return;
+		}
+		// findTarget:
+		for (var i = 0; i < targets.length; i++) {
+			var $node = e.target;
+			while ($node) {
+				if ($node == targets[i]) {
+					fn.call($node, e);
+					break; //findTarget;
+				}
+				$node = $node.parentNode;
+				if ($node == $el) {
+					break;
+				}
+			}
+		}
+	}, false);
+};
+
+
+
+im.delegate(document.querySelector('#img'), 'click', 'img', function () {
+	var urls = [];
+	var imgs = im.all('img', im.all('#img')[0]);
+	imgs.forEach(function (v, i) {
+		var str = v.src;
+		var url = str.replace("/compressFile", "");
+		urls.push(url);
+	})
+
+	var thisStr = this.src;
+	var current = thisStr.replace("/compressFile", "");
+	console.log(current);
+	var obj = {
+		urls: urls,
+		current: current
+	};
+	previewImage.start(obj);
+});
+var im2 = {};
+/**
+ * 得到多个元素
+ * @public
+ */
+im2.all = function (selector, contextElement) {
+	var nodeList,
+		list = [];
+	if (contextElement) {
+		nodeList = contextElement.querySelectorAll(selector);
+	} else {
+		nodeList = document.querySelectorAll(selector);
+	}
+	if (nodeList && nodeList.length > 0) {
+		list = Array.prototype.slice.call(nodeList);
+	}
+	return list;
+}
+
+/**
+ * 将事件委托给父元素
+ * @public
+ * @param  array     $el         父元素
+ * @param  string    eventType  事件类型名称
+ * @param  string    selector   目标的选择器
+ * @param  function  fn
+ */
+im2.delegate = function ($el, eventType, selector, fn) {
+	if (!$el) { return; }
+	$el.addEventListener(eventType, function (e) {
+		var targets = im2.all(selector, $el);
+		if (!targets) {
+			return;
+		}
+		// findTarget:
+		for (var i = 0; i < targets.length; i++) {
+			var $node = e.target;
+			while ($node) {
+				if ($node == targets[i]) {
+					fn.call($node, e);
+					break; //findTarget;
+				}
+				$node = $node.parentNode;
+				if ($node == $el) {
+					break;
+				}
+			}
+		}
+	}, false);
+};
+
+
+im2.delegate(document.querySelector('#img2'), 'click', 'img', function () {
+	var urls = [];
+	var imgs = im2.all('img', im2.all('#img2')[0]);
+	
+	imgs.forEach(function (v, i) {
+		var str = v.src;
+		var url = str.replace("/compressFile", "");
+		urls.push(url);
+	})
+
+	var thisStr = this.src;
+	var current = thisStr.replace("/compressFile", "");
+	console.log(current);
+	var obj = {
+		urls: urls,
+		current: current
+	};
+	previewImage.start(obj);
+});
+
+</script>
 </html>

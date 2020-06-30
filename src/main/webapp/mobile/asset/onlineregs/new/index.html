@@ -611,35 +611,38 @@
 					}
 				});
 		}
-		$("#sign").click(function () {
-			$.modal({
-				title: "签名",
-				text: "<div id=\"signature\"></div>",
-				buttons: [{
-					text: "确定",
-					onClick: saveImg
-				}, {
-					text: "重置",
-					className: "primary",
-					onClick: function () {
-						$("#signature").jSignature("reset")
-					}
-				}, {
-					text: "取消",
-					className: "default",
-					onClick: function () {
-						$.closeModal()
-					}
-				},],
-				autoClose: false
-			});
-			$("#signature").jSignature('init', {
-				height: '200px',
-				width: '100%'
-			});
-
-		});
+		
+		
 		$(document).ready(function () {
+
+			$("#sign").click(function () {
+				$.modal({
+					title: "签名",
+					text: "<div id=\"signature\"></div>",
+					buttons: [{
+						text: "确定",
+						onClick: saveImg
+					}, {
+						text: "重置",
+						className: "primary",
+						onClick: function () {
+							$("#signature").jSignature("reset")
+						}
+					}, {
+						text: "取消",
+						className: "default",
+						onClick: function () {
+							$.closeModal()
+						}
+					},],
+					autoClose: false
+				});
+				$("#signature").jSignature('init', {
+					height: '200px',
+					width: '100%'
+				});
+
+			});
 			//提交
 			$("#submit").click(function () {
 				if (clng != undefined) {
@@ -696,100 +699,43 @@
 					var arrays = new Array(img0, img1, img2, img3, img4,img5);
 					console.log('保存图片数组的id' + arrays);
 
-					$.get("/ycglj/baiduMap/findLicenseByPoint.do",
-						{
-							limit: 10,
-							offset: 0,
-							lng: lng,
-							lat: lat,
-							distance: 50
-						}, function (text) {
-							console.log(text);
-							var data = JSON.parse(text);
-							var total = data.total;
-							console.log(total);
-							if (total > 0) {
-								$.confirm("50米内存在零售户,是否继续申请", function () {
-									//点击确认后的回调函数
-									$.post("../../../assetRegister/insertNew.do",
-										{
-											name: name,
-											id_number: idcard,
-											phone: phone,
-											address: address,
-											area: area,
-											business_state: business_state,
-											arrays: JSON.stringify(arrays),
-											lng: lng,
-											lat: lat
-										},
-										function (text) {
-											console.log(text);
-											if (text == 1) {
-												 $("#submit").removeClass("weui-btn_loading");
-												$.alert({
-													title: "",
-													text: "成功",
-													onOK: function () {
-														//点击确认
-														location.href = "sucess.html";
-													}
-												});
-											} else if (text == 4) {
-												$.alert({
-													title: "",
-													text: "人脸识别失败,请重新上传身份证照片和自拍照",
-													onOK: function () {
-
-													}
-												});
-											} else {
-
-											}
-										});
-								}, function () {
-									//点击取消后的回调函数
-								});
-							} else {
-								$.post("../../../assetRegister/insertNew.do",
-									{
-										name: name,
-										id_number: idcard,
-										phone: phone,
-										address: address,
-										area: area,
-										business_state: business_state,
-										arrays: JSON.stringify(arrays),
-										lng: lng,
-										lat: lat
-									},
-									function (text) {
-									console.log(text);
-									$("#submit").removeClass("weui-btn_loading");
-										if (text == 1) {
-											$.alert({
-												title: "",
-												text: "成功",
-												onOK: function () {
-													//点击确认
-													location.href = "sucess.html";
-												}
-											});
-										} else if (text == 4) {
-											$.alert({
-												title: "",
-												text: "人脸识别失败,请重新上传身份证照片和自拍照",
-												onOK: function () {
-
-												}
-											});
-										} else {
+					$.post("../../../assetRegister/insertNew.do",
+							{
+								name: name,
+								id_number: idcard,
+								phone: phone,
+								address: address,
+								area: area,
+								business_state: business_state,
+								arrays: JSON.stringify(arrays),
+								lng: lng,
+								lat: lat
+							},
+							function (text) {
+								console.log(text);
+								if (text == 1) {
+									 $("#submit").removeClass("weui-btn_loading");
+									$.alert({
+										title: "",
+										text: "成功",
+										onOK: function () {
+											//点击确认
+											console.log(location)
+											location.href = "sucess.html";
+										}
+									});
+								} else if (text == 4) {
+									$.alert({
+										title: "",
+										text: "人脸识别失败,请重新上传身份证照片和自拍照",
+										onOK: function () {
 
 										}
 									});
-							}
+								} else {
 
-						});
+								}
+							});
 				}
 
 			})
